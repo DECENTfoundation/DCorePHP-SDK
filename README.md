@@ -83,27 +83,37 @@ $dcoreApi->getAccountApi()->transfer(
 );
 ```
 
-### Submit content
+### Create content
 
 ```php
-$dcoreApi->getContentApi()->submitContent(
-    null,
+$content = new SubmitContent();
+$content
+    ->setUri($randomUri)
+    ->setCoauthors([])
+    ->setCustodyData(null)
+    ->setHash('2222222222222222222222222222222222222222')
+    ->setKeyParts([])
+    ->setSeeders([])
+    ->setQuorum(0)
+    ->setSize(10000)
+    ->setSynopsis(json_encode([
+        'title' => 'Your content title',
+        'description' => 'Your content description',
+        'content_type_id' => '1.2.3'
+    ]))
+    ->setExpiration('2019-05-28T13:32:34+00:00')
+    ->setPrice([(new RegionalPrice)->setPrice((new AssetAmount())->setAmount(1000))->setRegion(1)]);
+
+$credentials = new Credentials(
     new ChainObject('1.2.34'),
-    [],
-    'https://decent.ch/', // your content url
-    [(new RegionalPrice)->setPrice((new AssetAmount())->setAmount(1000))->setRegion(1)],
-    10000,
-    '2222222222222222222222222222222222222222',
-    [],
-    0,
-    [],
-    '2019-05-28T13:32:34+00:00',
-    '1.3.0',
-    1000,
-    json_encode(['title' => 'Your content title', 'description' => 'Your content description', 'content_type_id' => '1.2.3']),
-    '',
-    null,
-    '5Jd7zdvxXYNdUfnEXt5XokrE3zwJSs734yQ36a1YaqioRTGGLtn'
+    ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1)
+);
+
+$dcoreApi->getContentApi()->create(
+    $content,
+    $credentials,
+    (new AssetAmount())->setAmount(1000)->setAssetId('1.3.0'),
+    (new AssetAmount())->setAmount(1000)->setAssetId('1.3.0')
 );
 ```
 
@@ -113,19 +123,6 @@ $dcoreApi->getContentApi()->submitContent(
 $contents = $dcoreApi->getContentApi()->findAll(
     'search term',
     '-rating'
-);
-```
-
-### Buy content
-
-```php
-$contents = $dcoreApi->getContentApi()->requestToBuy(
-    new ChainObject('1.2.34'),
-    'https://decent.ch/', // your content url
-    '1.3.0',
-    100000000,
-    1,
-    '5Jd7zdvxXYNdUfnEXt5XokrE3zwJSs734yQ36a1YaqioRTGGLtn'
 );
 ```
 
