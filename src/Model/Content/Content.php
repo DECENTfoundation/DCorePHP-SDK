@@ -12,7 +12,7 @@ class Content
     private $id;
     /** @var string */
     private $author;
-    /** @var int */
+    /** @var \DateTime */
     private $expiration;
     /** @var string */
     private $created;
@@ -81,20 +81,21 @@ class Content
     }
 
     /**
-     * @return int
+     * @return \DateTime
      */
-    public function getExpiration(): int
+    public function getExpiration(): \DateTime
     {
         return $this->expiration;
     }
 
     /**
-     * @param int $expiration
+     * @param \DateTime|string $expiration
      * @return Content
+     * @throws \Exception
      */
-    public function setExpiration(int $expiration): Content
+    public function setExpiration($expiration): Content
     {
-        $this->expiration = $expiration;
+        $this->expiration = $expiration instanceof \DateTime ? $expiration : new \DateTime($expiration);
 
         return $this;
     }

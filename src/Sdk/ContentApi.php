@@ -7,6 +7,7 @@ use DCorePHP\Crypto\PrivateKey;
 use DCorePHP\Exception\InvalidApiCallException;
 use DCorePHP\Exception\ObjectAlreadyFoundException;
 use DCorePHP\Exception\ObjectNotFoundException;
+use DCorePHP\Exception\ValidationException;
 use DCorePHP\Model\Asset\AssetAmount;
 use DCorePHP\Model\BaseOperation;
 use DCorePHP\Model\ChainObject;
@@ -31,6 +32,9 @@ use DCorePHP\Net\Model\Request\ListPublishingManagers;
 use DCorePHP\Net\Model\Request\NetworkBroadcast;
 use DCorePHP\Net\Model\Request\RestoreEncryptionKey;
 use DCorePHP\Net\Model\Request\SearchContent;
+use Symfony\Component\Validator\Constraints\EqualTo;
+use Symfony\Component\Validator\Constraints\IdenticalTo;
+use Symfony\Component\Validator\Validation;
 use WebSocket\BadOpcodeException;
 
 class ContentApi extends BaseApi implements ContentApiInterface
@@ -162,6 +166,29 @@ class ContentApi extends BaseApi implements ContentApiInterface
         return $this->dcoreApi->getBroadcastApi()->broadcastOperationWithECKeyPairWithCallback(
             $credentials->getKeyPair(),
             $this->createPurchaseOperationWithUri($credentials, $uri)
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function update(SubmitContent $content, Credentials $author, AssetAmount $publishingFee, AssetAmount $fee): ?TransactionConfirmation
+    {
+        $foundContent = $this->getByURI($content->getUri()); // Also checks if exists and throws exception
+        [$subject, $constraints] = [$foundContent->getExpiration()->format('c'), [
+            new IdenticalTo([
+                'value' => $content->getExpiration()->format('c'),
+                'message' => 'Content expiration must be the same!'])]];
+        if (($violations = Validation::createValidator()->validate($subject, $constraints))->count() > 0) {
+            throw new ValidationException($violations);
+        }
+
+        return $this->dcoreApi->getBroadcastApi()->broadcastOperationWithECKeyPairWithCallback($author->getKeyPair(), (
+        new ContentSubmitOperation())
+            ->setContent($content)
+            ->setAuthor($author->getAccount())
+            ->setPublishingFee($publishingFee)
+            ->setFee($fee)
         );
     }
 

@@ -18,7 +18,7 @@ class ContentObject
     private $author;
     /** @var array */
     private $coAuthors;
-    /** @var int */
+    /** @var \DateTime */
     private $expiration;
     /** @var string */
     private $created;
@@ -121,20 +121,21 @@ class ContentObject
     }
 
     /**
-     * @return int
+     * @return \DateTime
      */
-    public function getExpiration(): int
+    public function getExpiration(): \DateTime
     {
         return $this->expiration;
     }
 
     /**
-     * @param int $expiration
+     * @param \DateTime|string $expiration
      * @return ContentObject
+     * @throws \Exception
      */
-    public function setExpiration(int $expiration): ContentObject
+    public function setExpiration($expiration): ContentObject
     {
-        $this->expiration = $expiration;
+        $this->expiration = $expiration instanceof \DateTime ? $expiration : new \DateTime($expiration);
 
         return $this;
     }
