@@ -2,6 +2,7 @@
 
 namespace DCorePHP\Model;
 
+use DCorePHP\Crypto\Address;
 use DCorePHP\Model\Asset\AssetAmount;
 
 class Options
@@ -26,7 +27,7 @@ class Options
     public function __construct()
     {
         $this->setPricePerSubscribe(new AssetAmount());
-        $this->memoKey = new Address();
+//        $this->memoKey = new Address();
     }
 
     public function getMemoKey(): ?Address
@@ -34,8 +35,11 @@ class Options
         return $this->memoKey;
     }
 
-    public function setMemoKey(Address $memoKey): Options
+    public function setMemoKey($memoKey): Options
     {
+        if (is_string($memoKey)) {
+            $memoKey = Address::decode($memoKey);
+        }
         $this->memoKey = $memoKey;
 
         return $this;
