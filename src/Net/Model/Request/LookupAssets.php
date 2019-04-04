@@ -4,7 +4,7 @@ namespace DCorePHP\Net\Model\Request;
 
 use DCorePHP\Net\Model\Response\BaseResponse;
 
-class LookupAssets extends BaseRequest
+class LookupAssets extends GetAssetAbstract
 {
     public function __construct(array $assetSymbols)
     {
@@ -17,7 +17,11 @@ class LookupAssets extends BaseRequest
 
     public static function responseToModel(BaseResponse $response)
     {
-        // TODO: Implement responseToModel() method.
-        dump($response->getResult());
+        $assets = [];
+        foreach ($response->getResult() as $rawAsset) {
+            $assets[] = parent::resultToModel($rawAsset);
+        }
+
+        return $assets;
     }
 }

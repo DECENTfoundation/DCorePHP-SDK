@@ -2,6 +2,7 @@
 
 namespace DCorePHP\Sdk;
 
+use DCorePHP\Model\Asset\Asset;
 use DCorePHP\Model\Asset\AssetAmount;
 use DCorePHP\Model\ChainObject;
 use DCorePHP\Net\Model\Request\Database;
@@ -59,8 +60,10 @@ class BalanceApi extends BaseApi implements BalanceApiInterface
      */
     public function getAllWithAsset(ChainObject $accountId, array $assetSymbols): array
     {
+        /** @var Asset[] $assets */
         $assets = $this->dcoreApi->getAssetApi()->getAllByName($assetSymbols);
         // TODO: Map assets
+//        dump(array_map(function (Asset $asset) use($accountId) {return [$asset, $this->get($accountId, $asset->getId())];}, $assets));
         return [];
     }
 
