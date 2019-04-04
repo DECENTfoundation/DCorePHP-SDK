@@ -42,11 +42,11 @@ interface BalanceApiInterface
      * Get account balance by name.
      *
      * @param string $name
-     * @param array $assets, 1.3.*
+     * @param ChainObject[] $assets, 1.3.*
      *
      * @return AssetAmount[] for asset of amounts for different assets
      */
-    public function getAllByName(string $name, array $assets): array;
+    public function getAllByName(string $name, array $assets = []): array;
 
     /**
      * Get account balance.

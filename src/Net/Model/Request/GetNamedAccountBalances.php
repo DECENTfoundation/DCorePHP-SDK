@@ -6,21 +6,17 @@ use DCorePHP\Model\Asset\AssetAmount;
 use DCorePHP\Model\ChainObject;
 use DCorePHP\Net\Model\Response\BaseResponse;
 
-class GetAccountBalances extends BaseRequest
+class GetNamedAccountBalances extends BaseRequest
 {
-    public function __construct(ChainObject $id, array $assets)
+    public function __construct(string $name, array $assets)
     {
         parent::__construct(
             'database',
-            'get_account_balances',
-            [$id->getId(), array_map(function(ChainObject $asset) {return $asset->getId();}, $assets)]
+            'get_named_account_balances',
+            [$name, array_map(function(ChainObject $asset) {return $asset->getId();}, $assets)]
         );
     }
 
-    /**
-     * @param BaseResponse $response
-     * @return AssetAmount[]
-     */
     public static function responseToModel(BaseResponse $response): array
     {
         $assets = [];
