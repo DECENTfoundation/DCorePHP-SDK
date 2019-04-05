@@ -6,7 +6,7 @@ use DCorePHP\Model\BaseOperation;
 use DCorePHP\Model\ChainObject;
 use DCorePHP\Model\Explorer\Miner;
 use DCorePHP\Model\Mining\MinerId;
-use DCorePHP\Model\Operation\AccountUpdate;
+use DCorePHP\Model\Operation\UpdateAccount;
 use DCorePHP\Net\Model\Request\Database;
 use DCorePHP\Net\Model\Request\GetActualVotes;
 use DCorePHP\Net\Model\Request\GetAssetPerBlock;
@@ -127,7 +127,7 @@ class MiningApi extends BaseApi implements MiningApiInterface
     /**
      * @inheritDoc
      */
-    public function createVoteOperation(ChainObject $accountId, array $minderIds): AccountUpdate
+    public function createVoteOperation(ChainObject $accountId, array $minderIds): UpdateAccount
     {
         // TODO: Implement createVoteOperation() method.
     }

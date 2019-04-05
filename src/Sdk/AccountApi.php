@@ -19,6 +19,8 @@ use DCorePHP\Model\Memo;
 use DCorePHP\Model\Operation\CreateAccount;
 use DCorePHP\Model\Operation\CreateAccountParameters;
 use DCorePHP\Model\Operation\Transfer2;
+use DCorePHP\Model\Operation\UpdateAccount;
+use DCorePHP\Model\Operation\UpdateAccountParameters;
 use DCorePHP\Model\Subscription\AuthMap;
 use DCorePHP\Model\Transaction;
 use DCorePHP\Model\TransactionConfirmation;
@@ -203,7 +205,7 @@ class AccountApi extends BaseApi implements AccountApiInterface
     ): Transfer2 {
         $fee = $fee ?: new AssetAmount();
         $recipient = $this->getByNameOrId($nameOrId);
-        $recipientPublicKeyWif = $recipient->getActive()->getKeyAuths()[0][0];
+        $recipientPublicKeyWif = $recipient->getActive()->getKeyAuths()[0]->getValue();
 
         $transferOperation = new Transfer2();
         $transferOperation
@@ -354,9 +356,6 @@ class AccountApi extends BaseApi implements AccountApiInterface
         string $registrarPrivateKeyWif,
         bool $broadcast = true
     ): void {
-        /** @var $dynamicGlobalProperties $dynamicGlobalProps */
-        $dynamicGlobalProperties = $this->dcoreApi->getGeneralApi()->getDynamicGlobalProperties();
-
         $createAccountParameters = new CreateAccountParameters();
         $createAccountParameters
             ->setMemoKey($publicMemoKeyWif)
@@ -376,20 +375,13 @@ class AccountApi extends BaseApi implements AccountApiInterface
             ->setRegistrar($registrarAccountId)
             ->setOptions($createAccountParameters)
             ->setName(CreateAccount::OPERATION_NAME)
-            ->setType(CreateAccount::OPERATION_TYPE);
+            ->setType(CreateAccount::OPERATION_TYPE)
+            ->setFee(new AssetAmount());
 
-        /** @var AssetAmount[] $fees */
-        $fees = $this->dcoreApi->requestWebsocket(Database::class, new GetRequiredFees([$operation]));
-        $operation->setFee(clone reset($fees));
-
-        $transaction = new Transaction();
-        $transaction
-            ->setDynamicGlobalProps($dynamicGlobalProperties)
-            ->setOperations([$operation])
-            ->setExtensions([])
-            ->sign($registrarPrivateKeyWif);
-
-        $this->dcoreApi->requestWebsocket(NetworkBroadcast::class, new BroadcastTransactionWithCallback($transaction));
+        $this->dcoreApi->getBroadcastApi()->broadcastOperationWithECKeyPairWithCallback(
+            ECKeyPair::fromBase58($registrarPrivateKeyWif),
+            $operation
+        );
     }
 
     /**
@@ -413,6 +405,49 @@ class AccountApi extends BaseApi implements AccountApiInterface
             $registrarPrivateKeyWif,
             $broadcast
         );
+    }
+
+    /**
+     * @todo
+     * @inheritdoc
+     * @param ChainObject $accountId
+     * @param UpdateAccountParameters $updateAccountParameters
+     * @param string $privateKeyWif
+     * @param bool $broadcast
+     * @return mixed
+     * @throws ObjectNotFoundException
+     * @throws ValidationException
+     * @throws \DCorePHP\Exception\InvalidApiCallException
+     * @throws \WebSocket\BadOpcodeException
+     */
+    public function UpdateAccount(
+        ChainObject $accountId,
+        UpdateAccountParameters $updateAccountParameters,
+        string $privateKeyWif,
+        bool $broadcast = true
+    ) {
+        $account = $this->get($accountId);
+        $accountOptions = $account->getOptions();
+
+        $createAccountParameters = new CreateAccountParameters();
+        $createAccountParameters
+            ->setMemoKey($updateAccountParameters->getMemoKey() ?: $accountOptions->getMemoKey()->getPublicKey())
+            ->setVotingAccount($updateAccountParameters->getVotingAccount() ?: $accountOptions->getVotingAccount())
+            ->setAllowSubscription($updateAccountParameters->getAllowSubscription() ?: $accountOptions->getAllowSubscription())
+            ->setPricePerSubscribe($updateAccountParameters->getPricePerSubscribe() ?: $accountOptions->getPricePerSubscribe())
+            ->setNumMiner($updateAccountParameters->getNumMiner() ?: $accountOptions->getNumMiner())
+            ->setVotes($updateAccountParameters->getVotes() ?: $accountOptions->getVotes())
+            ->setExtensions($updateAccountParameters->getExtensions() ?: $accountOptions->getExtensions())
+            ->setSubscriptionPeriod($updateAccountParameters->getSubscriptionPeriod() ?: $accountOptions->getSubscriptionPeriod());
+
+        $operation = new UpdateAccount();
+        $operation
+            ->setAccountId($accountId)
+            ->setOwner($account->getOwner())
+            ->setActive($account->getActive())
+            ->setOptions($createAccountParameters);
+
+        $this->dcoreApi->getBroadcastApi()->broadcastOperationWithECKeyPairWithCallback(ECKeyPair::fromBase58($privateKeyWif), $operation);
     }
 
     /**

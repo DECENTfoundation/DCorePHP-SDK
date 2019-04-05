@@ -2,15 +2,18 @@
 
 namespace DCorePHPTests\Sdk;
 
+use DCorePHP\Crypto\Credentials;
 use DCorePHP\Crypto\ECKeyPair;
+use DCorePHP\Crypto\PrivateKey;
 use DCorePHP\DCoreApi;
 use DCorePHP\Model\Account;
 use DCorePHP\Model\Asset\AssetAmount;
 use DCorePHP\Model\BrainKeyInfo;
-use DCorePHP\Model\ElGamalKeys;
 use DCorePHP\Model\ChainObject;
+use DCorePHP\Model\ElGamalKeys;
 use DCorePHP\Model\FullAccount;
-use DCorePHP\Model\OperationHistory;
+use DCorePHP\Model\Operation\CreateAccountParameters;
+use DCorePHP\Model\Operation\UpdateAccountParameters;
 use DCorePHP\Model\TransactionDetail;
 use DCorePHP\Net\Model\Request\BaseRequest;
 use DCorePHP\Net\Model\Request\BroadcastTransactionWithCallback;
@@ -18,15 +21,12 @@ use DCorePHP\Net\Model\Request\Database;
 use DCorePHP\Net\Model\Request\GetAccountById;
 use DCorePHP\Net\Model\Request\GetAccountByName;
 use DCorePHP\Net\Model\Request\GetAccountCount;
-use DCorePHP\Net\Model\Request\GetAccountHistory;
 use DCorePHP\Net\Model\Request\GetAccountReferences;
 use DCorePHP\Net\Model\Request\GetAccountsById;
 use DCorePHP\Net\Model\Request\GetDynamicGlobalProperties;
 use DCorePHP\Net\Model\Request\GetFullAccounts;
 use DCorePHP\Net\Model\Request\GetKeyReferences;
 use DCorePHP\Net\Model\Request\GetRequiredFees;
-use DCorePHP\Net\Model\Request\History;
-use DCorePHP\Net\Model\Request\GetAccountBalances;
 use DCorePHP\Net\Model\Request\ListAccounts;
 use DCorePHP\Net\Model\Request\Login;
 use DCorePHP\Net\Model\Request\LookupAccountNames;
@@ -35,9 +35,6 @@ use DCorePHP\Net\Model\Request\SearchAccountHistory;
 use DCorePHP\Net\Model\Request\SearchAccounts;
 use DCorePHP\Net\Model\Response\BaseResponse;
 use DCorePHP\Sdk\AccountApi;
-use DCorePHP\Crypto\Credentials;
-use DCorePHP\Crypto\PrivateKey;
-use DCorePHP\Crypto\PublicKey;
 use DCorePHPTests\DCoreSDKTest;
 
 class AccountApiTest extends DCoreSDKTest
@@ -404,7 +401,7 @@ class AccountApiTest extends DCoreSDKTest
         $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
     }
 
-    public function testCreatetransfer(): void
+    public function testCreateTransfer(): void
     {
         $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
     }
@@ -603,5 +600,57 @@ class AccountApiTest extends DCoreSDKTest
         $account = $this->sdk->getAccountApi()->getByName($accountName);
 
         $this->assertEquals($accountName, $account->getName());
+    }
+
+    public function testUpdateAccount()
+    {
+        if ($this->websocketMock) {
+            $this->websocketMock
+                ->expects($this->exactly(9))
+                ->method('send')
+                ->withConsecutive(
+                    [$this->callback(static function(BaseRequest $req) { return $req->setId(1)->toJson() === '{"jsonrpc":"2.0","id":1,"method":"call","params":[1,"login",["",""]]}'; })],
+                    [$this->callback(static function(BaseRequest $req) { return $req->setId(2)->toJson() === '{"jsonrpc":"2.0","id":2,"method":"call","params":[1,"database",[]]}'; })],
+                    [$this->callback(static function(BaseRequest $req) { return $req->setId(3)->toJson() === '{"jsonrpc":"2.0","id":3,"method":"call","params":[6,"get_accounts",[["1.2.34"]]]}'; })],
+                    [$this->callback(static function(BaseRequest $req) { return $req->setId(4)->toJson() === '{"jsonrpc":"2.0","id":4,"method":"call","params":[1,"database",[]]}'; })],
+                    [$this->callback(static function(BaseRequest $req) { return $req->setId(5)->toJson() === '{"jsonrpc":"2.0","id":5,"method":"call","params":[6,"get_dynamic_global_properties",[]]}'; })],
+                    [$this->callback(static function(BaseRequest $req) { return $req->setId(6)->toJson() === '{"jsonrpc":"2.0","id":6,"method":"call","params":[1,"database",[]]}'; })],
+                    [$this->callback(static function(BaseRequest $req) { return $req->setId(7)->toJson() === '{"jsonrpc":"2.0","id":7,"method":"call","params":[6,"get_required_fees",[[[2,{"fee":{"amount":0,"asset_id":"1.3.0"},"account":"1.2.34","owner":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz",1]]},"active":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz",1]]},"new_options":{"memo_key":"DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz","voting_account":"1.2.3","num_miner":0,"votes":["0:3"],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":0,"asset_id":"1.3.0"},"subscription_period":0}}]],"1.3.0"]]}'; })],
+                    [$this->callback(static function(BaseRequest $req) { return $req->setId(8)->toJson() === '{"jsonrpc":"2.0","id":8,"method":"call","params":[1,"network_broadcast",[]]}'; })],
+                    [$this->callback(static function(BaseRequest $req) { return $req->setId(9)->toJson() === '{"jsonrpc":"2.0","id":9,"method":"call","params":[7,"broadcast_transaction_with_callback",[6,{"extensions":[],"operations":[[2,{"fee":{"amount":500000,"asset_id":"1.3.0"},"account":"1.2.34","owner":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz",1]]},"active":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz",1]]},"new_options":{"memo_key":"DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz","voting_account":"1.2.3","num_miner":0,"votes":["0:3"],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":0,"asset_id":"1.3.0"},"subscription_period":0}}]],"ref_block_num":42260,"ref_block_prefix":3188303955,"expiration":"2019-04-05T11:18:04","signatures":["1f7b93ed5c6583f7f4ebf404eb2788057242395a42ea77cba8cd31c9b3cca2ab5d3c642613df6134543402a4f92175fc705ee218272a66122fbd075c6278f0874b"]}]]}'; })]
+                )
+                ->will($this->onConsecutiveCalls(
+                    Login::responseToModel(new BaseResponse('{"id":1,"result":true}')),
+                    Database::responseToModel(new BaseResponse('{"id":2,"result":6}')),
+                    GetAccountById::responseToModel(new BaseResponse('{"id":3,"result":[{"id":"1.2.34","registrar":"1.2.15","name":"u961279ec8b7ae7bd62f304f7c1c3d345","owner":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz",1]]},"active":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz",1]]},"options":{"memo_key":"DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz","voting_account":"1.2.3","num_miner":0,"votes":["0:3"],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":0,"asset_id":"1.3.0"},"subscription_period":0},"rights_to_publish":{"is_publishing_manager":false,"publishing_rights_received":[],"publishing_rights_forwarded":[]},"statistics":"2.5.34","top_n_control_flags":0}]}')),
+                    Database::responseToModel(new BaseResponse('{"id":4,"result":6}')),
+                    GetDynamicGlobalProperties::responseToModel(new BaseResponse('{"id":5,"result":{"id":"2.1.0","head_block_number":4957460,"head_block_id":"004ba51453a809bef1f102dd5ba7ca92deb679c2","time":"2019-04-05T11:17:30","current_miner":"1.4.5","next_maintenance_time":"2019-04-06T00:00:00","last_budget_time":"2019-04-05T00:00:00","unspent_fee_budget":767399621,"mined_rewards":"247271000000","miner_budget_from_fees":1251355749,"miner_budget_from_rewards":"639249000000","accounts_registered_this_interval":15,"recently_missed_count":0,"current_aslot":11128218,"recent_slots_filled":"323661495008065045209634813307898297215","dynamic_flags":0,"last_irreversible_block_num":4957460}}')),
+                    Database::responseToModel(new BaseResponse('{"id":6,"result":6}')),
+                    GetRequiredFees::responseToModel(new BaseResponse('{"id":7,"result":[{"amount":500000,"asset_id":"1.3.0"}]}')),
+                    NetworkBroadcast::responseToModel(new BaseResponse('{"id":8,"result":7}')),
+                    BroadcastTransactionWithCallback::responseToModel(new BaseResponse('{"id":9,"result":null}'))
+                ));
+        }
+
+        $updateAccountParameters = new UpdateAccountParameters();
+        $updateAccountParameters
+            ->setMemoKey(DCoreSDKTest::PUBLIC_KEY_1)
+            ->setVotingAccount(new ChainObject('1.2.3'))
+            ->setAllowSubscription(false)
+            ->setPricePerSubscribe((new AssetAmount())->setAmount(0)->setAssetId(new ChainObject('1.3.0')))
+            ->setNumMiner(0)
+            ->setVotes(['0:3'])
+            ->setExtensions([])
+            ->setSubscriptionPeriod(0);
+
+        $this->sdk->getAccountApi()->updateAccount(
+            new ChainObject('1.2.34'),
+            $updateAccountParameters,
+            DCoreSDKTest::PRIVATE_KEY_1
+        );
+
+        if (!$this->websocketMock) {
+            $this->expectNotToPerformAssertions();
+        }
     }
 }

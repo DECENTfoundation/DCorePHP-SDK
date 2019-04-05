@@ -58,12 +58,25 @@ class Authority
     }
 
     /**
-     * @param array $keyAuths
+     * @param AuthMap[] $keyAuths
      * @return Authority
      */
     public function setKeyAuths(array $keyAuths): Authority
     {
-        $this->keyAuths = $keyAuths;
+        $keyAuthMaps = [];
+        foreach ($keyAuths as $keyAuth) {
+            $keyAuthMap = $keyAuth;
+            if (!$keyAuth instanceof AuthMap && is_array($keyAuth) && count($keyAuth) === 2) {
+                $keyAuthMap = new AuthMap();
+                $keyAuthMap
+                    ->setValue($keyAuth[0])
+                    ->setWeight($keyAuth[1]);
+            }
+
+            $keyAuthMaps[] = $keyAuthMap;
+        }
+
+        $this->keyAuths = $keyAuthMaps;
         return $this;
     }
 

@@ -127,7 +127,7 @@ class Transaction
                 implode('', array_reverse(str_split(str_pad(dechex($this->getDynamicGlobalProps()->getExpiration()->format('U')), 8, '0', STR_PAD_LEFT), 2))),
             ]),
             str_pad(dechex(\count($this->getOperations())), 2, '0', STR_PAD_LEFT), // number of operations
-            $this->getOperations() ? implode('', array_map(function (BaseOperation $transfer) { // operation bytes
+            $this->getOperations() ? implode('', array_map(static function (BaseOperation $transfer) { // operation bytes
                 return $transfer->toBytes();
             }, $this->getOperations())) : '00',
             '00', // extensions
@@ -153,12 +153,14 @@ class Transaction
 
         $signature = null;
         do {
-            $this->increment();
-
             try {
                 $signature = $ecKeyPair->signature($this->toBytes());
             } catch (\Exception $e) {
                 // try again
+            }
+
+            if (!$signature) {
+                $this->increment();
             }
         } while (!$signature);
 

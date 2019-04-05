@@ -8,7 +8,7 @@ use DCorePHP\Model\Explorer\Miner;
 use DCorePHP\Model\MinerVotes;
 use DCorePHP\Model\Mining\MinerId;
 use DCorePHP\Model\Mining\MinerVotingInfo;
-use DCorePHP\Model\Operation\AccountUpdate;
+use DCorePHP\Model\Operation\UpdateAccount;
 use DCorePHP\Net\Model\Request\SearchMinerVoting;
 
 interface MiningApiInterface
@@ -112,9 +112,9 @@ interface MiningApiInterface
      *
      * @param ChainObject $accountId, 1.2.*
      * @param array $minderIds of miner account ids
-     * @return AccountUpdate a transaction confirmation
+     * @return UpdateAccount a transaction confirmation
      */
-    public function createVoteOperation(ChainObject $accountId, array $minderIds): AccountUpdate;
+    public function createVoteOperation(ChainObject $accountId, array $minderIds): UpdateAccount;
 
     /**
      * Creates a miner object owned by the given account.
