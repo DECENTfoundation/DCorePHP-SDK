@@ -34,7 +34,7 @@ class GetFullAccounts extends BaseRequest
                     '[account][active][weight_threshold]' => 'account.active.weightThreshold',
                     '[account][active][account_auths]' => 'account.active.accountAuths',
                     '[account][active][key_auths]' => 'account.active.keyAuths',
-                    '[account][options][memo_key]' => 'account.options.memoKey.publicKey',
+                    '[account][options][memo_key]' => 'account.options.memoKey',
                     '[account][options][voting_account]' => 'account.options.votingAccount',
                     '[account][options][num_miner]' => 'account.options.numMiner',
                     '[account][options][votes]' => 'account.options.votes',

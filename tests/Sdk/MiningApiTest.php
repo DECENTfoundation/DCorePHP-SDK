@@ -2,26 +2,33 @@
 
 namespace DCorePHPTests\Sdk;
 
-use DCorePHP\DCoreApi;
+use DCorePHP\Crypto\Credentials;
+use DCorePHP\Crypto\ECKeyPair;
 use DCorePHP\Model\Explorer\Miner;
 use DCorePHP\Model\MinerVotes;
 use DCorePHP\Model\Mining\MinerId;
 use DCorePHP\Model\ChainObject;
 use DCorePHP\Model\Mining\MinerVotingInfo;
 use DCorePHP\Net\Model\Request\BaseRequest;
+use DCorePHP\Net\Model\Request\BroadcastTransactionWithCallback;
 use DCorePHP\Net\Model\Request\Database;
+use DCorePHP\Net\Model\Request\GetAccountById;
+use DCorePHP\Net\Model\Request\GetAccountsById;
 use DCorePHP\Net\Model\Request\GetActualVotes;
+use DCorePHP\Net\Model\Request\GetAssetPerBlock;
+use DCorePHP\Net\Model\Request\GetDynamicGlobalProperties;
 use DCorePHP\Net\Model\Request\GetMinerByAccount;
 use DCorePHP\Net\Model\Request\GetMinerCount;
 use DCorePHP\Net\Model\Request\GetMiners;
 use DCorePHP\Net\Model\Request\GetNewAssetPerBlock;
+use DCorePHP\Net\Model\Request\GetRequiredFees;
 use DCorePHP\Net\Model\Request\Login;
 use DCorePHP\Net\Model\Request\LookupMinerAccounts;
 use DCorePHP\Net\Model\Request\LookupVoteIds;
+use DCorePHP\Net\Model\Request\NetworkBroadcast;
 use DCorePHP\Net\Model\Request\SearchMinerVoting;
 use DCorePHP\Net\Model\Response\BaseResponse;
 use DCorePHPTests\DCoreSDKTest;
-use PHPUnit\Framework\TestCase;
 
 class MiningApiTest extends DCoreSDKTest
 {
@@ -51,9 +58,24 @@ class MiningApiTest extends DCoreSDKTest
 
     public function testGetAssetPerBlock(): void
     {
-        // TODO: No data
-//        $asset = $this->sdk->getMiningApi()->getAssetPerBlock('100');
-        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
+        if ($this->websocketMock) {
+            $this->websocketMock
+                ->expects($this->exactly(3))
+                ->method('send')
+                ->withConsecutive(
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(1)->toJson() === '{"jsonrpc":"2.0","id":1,"method":"call","params":[1,"login",["",""]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(2)->toJson() === '{"jsonrpc":"2.0","id":2,"method":"call","params":[1,"database",[]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(3)->toJson() === '{"jsonrpc":"2.0","id":3,"method":"call","params":[6,"get_asset_per_block_by_block_num",["100"]]}'; })]
+                )
+                ->will($this->onConsecutiveCalls(
+                    Login::responseToModel(new BaseResponse('{"id":1,"result":true}')),
+                    Database::responseToModel(new BaseResponse('{"id":2,"result":6}')),
+                    GetAssetPerBlock::responseToModel(new BaseResponse('{"id":3,"result":0}'))
+                ));
+        }
+
+        $asset = $this->sdk->getMiningApi()->getAssetPerBlock('100');
+        $this->assertEquals('0', $asset);
     }
 
     /**
@@ -275,9 +297,97 @@ class MiningApiTest extends DCoreSDKTest
         $this->assertTrue($minersInfo[0]->isVoted());
     }
 
+    /**
+     * @throws \DCorePHP\Exception\InvalidApiCallException
+     * @throws \DCorePHP\Exception\ObjectNotFoundException
+     * @throws \DCorePHP\Exception\ValidationException
+     * @throws \WebSocket\BadOpcodeException
+     */
     public function testCreateVoteOperation(): void
     {
-        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
+        if ($this->websocketMock) {
+            $this->websocketMock
+                ->expects($this->exactly(7))
+                ->method('send')
+                ->withConsecutive(
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(1)->toJson() === '{"jsonrpc":"2.0","id":1,"method":"call","params":[1,"login",["",""]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(2)->toJson() === '{"jsonrpc":"2.0","id":2,"method":"call","params":[1,"database",[]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(3)->toJson() === '{"jsonrpc":"2.0","id":3,"method":"call","params":[6,"get_objects",[["1.4.4"]]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(4)->toJson() === '{"jsonrpc":"2.0","id":4,"method":"call","params":[1,"database",[]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(5)->toJson() === '{"jsonrpc":"2.0","id":5,"method":"call","params":[6,"get_objects",[["1.4.4"]]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(6)->toJson() === '{"jsonrpc":"2.0","id":6,"method":"call","params":[1,"database",[]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(7)->toJson() === '{"jsonrpc":"2.0","id":7,"method":"call","params":[6,"get_accounts",[["1.2.34"]]]}'; })]
+                )
+                ->will($this->onConsecutiveCalls(
+                    Login::responseToModel(new BaseResponse('{"id":1,"result":true}')),
+                    Database::responseToModel(new BaseResponse('{"id":2,"result":6}')),
+                    GetMiners::responseToModel(new BaseResponse('{"id":3,"result":[{"id":"1.4.4","miner_account":"1.2.7","last_aslot":11179996,"signing_key":"DCT5j2bMj7XVWLxUW7AXeMiYPambYFZfCcMroXDvbCfX1VoswcZG4","pay_vb":"1.9.7","vote_id":"0:3","total_votes":"1301715534434","url":"","total_missed":478522,"last_confirmed_block_num":4999958,"vote_ranking":3}]}')),
+                    Database::responseToModel(new BaseResponse('{"id":4,"result":6}')),
+                    GetMiners::responseToModel(new BaseResponse('{"id":5,"result":[{"id":"1.4.4","miner_account":"1.2.7","last_aslot":11179996,"signing_key":"DCT5j2bMj7XVWLxUW7AXeMiYPambYFZfCcMroXDvbCfX1VoswcZG4","pay_vb":"1.9.7","vote_id":"0:3","total_votes":"1301715534434","url":"","total_missed":478522,"last_confirmed_block_num":4999958,"vote_ranking":3}]}')),
+                    Database::responseToModel(new BaseResponse('{"id":6,"result":6}')),
+                    GetAccountById::responseToModel(new BaseResponse('{"id":7,"result":[{"id":"1.2.34","registrar":"1.2.15","name":"u961279ec8b7ae7bd62f304f7c1c3d345","owner":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz",1]]},"active":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz",1]]},"options":{"memo_key":"DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz","voting_account":"1.2.3","num_miner":0,"votes":["0:2","0:3"],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":0,"asset_id":"1.3.0"},"subscription_period":0},"rights_to_publish":{"is_publishing_manager":false,"publishing_rights_received":[],"publishing_rights_forwarded":[]},"statistics":"2.5.34","top_n_control_flags":0}]}'))
+                ));
+        }
+
+        $minerId = new ChainObject('1.4.4');
+        $miners = $this->sdk->getMiningApi()->getMiners([$minerId]);
+        /** @var Miner $miner */
+        $miner = reset($miners);
+
+        $voteOperation = $this->sdk->getMiningApi()->createVoteOperation(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), [$minerId]);
+
+        $this->assertContains($miner->getVoteId(), $voteOperation->getOptions()->getVotes());
+    }
+
+    /**
+     * @throws \DCorePHP\Exception\InvalidApiCallException
+     * @throws \DCorePHP\Exception\ObjectNotFoundException
+     * @throws \DCorePHP\Exception\ValidationException
+     * @throws \WebSocket\BadOpcodeException
+     * @throws \Exception
+     */
+    public function testVote(): void
+    {
+        if ($this->websocketMock) {
+            $this->websocketMock
+                ->expects($this->exactly(11))
+                ->method('send')
+                ->withConsecutive(
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(1)->toJson() === '{"jsonrpc":"2.0","id":1,"method":"call","params":[1,"login",["",""]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(2)->toJson() === '{"jsonrpc":"2.0","id":2,"method":"call","params":[1,"database",[]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(3)->toJson() === '{"jsonrpc":"2.0","id":3,"method":"call","params":[6,"get_objects",[["1.4.4"]]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(4)->toJson() === '{"jsonrpc":"2.0","id":4,"method":"call","params":[1,"database",[]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(5)->toJson() === '{"jsonrpc":"2.0","id":5,"method":"call","params":[6,"get_accounts",[["1.2.34"]]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(6)->toJson() === '{"jsonrpc":"2.0","id":6,"method":"call","params":[1,"database",[]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(7)->toJson() === '{"jsonrpc":"2.0","id":7,"method":"call","params":[6,"get_dynamic_global_properties",[]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(8)->toJson() === '{"jsonrpc":"2.0","id":8,"method":"call","params":[1,"database",[]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(9)->toJson() === '{"jsonrpc":"2.0","id":9,"method":"call","params":[6,"get_required_fees",[[[2,{"fee":{"amount":0,"asset_id":"1.3.0"},"account":"1.2.34","new_options":{"memo_key":"DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz","voting_account":"1.2.3","num_miner":0,"votes":["0:3"],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":0,"asset_id":"1.3.0"},"subscription_period":0}}]],"1.3.0"]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(10)->toJson() === '{"jsonrpc":"2.0","id":10,"method":"call","params":[1,"network_broadcast",[]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(11)->toJson() === '{"jsonrpc":"2.0","id":11,"method":"call","params":[7,"broadcast_transaction_with_callback",[6,{"extensions":[],"operations":[[2,{"fee":{"amount":500000,"asset_id":"1.3.0"},"account":"1.2.34","new_options":{"memo_key":"DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz","voting_account":"1.2.3","num_miner":0,"votes":["0:3"],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":0,"asset_id":"1.3.0"},"subscription_period":0}}]],"ref_block_num":19271,"ref_block_prefix":2290578481,"expiration":"2019-04-08T11:18:35","signatures":["204e78f24fa5d90cab77b5694e4d4a10e182d1a22aba205602f8475b6442bb945077f0e51b52eb7b3cfa210337b6a44f73f38e5cdf4203bd19bc3109bcafc39fd8"]}]]}'; })]
+                )
+                ->will($this->onConsecutiveCalls(
+                    Login::responseToModel(new BaseResponse('{"id":1,"result":true}')),
+                    Database::responseToModel(new BaseResponse('{"id":2,"result":6}')),
+                    GetMiners::responseToModel(new BaseResponse('{"id":3,"result":[{"id":"1.4.4","miner_account":"1.2.7","last_aslot":11180053,"signing_key":"DCT5j2bMj7XVWLxUW7AXeMiYPambYFZfCcMroXDvbCfX1VoswcZG4","pay_vb":"1.9.7","vote_id":"0:3","total_votes":"1301715534434","url":"","total_missed":478522,"last_confirmed_block_num":5000004,"vote_ranking":3}]}')),
+                    Database::responseToModel(new BaseResponse('{"id":4,"result":6}')),
+                    GetAccountById::responseToModel(new BaseResponse('{"id":5,"result":[{"id":"1.2.34","registrar":"1.2.15","name":"u961279ec8b7ae7bd62f304f7c1c3d345","owner":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz",1]]},"active":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz",1]]},"options":{"memo_key":"DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz","voting_account":"1.2.3","num_miner":0,"votes":["0:2","0:3"],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":0,"asset_id":"1.3.0"},"subscription_period":0},"rights_to_publish":{"is_publishing_manager":false,"publishing_rights_received":[],"publishing_rights_forwarded":[]},"statistics":"2.5.34","top_n_control_flags":0}]}')),
+                    Database::responseToModel(new BaseResponse('{"id":6,"result":6}')),
+                    GetDynamicGlobalProperties::responseToModel(new BaseResponse('{"id":7,"result":{"id":"2.1.0","head_block_number":5000007,"head_block_id":"004c4b47317487880d82105ac85a9ca2523ebe29","time":"2019-04-08T11:18:05","current_miner":"1.4.1","next_maintenance_time":"2019-04-09T00:00:00","last_budget_time":"2019-04-08T00:00:00","unspent_fee_budget":5367636,"mined_rewards":"247012000000","miner_budget_from_fees":8745692,"miner_budget_from_rewards":"639249000000","accounts_registered_this_interval":60,"recently_missed_count":1,"current_aslot":11180056,"recent_slots_filled":"233881818338900857763569868994827501543","dynamic_flags":0,"last_irreversible_block_num":5000007}}')),
+                    Database::responseToModel(new BaseResponse('{"id":8,"result":6}')),
+                    GetRequiredFees::responseToModel(new BaseResponse('{"id":9,"result":[{"amount":500000,"asset_id":"1.3.0"}]}')),
+                    NetworkBroadcast::responseToModel(new BaseResponse('{"id":10,"result":7}')),
+                    BroadcastTransactionWithCallback::responseToModel(new BaseResponse('{"id":11,"result":null}'))
+                ));
+        }
+
+        $accountId = new ChainObject(DCoreSDKTest::ACCOUNT_ID_1);
+        $credentials = new Credentials($accountId, ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
+        $this->sdk->getMiningApi()->vote($credentials, $accountId, [new ChainObject('1.4.4')]);
+
+
+        if (!$this->websocketMock) {
+            $this->expectNotToPerformAssertions();
+        }
     }
 
     public function testCreateMiner(): void

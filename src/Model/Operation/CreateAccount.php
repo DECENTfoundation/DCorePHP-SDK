@@ -5,6 +5,7 @@ namespace DCorePHP\Model\Operation;
 use DCorePHP\Model\Authority;
 use DCorePHP\Model\BaseOperation;
 use DCorePHP\Model\ChainObject;
+use DCorePHP\Model\Options;
 
 class CreateAccount extends BaseOperation
 {
@@ -19,7 +20,7 @@ class CreateAccount extends BaseOperation
     private $active;
     /** @var ChainObject */
     private $registrar;
-    /** @var CreateAccountParameters */
+    /** @var Options */
     private $options;
 
     /**
@@ -108,18 +109,18 @@ class CreateAccount extends BaseOperation
     }
 
     /**
-     * @return CreateAccountParameters
+     * @return Options
      */
-    public function getOptions(): CreateAccountParameters
+    public function getOptions(): Options
     {
         return $this->options;
     }
 
     /**
-     * @param CreateAccountParameters $options
+     * @param Options $options
      * @return CreateAccount
      */
-    public function setOptions(CreateAccountParameters $options): CreateAccount
+    public function setOptions(Options $options): CreateAccount
     {
         $this->options = $options;
         return $this;

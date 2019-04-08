@@ -5,19 +5,24 @@ use DCorePHP\Model\Authority;
 use DCorePHP\Model\ChainObject;
 use DCorePHP\Model\Operation\CreateAccountParameters;
 use DCorePHP\Model\Operation\UpdateAccount;
+use DCorePHP\Model\Options;
 use DCorePHP\Model\Subscription\AuthMap;
 use DCorePHPTests\DCoreSDKTest;
 use PHPUnit\Framework\TestCase;
 
 class UpdateAccountTest extends TestCase
 {
+    /**
+     * @throws \DCorePHP\Exception\ValidationException
+     * @throws Exception
+     */
     public function testToBytes(): void
     {
         $updateAccount = new UpdateAccount();
         $updateAccount
             ->setAccountId(new ChainObject('1.2.34'))
             ->setOptions(
-                (new CreateAccountParameters())
+                (new Options())
                     ->setMemoKey(DCoreSDKTest::PUBLIC_KEY_1)
                     ->setVotingAccount(new ChainObject('1.2.3'))
                     ->setNumMiner(0)
@@ -47,7 +52,7 @@ class UpdateAccountTest extends TestCase
             ->setOwner((new Authority())->setKeyAuths([(new AuthMap())->setValue(DCoreSDKTest::PUBLIC_KEY_1)]))
             ->setActive((new Authority())->setKeyAuths([(new AuthMap())->setValue(DCoreSDKTest::PUBLIC_KEY_1)]))
             ->setOptions(
-                (new CreateAccountParameters())
+                (new Options())
                     ->setMemoKey(DCoreSDKTest::PUBLIC_KEY_1)
                     ->setVotingAccount(new ChainObject('1.2.3'))
                     ->setNumMiner(0)

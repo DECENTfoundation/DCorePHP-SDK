@@ -7,6 +7,7 @@ use DCorePHP\Model\Asset\AssetAmount;
 use DCorePHP\Model\Authority;
 use DCorePHP\Model\BaseOperation;
 use DCorePHP\Model\ChainObject;
+use DCorePHP\Model\Options;
 use Exception;
 use Symfony\Component\PropertyAccess\Exception\NoSuchPropertyException;
 
@@ -21,7 +22,7 @@ class UpdateAccount extends BaseOperation
     private $owner;
     /** @var Authority */
     private $active;
-    /** @var CreateAccountParameters */
+    /** @var Options */
     private $options;
     /** @var array */
     private $extensions = [];
@@ -31,7 +32,7 @@ class UpdateAccount extends BaseOperation
      */
     public function hydrate(array $rawOperation): void
     {
-        $this->options = new CreateAccountParameters();
+        $this->options = new Options();
         $this->options->setPricePerSubscribe(new AssetAmount());
         $this->owner = new Authority();
         $this->active = new Authority();
@@ -125,18 +126,18 @@ class UpdateAccount extends BaseOperation
     }
 
     /**
-     * @return CreateAccountParameters
+     * @return Options
      */
-    public function getOptions(): ?CreateAccountParameters
+    public function getOptions(): ?Options
     {
         return $this->options;
     }
 
     /**
-     * @param CreateAccountParameters $options
+     * @param Options $options
      * @return UpdateAccount
      */
-    public function setOptions(CreateAccountParameters $options): UpdateAccount
+    public function setOptions(Options $options): UpdateAccount
     {
         $this->options = $options;
         return $this;

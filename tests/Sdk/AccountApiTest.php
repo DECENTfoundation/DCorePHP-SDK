@@ -14,6 +14,7 @@ use DCorePHP\Model\ElGamalKeys;
 use DCorePHP\Model\FullAccount;
 use DCorePHP\Model\Operation\CreateAccountParameters;
 use DCorePHP\Model\Operation\UpdateAccountParameters;
+use DCorePHP\Model\Options;
 use DCorePHP\Model\TransactionDetail;
 use DCorePHP\Net\Model\Request\BaseRequest;
 use DCorePHP\Net\Model\Request\BroadcastTransactionWithCallback;
@@ -632,8 +633,8 @@ class AccountApiTest extends DCoreSDKTest
                 ));
         }
 
-        $updateAccountParameters = new UpdateAccountParameters();
-        $updateAccountParameters
+        $options = new Options();
+        $options
             ->setMemoKey(DCoreSDKTest::PUBLIC_KEY_1)
             ->setVotingAccount(new ChainObject('1.2.3'))
             ->setAllowSubscription(false)
@@ -645,7 +646,7 @@ class AccountApiTest extends DCoreSDKTest
 
         $this->sdk->getAccountApi()->updateAccount(
             new ChainObject('1.2.34'),
-            $updateAccountParameters,
+            $options,
             DCoreSDKTest::PRIVATE_KEY_1
         );
 

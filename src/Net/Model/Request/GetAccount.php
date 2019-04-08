@@ -44,7 +44,7 @@ abstract class GetAccount extends BaseRequest
                 '[active][weight_threshold]' => 'active.weightThreshold',
                 '[active][account_auths]' => 'active.accountAuths',
                 '[active][key_auths]' => 'active.keyAuths',
-                '[options][memo_key]' => 'options.memoKey.publicKey',
+                '[options][memo_key]' => 'options.memoKey',
                 '[options][voting_account]' => 'options.votingAccount',
                 '[options][num_miner]' => 'options.numMiner',
                 '[options][votes]' => 'options.votes',

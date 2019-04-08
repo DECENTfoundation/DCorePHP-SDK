@@ -2,10 +2,12 @@
 
 namespace DCorePHP\Sdk;
 
+use DCorePHP\Crypto\Credentials;
 use DCorePHP\Model\BaseOperation;
 use DCorePHP\Model\ChainObject;
 use DCorePHP\Model\Explorer\Miner;
 use DCorePHP\Model\Mining\MinerId;
+use DCorePHP\Model\TransactionConfirmation;
 use DCorePHP\Model\Operation\UpdateAccount;
 use DCorePHP\Net\Model\Request\Database;
 use DCorePHP\Net\Model\Request\GetActualVotes;
@@ -129,7 +131,23 @@ class MiningApi extends BaseApi implements MiningApiInterface
      */
     public function createVoteOperation(ChainObject $accountId, array $minderIds): UpdateAccount
     {
-        // TODO: Implement createVoteOperation() method.
+        $miners = $this->getMiners($minderIds);
+        // array_unique used to remove duplicates
+        $voteIds = array_unique(array_map(function (Miner $miner) { return $miner->getVoteId(); }, $miners));
+        $account = $this->dcoreApi->getAccountApi()->get($accountId);
+        $update = new UpdateAccount();
+        return $update->setAccountId($account->getId())->setOptions($account->getOptions()->setVotes($voteIds));
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function vote(Credentials $credentials, ChainObject $accountId, array $minerIds): ?TransactionConfirmation
+    {
+        return $this->dcoreApi->getBroadcastApi()->broadcastOperationWithECKeyPairWithCallback(
+            $credentials->getKeyPair(),
+            $this->createVoteOperation($accountId, $minerIds)
+        );
     }
 
     /**
