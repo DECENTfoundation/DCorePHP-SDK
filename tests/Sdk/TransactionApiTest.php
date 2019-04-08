@@ -111,7 +111,7 @@ class TransactionApiTest extends DCoreSDKTest
 
         $transaction = $this->sdk->getTransactionApi()->getByBlockNum(1370282, 0);
         $this->assertEquals('1f140e5744bcef282147ef3f0bab8df46f49704a99046d6ea5db37ab3113e0f45935fd94af7b33189ad34fa1666ab7e54aa127d725e2018fb6b68771aacef54c41', $transaction->getSignatures()[0]);
-        $this->assertEquals(59561, $transaction->getRefBlockNum());
+        $this->assertEquals('1.2.34', $transaction->getOperations()[0]->getFrom()->getId());
     }
 
 
