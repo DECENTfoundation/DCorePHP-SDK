@@ -3,16 +3,20 @@
 namespace DCorePHP\Sdk;
 
 use DCorePHP\Model\BlockHeader;
-use DCorePHP\Model\SingleBlock;
+use DCorePHP\Model\SignedBlock;
+use DCorePHP\Net\Model\Request\Database;
+use DCorePHP\Net\Model\Request\GetBlock;
+use DCorePHP\Net\Model\Request\GetBlockHeader;
+use DCorePHP\Net\Model\Request\HeadBlockTime;
 
 class BlockApi extends BaseApi implements BlockApiInterface
 {
     /**
      * @inheritDoc
      */
-    public function get(string $blockNum): SingleBlock
+    public function get(string $blockNum): SignedBlock
     {
-        // TODO: Implement get() method.
+        return $this->dcoreApi->requestWebsocket(Database::class, new GetBlock($blockNum));
     }
 
     /**
@@ -20,14 +24,14 @@ class BlockApi extends BaseApi implements BlockApiInterface
      */
     public function getHeader(string $blockNum): BlockHeader
     {
-        // TODO: Implement getHeader() method.
+        return $this->dcoreApi->requestWebsocket(Database::class, new GetBlockHeader($blockNum));
     }
 
     /**
      * @inheritDoc
      */
-    public function getHeadTime(): int
+    public function getHeadTime(): \DateTime
     {
-        // TODO: Implement getHeadTime() method.
+        return $this->dcoreApi->requestWebsocket(Database::class, new HeadBlockTime());
     }
 }
