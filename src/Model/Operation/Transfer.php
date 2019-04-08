@@ -158,11 +158,11 @@ class Transfer extends BaseOperation
     /**
      * @return string
      */
-    protected function getToObjectTypeIdBytes(): string
+    protected function getToBytes(): string
     {
         [$space, $type, $instance] = explode('.', $this->getTo());
 
-        return str_pad(strrev(dechex(($space << 56) | ($type << 48))), 16, '0', STR_PAD_LEFT) | str_pad(dechex($instance), 16, '0', STR_PAD_RIGHT);
+        return dechex($instance);
     }
 
     /**
@@ -173,8 +173,8 @@ class Transfer extends BaseOperation
         return implode('', [
             $this->getTypeBytes(),
             $this->getFee()->toBytes(),
-            $this->getFromBytes(),
-            $this->getToObjectTypeIdBytes(),
+            $this->getFrom(),
+            $this->getToBytes(),
             $this->getAmount()->toBytes(),
             $this->getMemo()->isEmpty() ? str_pad('', 33, '00') : $this->getMemo()->toBytes(),
             '00',
