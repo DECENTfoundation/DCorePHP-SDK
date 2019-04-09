@@ -142,11 +142,11 @@ class MiningApi extends BaseApi implements MiningApiInterface
     /**
      * @inheritDoc
      */
-    public function vote(Credentials $credentials, ChainObject $accountId, array $minerIds): ?TransactionConfirmation
+    public function vote(Credentials $credentials, array $minerIds): ?TransactionConfirmation
     {
         return $this->dcoreApi->getBroadcastApi()->broadcastOperationWithECKeyPairWithCallback(
             $credentials->getKeyPair(),
-            $this->createVoteOperation($accountId, $minerIds)
+            $this->createVoteOperation($credentials->getAccount(), $minerIds)
         );
     }
 

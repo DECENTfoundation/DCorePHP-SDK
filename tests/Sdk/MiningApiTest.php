@@ -382,7 +382,7 @@ class MiningApiTest extends DCoreSDKTest
 
         $accountId = new ChainObject(DCoreSDKTest::ACCOUNT_ID_1);
         $credentials = new Credentials($accountId, ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
-        $this->sdk->getMiningApi()->vote($credentials, $accountId, [new ChainObject('1.4.4')]);
+        $this->sdk->getMiningApi()->vote($credentials, [new ChainObject('1.4.4')]);
 
 
         if (!$this->websocketMock) {

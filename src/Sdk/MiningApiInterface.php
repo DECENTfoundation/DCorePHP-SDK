@@ -135,7 +135,7 @@ interface MiningApiInterface
      * @throws \WebSocket\BadOpcodeException
      * @throws \Exception
      */
-    public function vote(Credentials $credentials, ChainObject $accountId, array $minerIds): ?TransactionConfirmation;
+    public function vote(Credentials $credentials, array $minerIds): ?TransactionConfirmation;
 
     /**
      * Creates a miner object owned by the given account.
