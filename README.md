@@ -41,8 +41,8 @@ composer require decentfoundation/dcorephp-sdk
 
 ```php
 $dcoreApi = new \DCorePHP\DCoreApi(
-    'http://stagesocket.decentgo.com:8089/',
-    'wss://stagesocket.decentgo.com:8090'
+    'https://testnet-api.dcore.io/',
+    'wss://testnet-api.dcore.io'
 );
 ```
 

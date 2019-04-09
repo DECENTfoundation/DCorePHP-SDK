@@ -1,0 +1,74 @@
+<?php
+
+use DCorePHP\Model\Asset\AssetAmount;
+use DCorePHP\Model\Authority;
+use DCorePHP\Model\ChainObject;
+use DCorePHP\Model\Operation\CreateAccountParameters;
+use DCorePHP\Model\Operation\UpdateAccount;
+use DCorePHP\Model\Subscription\AuthMap;
+use DCorePHPTests\DCoreSDKTest;
+use PHPUnit\Framework\TestCase;
+
+class UpdateAccountTest extends TestCase
+{
+    public function testToBytes(): void
+    {
+        $updateAccount = new UpdateAccount();
+        $updateAccount
+            ->setAccountId(new ChainObject('1.2.34'))
+            ->setOptions(
+                (new CreateAccountParameters())
+                    ->setMemoKey(DCoreSDKTest::PUBLIC_KEY_1)
+                    ->setVotingAccount(new ChainObject('1.2.3'))
+                    ->setNumMiner(0)
+                    ->setVotes(['0:3'])
+                    ->setExtensions([])
+                    ->setAllowSubscription(false)
+                    ->setSubscriptionPeriod(0)
+                    ->setPricePerSubscribe(
+                        (new AssetAmount())
+                            ->setAmount(0)
+                            ->setAssetId(new ChainObject('1.3.0'))
+                    )
+            )->setFee(
+                (new AssetAmount())
+                    ->setAmount(500000)
+                    ->setAssetId(new ChainObject('1.3.0')))
+        ;
+
+        $this->assertEquals(
+            '0220a1070000000000002200000102c03f8e840c1699fd7808c2bb858e249c688c5be8acf0a0c1c484ab0cfb27f0a8030000010003000000000000000000000000000000000000',
+            $updateAccount->toBytes()
+        );
+
+        $updateAccount = new UpdateAccount();
+        $updateAccount
+            ->setAccountId(new ChainObject('1.2.34'))
+            ->setOwner((new Authority())->setKeyAuths([(new AuthMap())->setValue(DCoreSDKTest::PUBLIC_KEY_1)]))
+            ->setActive((new Authority())->setKeyAuths([(new AuthMap())->setValue(DCoreSDKTest::PUBLIC_KEY_1)]))
+            ->setOptions(
+                (new CreateAccountParameters())
+                    ->setMemoKey(DCoreSDKTest::PUBLIC_KEY_1)
+                    ->setVotingAccount(new ChainObject('1.2.3'))
+                    ->setNumMiner(0)
+                    ->setVotes(['0:5', '0:8'])
+                    ->setExtensions([])
+                    ->setAllowSubscription(false)
+                    ->setSubscriptionPeriod(0)
+                    ->setPricePerSubscribe(
+                        (new AssetAmount())
+                            ->setAmount(0)
+                            ->setAssetId(new ChainObject('1.3.0'))
+                    )
+            )->setFee(
+                (new AssetAmount())
+                    ->setAmount(500000)
+                    ->setAssetId(new ChainObject('1.3.0')))
+        ;
+
+        $this->assertEquals(
+            '0220a107000000000000220101000000000102c03f8e840c1699fd7808c2bb858e249c688c5be8acf0a0c1c484ab0cfb27f0a801000101000000000102c03f8e840c1699fd7808c2bb858e249c688c5be8acf0a0c1c484ab0cfb27f0a801000102c03f8e840c1699fd7808c2bb858e249c688c5be8acf0a0c1c484ab0cfb27f0a803000002000500000008000000000000000000000000000000000000',
+            $updateAccount->toBytes()
+        );
+    }
+}

@@ -4,13 +4,12 @@ namespace DCorePHP\Model\Operation;
 
 use DCorePHP\Crypto\PublicKey;
 use DCorePHP\Model\Asset\AssetAmount;
-use DCorePHP\Model\BaseOperation;
 use DCorePHP\Model\ChainObject;
 
-class CreateAccountParameters extends BaseOperation
+class UpdateAccountParameters
 {
-    public const OPERATION_TYPE = 1;
-    public const OPERATION_NAME = 'account_create';
+    public const OPERATION_TYPE = 100; // @todo
+    public const OPERATION_NAME = 'account_update';
 
     /** @var string */
     private $memoKey;
@@ -39,9 +38,9 @@ class CreateAccountParameters extends BaseOperation
 
     /**
      * @param string $memoKey
-     * @return CreateAccountParameters
+     * @return UpdateAccountParameters
      */
-    public function setMemoKey(?string $memoKey): CreateAccountParameters
+    public function setMemoKey(string $memoKey): UpdateAccountParameters
     {
         $this->memoKey = $memoKey;
         return $this;
@@ -57,10 +56,10 @@ class CreateAccountParameters extends BaseOperation
 
     /**
      * @param ChainObject|string $votingAccount
-     * @return CreateAccountParameters
+     * @return UpdateAccountParameters
      * @throws \DCorePHP\Exception\ValidationException
      */
-    public function setVotingAccount($votingAccount): CreateAccountParameters
+    public function setVotingAccount($votingAccount): UpdateAccountParameters
     {
         if (is_string($votingAccount)) {
             $votingAccount = new ChainObject($votingAccount);
@@ -80,9 +79,9 @@ class CreateAccountParameters extends BaseOperation
 
     /**
      * @param bool $allowSubscription
-     * @return CreateAccountParameters
+     * @return UpdateAccountParameters
      */
-    public function setAllowSubscription(?bool $allowSubscription): CreateAccountParameters
+    public function setAllowSubscription(bool $allowSubscription): UpdateAccountParameters
     {
         $this->allowSubscription = $allowSubscription;
         return $this;
@@ -98,9 +97,9 @@ class CreateAccountParameters extends BaseOperation
 
     /**
      * @param AssetAmount $pricePerSubscribe
-     * @return CreateAccountParameters
+     * @return UpdateAccountParameters
      */
-    public function setPricePerSubscribe(?AssetAmount $pricePerSubscribe): CreateAccountParameters
+    public function setPricePerSubscribe(AssetAmount $pricePerSubscribe): UpdateAccountParameters
     {
         $this->pricePerSubscribe = $pricePerSubscribe;
         return $this;
@@ -116,9 +115,9 @@ class CreateAccountParameters extends BaseOperation
 
     /**
      * @param int $numMiner
-     * @return CreateAccountParameters
+     * @return UpdateAccountParameters
      */
-    public function setNumMiner(?int $numMiner): CreateAccountParameters
+    public function setNumMiner(int $numMiner): UpdateAccountParameters
     {
         $this->numMiner = $numMiner;
         return $this;
@@ -134,9 +133,9 @@ class CreateAccountParameters extends BaseOperation
 
     /**
      * @param array $votes
-     * @return CreateAccountParameters
+     * @return UpdateAccountParameters
      */
-    public function setVotes(?array $votes): CreateAccountParameters
+    public function setVotes(array $votes): UpdateAccountParameters
     {
         $this->votes = $votes;
         return $this;
@@ -152,9 +151,9 @@ class CreateAccountParameters extends BaseOperation
 
     /**
      * @param array $extensions
-     * @return CreateAccountParameters
+     * @return UpdateAccountParameters
      */
-    public function setExtensions(?array $extensions): CreateAccountParameters
+    public function setExtensions(array $extensions): UpdateAccountParameters
     {
         $this->extensions = $extensions;
         return $this;
@@ -170,9 +169,9 @@ class CreateAccountParameters extends BaseOperation
 
     /**
      * @param int $subscriptionPeriod
-     * @return CreateAccountParameters
+     * @return UpdateAccountParameters
      */
-    public function setSubscriptionPeriod(?int $subscriptionPeriod): CreateAccountParameters
+    public function setSubscriptionPeriod(int $subscriptionPeriod): UpdateAccountParameters
     {
         $this->subscriptionPeriod = $subscriptionPeriod;
         return $this;

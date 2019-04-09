@@ -12,7 +12,7 @@ class OperationFactory
         return [
             Operation\Transfer::OPERATION_TYPE => Operation\Transfer::class,
             Operation\CreateAccount::OPERATION_TYPE => Operation\CreateAccount::class,
-            Operation\AccountUpdate::OPERATION_TYPE => Operation\AccountUpdate::class,
+            Operation\UpdateAccount::OPERATION_TYPE => Operation\UpdateAccount::class,
             3 => 'asset_create',
             4 => 'asset_issue',
             5 => 'asset_publish_feed',
