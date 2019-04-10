@@ -22,14 +22,21 @@ class Math
     }
 
     /**
-     * @param int $number
-     * @return int
+     * @param string $number
+     * @return string
      */
-    public static function reverseBytesLong(int $number): int
+    public static function reverseBytesLong(string $number): string
     {
-        $number = ($number & 0x00ff00ff00ff00ff) << 8 | self::unsignedRightShift($number, 8) & 0x00ff00ff00ff00ff;
+        $number = gmp_strval(gmp_init($number, 10), 16);
+        if (strlen($number) % 2 !== 0) {
+            $number = '0' . $number;
+        }
 
-        return ($number << 48) | (($number & 0xffff0000) << 16) | (self::unsignedRightShift($number, 16) & 0xffff0000) | self::unsignedRightShift($number, 48);
+        $number = implode('', array_reverse(str_split($number, 2)));
+        $number = str_pad($number, 16, '0', STR_PAD_RIGHT);
+        $number = gmp_strval(gmp_init($number, 16));
+
+        return gmp_strval($number);
     }
 
     public static function reverseBytesShort(int $number)

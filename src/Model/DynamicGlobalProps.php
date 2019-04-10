@@ -22,11 +22,11 @@ class DynamicGlobalProps
     private $nextMaintenanceTime;
     /** @var \DateTime */
     private $lastBudgetTime;
-    /** @var int */
+    /** @var string */
     private $unspentFeeBudget;
     /** @var string */
     private $minedRewards;
-    /** @var int */
+    /** @var string */
     private $minerBudgetFromFees;
     /** @var string */
     private $minerBudgetFromRewards;
@@ -170,18 +170,18 @@ class DynamicGlobalProps
     }
 
     /**
-     * @return int
+     * @return string
      */
-    public function getUnspentFeeBudget(): int
+    public function getUnspentFeeBudget(): string
     {
         return $this->unspentFeeBudget;
     }
 
     /**
-     * @param int $unspentFeeBudget
+     * @param string $unspentFeeBudget
      * @return DynamicGlobalProps
      */
-    public function setUnspentFeeBudget(int $unspentFeeBudget): DynamicGlobalProps
+    public function setUnspentFeeBudget(string $unspentFeeBudget): DynamicGlobalProps
     {
         $this->unspentFeeBudget = $unspentFeeBudget;
         return $this;
@@ -206,18 +206,18 @@ class DynamicGlobalProps
     }
 
     /**
-     * @return int
+     * @return string
      */
-    public function getMinerBudgetFromFees(): int
+    public function getMinerBudgetFromFees(): string
     {
         return $this->minerBudgetFromFees;
     }
 
     /**
-     * @param int $minerBudgetFromFees
+     * @param string $minerBudgetFromFees
      * @return DynamicGlobalProps
      */
-    public function setMinerBudgetFromFees(int $minerBudgetFromFees): DynamicGlobalProps
+    public function setMinerBudgetFromFees(string $minerBudgetFromFees): DynamicGlobalProps
     {
         $this->minerBudgetFromFees = $minerBudgetFromFees;
         return $this;
@@ -358,9 +358,9 @@ class DynamicGlobalProps
     }
 
     /**
-     * @return int
+     * @return string
      */
-    public function getRefBlockPrefix(): int
+    public function getRefBlockPrefix(): string
     {
         $headBlockId = substr($this->getHeadBlockId(), 8, 8);
         $headBlockId = str_split($headBlockId, 2);
@@ -368,7 +368,7 @@ class DynamicGlobalProps
         $headBlockId = implode('', $headBlockId);
         $headBlockId = hexdec($headBlockId);
 
-        return $headBlockId;
+        return (string) $headBlockId;
     }
 
     /**

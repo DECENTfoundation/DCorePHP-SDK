@@ -189,8 +189,8 @@ class UpdateAccount extends BaseOperation
             $this->getTypeBytes(),
             $this->getFee()->toBytes(),
             $this->getAccountId() ? $this->getAccountId()->toBytes() : '00',
-            $this->getOwner() ? str_pad(dechex(count($this->getOwner()->getKeyAuths())), 2, '0', STR_PAD_LEFT) . $this->getOwner()->toBytes() : '00',
-            $this->getActive() ? str_pad(dechex(count($this->getActive()->getKeyAuths())), 2, '0', STR_PAD_LEFT) . $this->getActive()->toBytes() : '00',
+            $this->getOwner() ? str_pad(gmp_strval(gmp_init(count($this->getOwner()->getKeyAuths()), 10), 16), 2, '0', STR_PAD_LEFT) . $this->getOwner()->toBytes() : '00',
+            $this->getActive() ? str_pad(gmp_strval(gmp_init(count($this->getActive()->getKeyAuths()), 10), 16), 2, '0', STR_PAD_LEFT) . $this->getActive()->toBytes() : '00',
             $this->getOptions() ? '01' . $this->getOptions()->toBytes() : '00',
             '00',
         ]);

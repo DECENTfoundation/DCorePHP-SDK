@@ -129,7 +129,7 @@ class Memo
     private function generateNonce(): string
     {
         try {
-            return (string)((int)str_pad(str_replace('.', '', microtime(true)), 18, '0') + random_int(0, 100000000000));
+            return (string)((int)str_pad(str_replace('.', '', microtime(true)), 18, '0') + random_int(0, PHP_INT_MAX));
         } catch (\Exception $e) {
             return $this->generateNonce();
         }
@@ -159,8 +159,8 @@ class Memo
             '01',
             PublicKey::fromWif($this->getFrom()->encode())->toCompressedPublicKey(),
             PublicKey::fromWif($this->getTo()->encode())->toCompressedPublicKey(),
-            str_pad(dechex(Math::reverseBytesLong($this->getNonce())), 16, '0', STR_PAD_LEFT),
-            dechex(\strlen($this->getMessage()) / 2) . $this->getMessage(),
+            str_pad(gmp_strval(gmp_init(Math::reverseBytesLong($this->getNonce()), 10), 16), 16, '0', STR_PAD_LEFT),
+            gmp_strval(gmp_init(strlen($this->getMessage()) / 2, 10), 16) . $this->getMessage(),
         ]);
     }
 }

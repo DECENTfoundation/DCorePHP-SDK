@@ -155,7 +155,7 @@ class ECKeyPair
             throw new \Exception('Could not construct a recoverable keyPair. This should never happen.');
         }
 
-        $canonicalSignature = dechex($finalRecId + 31) . $signatureHex;
+        $canonicalSignature = gmp_strval(gmp_init($finalRecId + 31, 10), 16) . $signatureHex;
         $sigData = str_split($canonicalSignature, 2);
 
         if ((hexdec($sigData[0]) & 0x80) !== 0 ||

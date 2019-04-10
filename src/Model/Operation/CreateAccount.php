@@ -155,7 +155,7 @@ class CreateAccount extends BaseOperation
             $this->getTypeBytes(),
             $this->getFee()->toBytes(),
             $this->getRegistrar()->toBytes(),
-            str_pad(dechex(strlen($this->getAccountName())), 2, '0', STR_PAD_LEFT) . unpack('H*', $this->getAccountName())[1],
+            str_pad(gmp_strval(gmp_init(strlen($this->getAccountName()), 10), 16), 2, '0', STR_PAD_LEFT) . unpack('H*', $this->getAccountName())[1],
             $this->getOwner()->toBytes(),
             $this->getActive()->toBytes(),
             $this->getOptions()->toBytes(),

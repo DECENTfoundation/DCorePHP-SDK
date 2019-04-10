@@ -178,11 +178,11 @@ class ContentSubmitOperation extends BaseOperation
             [
                 $this->getTypeBytes(),
                 $this->getFee()->toBytes(),
-                str_pad(dechex(Math::reverseBytesLong($this->getContent()->getSize())), 16, '0', STR_PAD_LEFT),
+                str_pad(gmp_strval(gmp_init(Math::reverseBytesLong($this->getContent()->getSize()), 10), 16), 16, '0', STR_PAD_LEFT),
                 $this->getAuthor()->toBytes(),
                 '00',
-                dechex(strlen(unpack('H*', $this->getContent()->getUri())[1]) / 2).unpack('H*', $this->getContent()->getUri())[1],
-                str_pad(dechex(Math::reverseBytesLong($this->getContent()->getQuorum())), 8, '0', STR_PAD_LEFT),
+                gmp_strval(gmp_init(strlen(unpack('H*', $this->getContent()->getUri())[1]) / 2, 10), 16).unpack('H*', $this->getContent()->getUri())[1],
+                str_pad(gmp_strval(gmp_init(Math::reverseBytesLong($this->getContent()->getQuorum()), 10), 16), 8, '0', STR_PAD_LEFT),
                 // TODO: Hardcoded string '01' as a part of price bytes()
                 '01',
                 $this->getContent()->getPrice() ? implode('', array_map(function (RegionalPrice $regionalPrice) { // operation bytes
@@ -193,9 +193,9 @@ class ContentSubmitOperation extends BaseOperation
                         return $seeder->toBytes();
                     }, $this->getContent()->getPrice())) : '00',
                 '00', // TODO: Hardcoded KeyParts
-                implode('', array_reverse(str_split(str_pad(dechex($this->getContent()->getExpiration()->format('U')), 8, '0', STR_PAD_LEFT), 2))),
+                implode('', array_reverse(str_split(str_pad(gmp_strval(gmp_init($this->getContent()->getExpiration()->format('U'), 10), 16), 8, '0', STR_PAD_LEFT), 2))),
                 $this->getPublishingFee()->toBytes(),
-                dechex(strlen(unpack('H*', $this->getContent()->getSynopsis())[1]) / 2).unpack('H*', $this->getContent()->getSynopsis())[1],
+                gmp_strval(gmp_init(strlen(unpack('H*', $this->getContent()->getSynopsis())[1]) / 2, 10), 16).unpack('H*', $this->getContent()->getSynopsis())[1],
                 $this->getContent()->getCustodyData() ? $this->getContent()->getCustodyData()->toBytes() : '00'
             ]
         );

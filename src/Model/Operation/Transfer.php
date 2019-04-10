@@ -152,7 +152,7 @@ class Transfer extends BaseOperation
     {
         [$space, $type, $instance] = explode('.', $this->getFrom());
 
-        return dechex($instance);
+        return gmp_strval(gmp_init($instance, 10), 16);
     }
 
     /**
@@ -162,7 +162,7 @@ class Transfer extends BaseOperation
     {
         [$space, $type, $instance] = explode('.', $this->getTo());
 
-        return dechex($instance);
+        return gmp_strval(gmp_init($instance, 10), 16);
     }
 
     /**

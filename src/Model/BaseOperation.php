@@ -91,7 +91,7 @@ abstract class BaseOperation
      */
     protected function getTypeBytes(): string
     {
-        return str_pad(dechex(static::OPERATION_TYPE), 2, '0', STR_PAD_LEFT);
+        return str_pad(gmp_strval(gmp_init(static::OPERATION_TYPE, 10), 16), 2, '0', STR_PAD_LEFT);
     }
 
     /**

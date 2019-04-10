@@ -217,19 +217,19 @@ class Options
             PublicKey::fromWif($this->getMemoKey()->encode())->toCompressedPublicKey(),
             $this->getVotingAccount()->toBytes(),
             implode('', array_reverse(str_split(
-                str_pad(dechex($this->getNumMiner()), 4, '0', STR_PAD_LEFT),
+                str_pad(gmp_strval(gmp_init($this->getNumMiner(), 10), 16), 4, '0', STR_PAD_LEFT),
                 2
             ))),
-            $this->getVotes() ? str_pad(dechex(count($this->getVotes())), 2, '0', STR_PAD_LEFT) . implode('', array_map(function (string $vote) {
+            $this->getVotes() ? str_pad(gmp_strval(gmp_init(count($this->getVotes()), 10), 16), 2, '0', STR_PAD_LEFT) . implode('', array_map(function (string $vote) {
                     return implode('', array_map(function (string $number) {
-                            return str_pad(dechex($number), 2, '0', STR_PAD_LEFT);
+                            return str_pad(gmp_strval(gmp_init($number, 10), 16), 2, '0', STR_PAD_LEFT);
                         }, explode(':', $vote))) . '0000';
                 }, $this->getVotes())) : '00',
             '00',
-            str_pad(dechex($this->getAllowSubscription()), 2, '0', STR_PAD_LEFT),
+            str_pad(gmp_strval(gmp_init($this->getAllowSubscription(), 10), 16), 2, '0', STR_PAD_LEFT),
             $this->getPricePerSubscribe()->toBytes(),
             implode('', array_reverse(str_split(
-                str_pad(dechex($this->getSubscriptionPeriod()), 8, '0', STR_PAD_LEFT),
+                str_pad(gmp_strval(gmp_init($this->getSubscriptionPeriod(), 10), 16), 8, '0', STR_PAD_LEFT),
                 2
             ))),
         ]);

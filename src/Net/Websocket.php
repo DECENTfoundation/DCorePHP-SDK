@@ -77,7 +77,7 @@ class Websocket
         $request->setId($this->requestId);
 
         if ($this->debug) {
-            dump('request: ' . $request->toJson());
+            var_dump('request: ' . $request->toJson());
         }
 
         $client = $this->getClient();
@@ -89,7 +89,7 @@ class Websocket
         } while ($response->getId() !== $request->getId());
 
         if ($this->debug) {
-            dump('response: ' . $rawResponse);
+            var_dump('response: ' . $rawResponse);
         }
 
         if ($response->getError()) {
