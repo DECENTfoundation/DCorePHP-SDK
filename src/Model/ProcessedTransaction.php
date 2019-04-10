@@ -11,8 +11,7 @@ class ProcessedTransaction
     private $extensions;
     /** @var BaseOperation[] */
     private $operations;
-    // TODO: Datetime
-    /** @var int */
+    /** @var \DateTime */
     private $expiration;
     /** @var int */
     private $refBlockNum;
@@ -80,20 +79,21 @@ class ProcessedTransaction
     }
 
     /**
-     * @return int
+     * @return \DateTime
      */
-    public function getExpiration(): int
+    public function getExpiration(): \DateTime
     {
         return $this->expiration;
     }
 
     /**
-     * @param int $expiration
+     * @param \DateTime|string $expiration
      * @return ProcessedTransaction
+     * @throws \Exception
      */
-    public function setExpiration(int $expiration): ProcessedTransaction
+    public function setExpiration($expiration): ProcessedTransaction
     {
-        $this->expiration = $expiration;
+        $this->expiration = $expiration instanceof \DateTime ? $expiration : new \DateTime($expiration);
 
         return $this;
     }

@@ -5,6 +5,8 @@ namespace DCorePHP\Sdk;
 
 
 use DCorePHP\Crypto\Credentials;
+use DCorePHP\Exception\InvalidApiCallException;
+use DCorePHP\Exception\ObjectAlreadyFoundException;
 use DCorePHP\Exception\ObjectNotFoundException;
 use DCorePHP\Model\Asset\AssetAmount;
 use DCorePHP\Model\BaseOperation;
@@ -19,6 +21,7 @@ use DCorePHP\Model\Operation\Transfer;
 use DCorePHP\Model\PubKey;
 use DCorePHP\Model\TransactionConfirmation;
 use DCorePHP\Net\Model\Request\SearchContent;
+use WebSocket\BadOpcodeException;
 
 interface ContentApiInterface
 {
@@ -151,6 +154,23 @@ interface ContentApiInterface
      * @throws \Exception
      */
     public function purchaseWithUri(Credentials $credentials, string $uri): ?TransactionConfirmation;
+
+    /**
+     * Update Content
+     *
+     * @param SubmitContent $content
+     * @param Credentials $author
+     * @param AssetAmount $publishingFee
+     * @param AssetAmount $fee
+     * @return TransactionConfirmation|null
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
+     * @throws ObjectAlreadyFoundException
+     * @throws ObjectNotFoundException
+     * @throws \DCorePHP\Exception\ValidationException
+     * @throws \Exception
+     */
+    public function update(SubmitContent $content, Credentials $author, AssetAmount $publishingFee, AssetAmount $fee): ?TransactionConfirmation;
 
     /**
      * Transfers an amount of one asset to content. Amount is transferred to author and co-authors of the content, if they are specified.
