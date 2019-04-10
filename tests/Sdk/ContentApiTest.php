@@ -284,7 +284,83 @@ class ContentApiTest extends DCoreSDKTest
         $this->assertEquals( $randomUri, $submittedContentObject->getURI());
         $this->assertEquals('1.2.34', $submittedContentObject->getAuthor());
         $this->assertEquals('2222222222222222222222222222222222222222', $submittedContentObject->getHash());
+    }
 
+    /**
+     * @throws \DCorePHP\Exception\ObjectAlreadyFoundException
+     * @throws \DCorePHP\Exception\ObjectNotFoundException
+     * @throws \DCorePHP\Exception\ValidationException
+     * @throws \Exception
+     */
+    public function testUpdate(): void
+    {
+        $uri = 'http://decent.ch?PHPtesttime=' . time();
+        $expiration = new \DateTime('+2 day');
+
+        if ($this->websocketMock) {
+            $this->websocketMock
+                ->expects($this->exactly(15))
+                ->method('send')
+                ->withConsecutive(
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(1)->toJson() === '{"jsonrpc":"2.0","id":1,"method":"call","params":[1,"login",["",""]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(2)->toJson() === '{"jsonrpc":"2.0","id":2,"method":"call","params":[1,"database",[]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(3)->toJson() === '{"jsonrpc":"2.0","id":3,"method":"call","params":[6,"get_content",' . json_encode([$req->getParams()[0]]) . ']}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(4)->toJson() === '{"jsonrpc":"2.0","id":4,"method":"call","params":[1,"database",[]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(5)->toJson() === '{"jsonrpc":"2.0","id":5,"method":"call","params":[6,"get_dynamic_global_properties",[]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(6)->toJson() === '{"jsonrpc":"2.0","id":6,"method":"call","params":[1,"network_broadcast",[]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(7)->toJson() === '{"jsonrpc":"2.0","id":7,"method":"call","params":[7,"broadcast_transaction_with_callback",[6,{"extensions":[],"operations":[[20,{"size":10000,"author":"1.2.34","co_authors":[],"URI":' . trim(json_encode([$req->getParams()[1]['operations'][0][1]['URI']]), '[]') . ',"quorum":"0","price":[{"price":{"amount":1000,"asset_id":"1.3.0"},"region":"1"}],"hash":"2222222222222222222222222222222222222222","seeders":[],"key_parts":[],"expiration":"' . $req->getParams()[1]['operations'][0][1]['expiration'] . '","publishing_fee":{"amount":1000,"asset_id":"1.3.0"},"synopsis":"{\"title\":\"Game Title\",\"description\":\"Description\",\"content_type_id\":\"1.2.3\"}","fee":{"amount":1000,"asset_id":"1.3.0"}}]],"ref_block_num":49819,"ref_block_prefix":3899811444,"expiration":"' . $req->getParams()[1]['expiration'] . '","signatures":["' . $req->getParams()[1]['signatures'][0] . '"]}]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(8)->toJson() === '{"jsonrpc":"2.0","id":8,"method":"call","params":[1,"database",[]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(9)->toJson() === '{"jsonrpc":"2.0","id":9,"method":"call","params":[6,"get_content",' . json_encode([$req->getParams()[0]]) . ']}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(10)->toJson() === '{"jsonrpc":"2.0","id":10,"method":"call","params":[1,"database",[]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(11)->toJson() === '{"jsonrpc":"2.0","id":11,"method":"call","params":[6,"get_dynamic_global_properties",[]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(12)->toJson() === '{"jsonrpc":"2.0","id":12,"method":"call","params":[1,"network_broadcast",[]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(13)->toJson() === '{"jsonrpc":"2.0","id":13,"method":"call","params":[7,"broadcast_transaction_with_callback",[6,{"extensions":[],"operations":[[20,{"size":10000,"author":"1.2.34","co_authors":[],"URI":' . trim(json_encode([$req->getParams()[1]['operations'][0][1]['URI']]), '[]') . ',"quorum":"0","price":[{"price":{"amount":1000,"asset_id":"1.3.0"},"region":"1"}],"hash":"2222222222222222222222222222222222222222","seeders":[],"key_parts":[],"expiration":"' . $req->getParams()[1]['operations'][0][1]['expiration'] . '","publishing_fee":{"amount":1000,"asset_id":"1.3.0"},"synopsis":"{\"title\":\"Game Title Updated by PHP\",\"description\":\"Description Updated by PHP\",\"content_type_id\":\"1.2.3\"}","fee":{"amount":1000,"asset_id":"1.3.0"}}]],"ref_block_num":49819,"ref_block_prefix":3899811444,"expiration":"' . $req->getParams()[1]['expiration'] . '","signatures":["' . $req->getParams()[1]['signatures'][0] . '"]}]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(14)->toJson() === '{"jsonrpc":"2.0","id":14,"method":"call","params":[1,"database",[]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(15)->toJson() === '{"jsonrpc":"2.0","id":15,"method":"call","params":[6,"get_content",' . json_encode([$req->getParams()[0]]) . ']}'; })]
+                )
+                ->will($this->onConsecutiveCalls(
+                    Login::responseToModel(new BaseResponse('{"id":1,"result":true}')),
+                    Database::responseToModel(new BaseResponse('{"id":2,"result":6}')),
+                    GetContentByURI::responseToModel(new BaseResponse('{"id":3,"result":null}')),
+                    Database::responseToModel(new BaseResponse('{"id":4,"result":6}')),
+                    GetDynamicGlobalProperties::responseToModel(new BaseResponse('{"id":5,"result":{"id":"2.1.0","head_block_number":4899483,"head_block_id":"004ac29b746672e8eac7099f859e02facd7cf10d","time":"2019-04-01T09:05:05","current_miner":"1.4.4","next_maintenance_time":"2019-04-02T00:00:00","last_budget_time":"2019-04-01T00:00:00","unspent_fee_budget":15755050,"mined_rewards":"198098000000","miner_budget_from_fees":22827684,"miner_budget_from_rewards":"639249000000","accounts_registered_this_interval":4,"recently_missed_count":1,"current_aslot":11057521,"recent_slots_filled":"169390876192714235399544350075502163943","dynamic_flags":0,"last_irreversible_block_num":4899483}}')),
+                    NetworkBroadcast::responseToModel(new BaseResponse('{"id":6,"result":7}')),
+                    BroadcastTransactionWithCallback::responseToModel(new BaseResponse('{"id":7,"result":null}')),
+                    Database::responseToModel(new BaseResponse('{"id":8,"result":6}')),
+                    GetContentByURI::responseToModel(new BaseResponse('{"id":9,"result":{"id":"2.13.1028","author":"1.2.34","co_authors":[],"expiration":"'. $expiration->format('c') .'","created":"2019-04-01T09:05:05","price":{"map_price":[[1,{"amount":1000,"asset_id":"1.3.0"}]]},"size":10000,"synopsis":"{\"title\":\"Game Title\",\"description\":\"Description\",\"content_type_id\":\"1.2.3\"}","URI":"http://decent.ch?PHPtesttime=1554109506","quorum":0,"key_parts":[],"_hash":"2222222222222222222222222222222222222222","last_proof":[],"is_blocked":false,"AVG_rating":0,"num_of_ratings":0,"times_bought":0,"publishing_fee_escrow":{"amount":1000,"asset_id":"1.3.0"},"seeder_price":[]}}')),
+                    Database::responseToModel(new BaseResponse('{"id":10,"result":6}')),
+                    GetDynamicGlobalProperties::responseToModel(new BaseResponse('{"id":11,"result":{"id":"2.1.0","head_block_number":4899483,"head_block_id":"004ac29b746672e8eac7099f859e02facd7cf10d","time":"2019-04-01T09:05:05","current_miner":"1.4.4","next_maintenance_time":"2019-04-02T00:00:00","last_budget_time":"2019-04-01T00:00:00","unspent_fee_budget":15755050,"mined_rewards":"198098000000","miner_budget_from_fees":22827684,"miner_budget_from_rewards":"639249000000","accounts_registered_this_interval":4,"recently_missed_count":1,"current_aslot":11057521,"recent_slots_filled":"169390876192714235399544350075502163943","dynamic_flags":0,"last_irreversible_block_num":4899483}}')),
+                    NetworkBroadcast::responseToModel(new BaseResponse('{"id":12,"result":7}')),
+                    BroadcastTransactionWithCallback::responseToModel(new BaseResponse('{"id":13,"result":null}')),
+                    Database::responseToModel(new BaseResponse('{"id":14,"result":6}')),
+                    GetContentByURI::responseToModel(new BaseResponse('{"id":15,"result":{"id":"2.13.1028","author":"1.2.34","co_authors":[],"expiration":"'. $expiration->format('c') .'","created":"2019-04-01T09:05:05","price":{"map_price":[[1,{"amount":1000,"asset_id":"1.3.0"}]]},"size":10000,"synopsis":"{\"title\":\"Game Title Updated by PHP\",\"description\":\"Description Updated by PHP\",\"content_type_id\":\"1.2.3\"}","URI":"'. $uri.'","quorum":0,"key_parts":[],"_hash":"2222222222222222222222222222222222222222","last_proof":[],"is_blocked":false,"AVG_rating":0,"num_of_ratings":0,"times_bought":0,"publishing_fee_escrow":{"amount":1000,"asset_id":"1.3.0"},"seeder_price":[]}}'))
+                ));
+        }
+
+        $credentials = new Credentials(new ChainObject('1.2.34'), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
+        $content = new SubmitContent();
+        $content
+            ->setUri($uri)
+            ->setCoauthors([])
+            ->setCustodyData(null)
+            ->setHash('2222222222222222222222222222222222222222')
+            ->setKeyParts([])
+            ->setSeeders([])
+            ->setQuorum(0)
+            ->setSize(10000)
+            ->setSynopsis(json_encode(['title' => 'Game Title', 'description' => 'Description', 'content_type_id' => '1.2.3']))
+            ->setExpiration($expiration)
+            ->setPrice([(new RegionalPrice)->setPrice((new AssetAmount())->setAmount(1000))->setRegion(1)]);
+
+        $this->sdk->getContentApi()->create($content, $credentials, (new AssetAmount())->setAmount(1000)->setAssetId('1.3.0'), (new AssetAmount())->setAmount(1000)->setAssetId('1.3.0'));
+
+        $content->setSynopsis(json_encode(['title' => 'Game Title Updated by PHP', 'description' => 'Description Updated by PHP', 'content_type_id' => '1.2.3']));
+        $this->sdk->getContentApi()->update($content, $credentials, (new AssetAmount())->setAmount(1000)->setAssetId('1.3.0'), (new AssetAmount())->setAmount(1000)->setAssetId('1.3.0'));
+
+        $submittedContentObject = $this->sdk->getContentApi()->getByURI($uri);
+        $this->assertEquals( $uri, $submittedContentObject->getURI());
+        $this->assertEquals('1.2.34', $submittedContentObject->getAuthor());
+        $this->assertEquals('Game Title Updated by PHP', $submittedContentObject->getSynopsisDecoded()['title']);
     }
 
     public function testSubmitContentAsync(): void
