@@ -7,15 +7,20 @@ use DCorePHP\Model\Authority;
 use DCorePHP\Model\ChainObject;
 use DCorePHP\Model\Operation\CreateAccountParameters;
 use DCorePHP\Model\Operation\CreateAccount;
+use DCorePHP\Model\Options;
 use DCorePHP\Model\Subscription\AuthMap;
 use PHPUnit\Framework\TestCase;
 
 class RegisterAccountTest extends TestCase
 {
-    public function testToBytes()
+    /**
+     * @throws \DCorePHP\Exception\ValidationException
+     * @throws \Exception
+     */
+    public function testToBytes(): void
     {
-        $createAccountParameters = new CreateAccountParameters();
-        $createAccountParameters
+        $options = new Options();
+        $options
             ->setMemoKey('DCT6718kUCCksnkeYD1YySWkXb1VLpzjkFfHHMirCRPexp5gDPJLU')
             ->setVotingAccount(new ChainObject('1.2.3'))
             ->setAllowSubscription(false)
@@ -31,7 +36,7 @@ class RegisterAccountTest extends TestCase
             ->setOwner((new Authority())->setKeyAuths([(new AuthMap())->setValue('DCT6718kUCCksnkeYD1YySWkXb1VLpzjkFfHHMirCRPexp5gDPJLU')]))
             ->setActive((new Authority())->setKeyAuths([(new AuthMap())->setValue('DCT6718kUCCksnkeYD1YySWkXb1VLpzjkFfHHMirCRPexp5gDPJLU')]))
             ->setRegistrar(new ChainObject('1.2.34'))
-            ->setOptions($createAccountParameters)
+            ->setOptions($options)
             ->setName(CreateAccount::OPERATION_NAME)
             ->setType(CreateAccount::OPERATION_TYPE)
             ->setFee((new AssetAmount())->setAmount(0));

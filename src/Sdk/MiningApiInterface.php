@@ -2,12 +2,14 @@
 
 namespace DCorePHP\Sdk;
 
+use DCorePHP\Crypto\Credentials;
 use DCorePHP\Model\BaseOperation;
 use DCorePHP\Model\ChainObject;
 use DCorePHP\Model\Explorer\Miner;
 use DCorePHP\Model\MinerVotes;
 use DCorePHP\Model\Mining\MinerId;
 use DCorePHP\Model\Mining\MinerVotingInfo;
+use DCorePHP\Model\TransactionConfirmation;
 use DCorePHP\Model\Operation\UpdateAccount;
 use DCorePHP\Net\Model\Request\SearchMinerVoting;
 
@@ -113,8 +115,27 @@ interface MiningApiInterface
      * @param ChainObject $accountId, 1.2.*
      * @param array $minderIds of miner account ids
      * @return UpdateAccount a transaction confirmation
+     * @throws \DCorePHP\Exception\InvalidApiCallException
+     * @throws \DCorePHP\Exception\ObjectNotFoundException
+     * @throws \DCorePHP\Exception\ValidationException
+     * @throws \WebSocket\BadOpcodeException
      */
     public function createVoteOperation(ChainObject $accountId, array $minderIds): UpdateAccount;
+
+    /**
+     * Create vote for miner operation
+     *
+     * @param Credentials $credentials
+     * @param ChainObject $accountId
+     * @param array $minerIds
+     * @return TransactionConfirmation|null
+     * @throws \DCorePHP\Exception\InvalidApiCallException
+     * @throws \DCorePHP\Exception\ObjectNotFoundException
+     * @throws \DCorePHP\Exception\ValidationException
+     * @throws \WebSocket\BadOpcodeException
+     * @throws \Exception
+     */
+    public function vote(Credentials $credentials, array $minerIds): ?TransactionConfirmation;
 
     /**
      * Creates a miner object owned by the given account.

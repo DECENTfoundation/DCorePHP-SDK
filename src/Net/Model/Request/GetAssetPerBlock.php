@@ -17,7 +17,6 @@ class GetAssetPerBlock extends BaseRequest
 
     public static function responseToModel(BaseResponse $response)
     {
-        // TODO: No data
-        dump($response->getResult());
+        return $response->getResult();
     }
 }

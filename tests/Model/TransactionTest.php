@@ -11,6 +11,7 @@ use DCorePHP\Model\Operation\CreateAccountParameters;
 use DCorePHP\Model\Operation\CreateAccount;
 use DCorePHP\Model\Operation\Transfer2;
 use DCorePHP\Model\Operation\UpdateAccount;
+use DCorePHP\Model\Options;
 use DCorePHP\Model\Subscription\AuthMap;
 use DCorePHP\Model\Transaction;
 use DCorePHP\Crypto\Address;
@@ -89,6 +90,10 @@ class TransactionTest extends TestCase
         );
     }
 
+    /**
+     * @throws \DCorePHP\Exception\ValidationException
+     * @throws \Exception
+     */
     public function testSignRegisterAccount()
     {
         $dynamicGlobalProperties = new DynamicGlobalProps();
@@ -111,8 +116,8 @@ class TransactionTest extends TestCase
             ->setDynamicFlags(0)
             ->setLastIrreversibleBlockNum(483808);
 
-        $createAccountParameters = new CreateAccountParameters();
-        $createAccountParameters
+        $options = new Options();
+        $options
             ->setMemoKey('DCT6718kUCCksnkeYD1YySWkXb1VLpzjkFfHHMirCRPexp5gDPJLU')
             ->setVotingAccount(new ChainObject('1.2.3'))
             ->setAllowSubscription(false)
@@ -128,7 +133,7 @@ class TransactionTest extends TestCase
             ->setOwner((new Authority())->setKeyAuths([(new AuthMap())->setValue('DCT6718kUCCksnkeYD1YySWkXb1VLpzjkFfHHMirCRPexp5gDPJLU')]))
             ->setActive((new Authority())->setKeyAuths([(new AuthMap())->setValue('DCT6718kUCCksnkeYD1YySWkXb1VLpzjkFfHHMirCRPexp5gDPJLU')]))
             ->setRegistrar(new ChainObject('1.2.34'))
-            ->setOptions($createAccountParameters)
+            ->setOptions($options)
             ->setName(CreateAccount::OPERATION_NAME)
             ->setType(CreateAccount::OPERATION_TYPE)
             ->setFee((new AssetAmount())->setAmount(500000));
@@ -150,6 +155,9 @@ class TransactionTest extends TestCase
         );
     }
 
+    /**
+     * @throws \DCorePHP\Exception\ValidationException
+     */
     public function testSignUpdateAccount()
     {
         $dynamicGlobalProperties = new DynamicGlobalProps();
@@ -172,8 +180,8 @@ class TransactionTest extends TestCase
             ->setDynamicFlags(0)
             ->setLastIrreversibleBlockNum(3441407);
 
-        $createAccountParameters = new CreateAccountParameters();
-        $createAccountParameters
+        $options = new Options();
+        $options
             ->setMemoKey(DCoreSDKTest::PUBLIC_KEY_1)
             ->setVotingAccount(new ChainObject('1.2.3'))
             ->setAllowSubscription(false)
@@ -186,7 +194,7 @@ class TransactionTest extends TestCase
         $operation = new UpdateAccount();
         $operation
             ->setAccountId(new ChainObject('1.2.34'))
-            ->setOptions($createAccountParameters)
+            ->setOptions($options)
             ->setName(CreateAccount::OPERATION_NAME)
             ->setType(CreateAccount::OPERATION_TYPE)
             ->setFee((new AssetAmount())->setAmount(500000));

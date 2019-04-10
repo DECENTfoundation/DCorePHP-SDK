@@ -21,6 +21,7 @@ use DCorePHP\Model\Operation\CreateAccountParameters;
 use DCorePHP\Model\Operation\Transfer2;
 use DCorePHP\Model\Operation\UpdateAccount;
 use DCorePHP\Model\Operation\UpdateAccountParameters;
+use DCorePHP\Model\Options;
 use DCorePHP\Model\Subscription\AuthMap;
 use DCorePHP\Model\Transaction;
 use DCorePHP\Model\TransactionConfirmation;
@@ -356,9 +357,9 @@ class AccountApi extends BaseApi implements AccountApiInterface
         string $registrarPrivateKeyWif,
         bool $broadcast = true
     ): void {
-        $createAccountParameters = new CreateAccountParameters();
-        $createAccountParameters
-            ->setMemoKey($publicMemoKeyWif)
+        $options = new Options();
+        $options
+            ->setMemoKey(Address::decode($publicMemoKeyWif))
             ->setVotingAccount(new ChainObject('1.2.3'))
             ->setAllowSubscription(false)
             ->setPricePerSubscribe((new Asset\AssetAmount())->setAmount(0)->setAssetId(new ChainObject('1.3.0')))
@@ -373,7 +374,7 @@ class AccountApi extends BaseApi implements AccountApiInterface
             ->setOwner((new Authority())->setKeyAuths([(new AuthMap())->setValue($publicOwnerKeyWif)]))
             ->setActive((new Authority())->setKeyAuths([(new AuthMap())->setValue($publicActiveKeyWif)]))
             ->setRegistrar($registrarAccountId)
-            ->setOptions($createAccountParameters)
+            ->setOptions($options)
             ->setName(CreateAccount::OPERATION_NAME)
             ->setType(CreateAccount::OPERATION_TYPE)
             ->setFee(new AssetAmount());
@@ -408,46 +409,36 @@ class AccountApi extends BaseApi implements AccountApiInterface
     }
 
     /**
-     * @todo
      * @inheritdoc
-     * @param ChainObject $accountId
-     * @param UpdateAccountParameters $updateAccountParameters
-     * @param string $privateKeyWif
-     * @param bool $broadcast
-     * @return mixed
-     * @throws ObjectNotFoundException
-     * @throws ValidationException
-     * @throws \DCorePHP\Exception\InvalidApiCallException
-     * @throws \WebSocket\BadOpcodeException
      */
-    public function UpdateAccount(
+    public function updateAccount(
         ChainObject $accountId,
-        UpdateAccountParameters $updateAccountParameters,
+        Options $options,
         string $privateKeyWif,
         bool $broadcast = true
-    ) {
+    ): ?TransactionConfirmation {
         $account = $this->get($accountId);
         $accountOptions = $account->getOptions();
 
-        $createAccountParameters = new CreateAccountParameters();
-        $createAccountParameters
-            ->setMemoKey($updateAccountParameters->getMemoKey() ?: $accountOptions->getMemoKey()->getPublicKey())
-            ->setVotingAccount($updateAccountParameters->getVotingAccount() ?: $accountOptions->getVotingAccount())
-            ->setAllowSubscription($updateAccountParameters->getAllowSubscription() ?: $accountOptions->getAllowSubscription())
-            ->setPricePerSubscribe($updateAccountParameters->getPricePerSubscribe() ?: $accountOptions->getPricePerSubscribe())
-            ->setNumMiner($updateAccountParameters->getNumMiner() ?: $accountOptions->getNumMiner())
-            ->setVotes($updateAccountParameters->getVotes() ?: $accountOptions->getVotes())
-            ->setExtensions($updateAccountParameters->getExtensions() ?: $accountOptions->getExtensions())
-            ->setSubscriptionPeriod($updateAccountParameters->getSubscriptionPeriod() ?: $accountOptions->getSubscriptionPeriod());
+        $newOptions = new Options();
+        $newOptions
+            ->setMemoKey($options->getMemoKey() ?: $accountOptions->getMemoKey()->encode())
+            ->setVotingAccount($options->getVotingAccount() ?: $accountOptions->getVotingAccount())
+            ->setAllowSubscription($options->getAllowSubscription() ?: $accountOptions->getAllowSubscription())
+            ->setPricePerSubscribe($options->getPricePerSubscribe() ?: $accountOptions->getPricePerSubscribe())
+            ->setNumMiner($options->getNumMiner() ?: $accountOptions->getNumMiner())
+            ->setVotes($options->getVotes() ?: $accountOptions->getVotes())
+            ->setExtensions($options->getExtensions() ?: $accountOptions->getExtensions())
+            ->setSubscriptionPeriod($options->getSubscriptionPeriod() ?: $accountOptions->getSubscriptionPeriod());
 
         $operation = new UpdateAccount();
         $operation
             ->setAccountId($accountId)
             ->setOwner($account->getOwner())
             ->setActive($account->getActive())
-            ->setOptions($createAccountParameters);
+            ->setOptions($newOptions);
 
-        $this->dcoreApi->getBroadcastApi()->broadcastOperationWithECKeyPairWithCallback(ECKeyPair::fromBase58($privateKeyWif), $operation);
+        return $this->dcoreApi->getBroadcastApi()->broadcastOperationWithECKeyPairWithCallback(ECKeyPair::fromBase58($privateKeyWif), $operation);
     }
 
     /**

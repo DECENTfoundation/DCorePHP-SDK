@@ -25,7 +25,7 @@ class Account
 
     public function __construct()
     {
-        $this->setOptions(new Options());
+        $this->options = new Options();
         $this->owner = new Authority();
         $this->active = new Authority();
         $this->rightsToPublish = new Publishing();

@@ -6,12 +6,15 @@ namespace DCorePHP\Sdk;
 
 use DCorePHP\Crypto\Credentials;
 use DCorePHP\Crypto\PrivateKey;
+use DCorePHP\Exception\ObjectNotFoundException;
+use DCorePHP\Exception\ValidationException;
 use DCorePHP\Model\Account;
 use DCorePHP\Model\Asset\AssetAmount;
 use DCorePHP\Model\BrainKeyInfo;
 use DCorePHP\Model\ChainObject;
 use DCorePHP\Model\ElGamalKeys;
 use DCorePHP\Model\Operation\Transfer2;
+use DCorePHP\Model\Options;
 use DCorePHP\Model\TransactionConfirmation;
 use DCorePHP\Model\TransactionDetail;
 use DCorePHP\Net\Model\Request\SearchAccountHistory;
@@ -281,6 +284,20 @@ interface AccountApiInterface
         string $registrarPrivateKeyWif,
         bool $broadcast = false
     ): void;
+
+    /**
+     * @param ChainObject $accountId
+     * @param Options $options
+     * @param string $privateKeyWif
+     * @param bool $broadcast
+     * @return mixed
+     * @throws ObjectNotFoundException
+     * @throws ValidationException
+     * @throws \DCorePHP\Exception\InvalidApiCallException
+     * @throws \WebSocket\BadOpcodeException
+     * @throws \Exception
+     */
+    public function updateAccount(ChainObject $accountId, Options $options, string $privateKeyWif, bool $broadcast = true): ?TransactionConfirmation;
 
     /**
      * Generates private El Gamal key and corresponding public key
