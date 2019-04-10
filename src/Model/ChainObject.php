@@ -72,6 +72,21 @@ class ChainObject
     /**
      * @return string
      */
+    public function toObjectTypeIdBytes(): string
+    {
+        [$space, $type, $instance] = explode('.', $this->getId());
+
+        return dechex($instance) . str_pad(
+            str_pad(dechex($type), 2, '0', STR_PAD_LEFT) . str_pad(dechex($space), 2, '0', STR_PAD_LEFT),
+            16 - strlen(dechex($instance)),
+            '0',
+            STR_PAD_LEFT
+        );
+    }
+
+    /**
+     * @return string
+     */
     public function __toString(): string
     {
         return $this->getId();
