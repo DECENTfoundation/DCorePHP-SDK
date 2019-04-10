@@ -9,6 +9,7 @@ use DCorePHP\Model\ChainObject;
 use DCorePHP\Crypto\Address;
 use DCorePHP\Utils\Crypto;
 use DCorePHP\Utils\Math;
+use InvalidArgumentException;
 
 class Message
 {
@@ -45,9 +46,8 @@ class Message
     public function decrypt(Credentials $credentials): Message {
         if (!$this->isEncrypted()) return $this;
 
-        // TODO: Exceptions
-//        if ($this->getSenderAddress() === null) throwException(new InvalidArgumentException('Sender address was null!'));
-//        if ($this->getReceiverAddress() === null) throwException(new InvalidArgumentException('Receiver address was null!'));
+        if ($this->getSenderAddress() === null) throwException(new InvalidArgumentException('Sender address was null!'));
+        if ($this->getReceiverAddress() === null) throwException(new InvalidArgumentException('Receiver address was null!'));
 
         $address = $credentials->getAccount()->getId() === $this->getSender()->getId() ? $this->getReceiverAddress() : $this->getSenderAddress();
         $decrypted = $this->decryptOrNull($credentials->getKeyPair(), $address);
