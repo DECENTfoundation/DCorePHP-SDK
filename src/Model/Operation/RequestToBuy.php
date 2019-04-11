@@ -149,7 +149,7 @@ class RequestToBuy extends BaseOperation
             Math::byteArrayToHex(Math::stringToByteArray($this->getUri())),
             $this->getConsumer()->toBytes(),
             $this->getPrice()->toBytes(),
-            str_pad(gmp_strval(gmp_init(Math::reverseBytesInt($this->getRegionCodeFrom()), 10), 16), 8, '0', STR_PAD_LEFT),
+            str_pad(Math::gmpDecHex(Math::reverseBytesInt($this->getRegionCodeFrom())), 8, '0', STR_PAD_LEFT),
             implode('', [
                 Math::writeUnsignedVarIntHex(strlen($this->getElGamalPublicKey()->getPubKey())),
                 Math::byteArrayToHex(Math::stringToByteArray($this->getElGamalPublicKey()->getPubKey()))

@@ -5,6 +5,7 @@ namespace DCorePHP\Model\Operation;
 use DCorePHP\Model\Asset\AssetAmount;
 use DCorePHP\Model\BaseOperation;
 use DCorePHP\Model\Memo;
+use DCorePHP\Utils\Math;
 
 class Transfer extends BaseOperation
 {
@@ -152,7 +153,7 @@ class Transfer extends BaseOperation
     {
         [$space, $type, $instance] = explode('.', $this->getFrom());
 
-        return gmp_strval(gmp_init($instance, 10), 16);
+        return Math::gmpDecHex($instance);
     }
 
     /**
@@ -162,7 +163,7 @@ class Transfer extends BaseOperation
     {
         [$space, $type, $instance] = explode('.', $this->getTo());
 
-        return gmp_strval(gmp_init($instance, 10), 16);
+        return Math::gmpDecHex($instance);
     }
 
     /**

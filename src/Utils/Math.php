@@ -27,7 +27,7 @@ class Math
      */
     public static function reverseBytesLong(string $number): string
     {
-        $number = gmp_strval(gmp_init($number, 10), 16);
+        $number = self::gmpDecHex($number);
         if (strlen($number) % 2 !== 0) {
             $number = '0' . $number;
         }
@@ -98,5 +98,10 @@ class Math
     {
         $bin = hex2bin($string);
         return unpack('C*', $bin);
+    }
+
+    public static function gmpDecHex($number): string
+    {
+        return gmp_strval(gmp_init($number, 10), 16);
     }
 }

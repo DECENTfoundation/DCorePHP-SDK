@@ -3,6 +3,7 @@
 namespace DCorePHP\Model;
 
 use DCorePHP\Exception\ValidationException;
+use DCorePHP\Utils\Math;
 use Symfony\Component\Validator\Constraints\Regex;
 use Symfony\Component\Validator\Validation;
 
@@ -66,7 +67,7 @@ class ChainObject
     {
         [$space, $type, $instance] = explode('.', $this->getId());
 
-        return str_pad(gmp_strval(gmp_init($instance, 10), 16), 2, '0', STR_PAD_LEFT);
+        return str_pad(Math::gmpDecHex($instance), 2, '0', STR_PAD_LEFT);
     }
 
     /**
@@ -76,9 +77,9 @@ class ChainObject
     {
         [$space, $type, $instance] = explode('.', $this->getId());
 
-        return gmp_strval(gmp_init($instance, 10), 16) . str_pad(
-            str_pad(gmp_strval(gmp_init($type, 10), 16), 2, '0', STR_PAD_LEFT) . str_pad(gmp_strval(gmp_init($space, 10), 16), 2, '0', STR_PAD_LEFT),
-            16 - strlen(gmp_strval(gmp_init($instance, 10), 16)),
+        return Math::gmpDecHex($instance) . str_pad(
+            str_pad(Math::gmpDecHex($type), 2, '0', STR_PAD_LEFT) . str_pad(Math::gmpDecHex($space), 2, '0', STR_PAD_LEFT),
+            16 - strlen(Math::gmpDecHex($instance)),
             '0',
             STR_PAD_LEFT
         );

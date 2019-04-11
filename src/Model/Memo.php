@@ -159,8 +159,8 @@ class Memo
             '01',
             PublicKey::fromWif($this->getFrom()->encode())->toCompressedPublicKey(),
             PublicKey::fromWif($this->getTo()->encode())->toCompressedPublicKey(),
-            str_pad(gmp_strval(gmp_init(Math::reverseBytesLong($this->getNonce()), 10), 16), 16, '0', STR_PAD_LEFT),
-            gmp_strval(gmp_init(strlen($this->getMessage()) / 2, 10), 16) . $this->getMessage(),
+            str_pad(Math::gmpDecHex(Math::reverseBytesLong($this->getNonce())), 16, '0', STR_PAD_LEFT),
+            Math::gmpDecHex(strlen($this->getMessage()) / 2) . $this->getMessage(),
         ]);
     }
 }
