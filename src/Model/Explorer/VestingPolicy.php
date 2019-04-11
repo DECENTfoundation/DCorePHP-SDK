@@ -7,28 +7,28 @@ namespace DCorePHP\Model\Explorer;
 class VestingPolicy
 {
 
-    /** @var int */
-    private $vestingSeconds;
     /** @var string */
+    private $vestingSeconds;
+    /** @var \DateTime */
     private $startClaim;
     /** @var string */
     private $coinSecondsEarned;
-    /** @var string */
+    /** @var \DateTime */
     private $coinSecondsEarnedLastUpdate;
 
     /**
-     * @return int
+     * @return string
      */
-    public function getVestingSeconds(): int
+    public function getVestingSeconds(): string
     {
         return $this->vestingSeconds;
     }
 
     /**
-     * @param int $vestingSeconds
+     * @param string $vestingSeconds
      * @return VestingPolicy
      */
-    public function setVestingSeconds(int $vestingSeconds): VestingPolicy
+    public function setVestingSeconds(string $vestingSeconds): VestingPolicy
     {
         $this->vestingSeconds = $vestingSeconds;
 
@@ -36,20 +36,21 @@ class VestingPolicy
     }
 
     /**
-     * @return string
+     * @return \DateTime
      */
-    public function getStartClaim(): string
+    public function getStartClaim(): \DateTime
     {
         return $this->startClaim;
     }
 
     /**
-     * @param string $startClaim
+     * @param \DateTime|string $startClaim
      * @return VestingPolicy
+     * @throws \Exception
      */
-    public function setStartClaim(string $startClaim): VestingPolicy
+    public function setStartClaim($startClaim): VestingPolicy
     {
-        $this->startClaim = $startClaim;
+        $this->startClaim = $startClaim instanceof \DateTime ? $startClaim : new \DateTime($startClaim);
 
         return $this;
     }
@@ -74,20 +75,21 @@ class VestingPolicy
     }
 
     /**
-     * @return string
+     * @return \DateTime
      */
-    public function getCoinSecondsEarnedLastUpdate(): string
+    public function getCoinSecondsEarnedLastUpdate(): \DateTime
     {
         return $this->coinSecondsEarnedLastUpdate;
     }
 
     /**
-     * @param string $coinSecondsEarnedLastUpdate
+     * @param \DateTime|string $coinSecondsEarnedLastUpdate
      * @return VestingPolicy
+     * @throws \Exception
      */
-    public function setCoinSecondsEarnedLastUpdate(string $coinSecondsEarnedLastUpdate): VestingPolicy
+    public function setCoinSecondsEarnedLastUpdate($coinSecondsEarnedLastUpdate): VestingPolicy
     {
-        $this->coinSecondsEarnedLastUpdate = $coinSecondsEarnedLastUpdate;
+        $this->coinSecondsEarnedLastUpdate = $coinSecondsEarnedLastUpdate instanceof \DateTime ? $coinSecondsEarnedLastUpdate : new \DateTime($coinSecondsEarnedLastUpdate);
 
         return $this;
     }
