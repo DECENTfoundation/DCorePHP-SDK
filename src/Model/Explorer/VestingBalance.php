@@ -1,73 +1,88 @@
 <?php
 
-
 namespace DCorePHP\Model\Explorer;
 
+use DCorePHP\Model\Asset\AssetAmount;
+use DCorePHP\Model\ChainObject;
 
 class VestingBalance
 {
-    /** @var string */
+    /** @var ChainObject */
     private $id;
-    /** @var string */
+    /** @var ChainObject */
     private $owner;
-    /** @var Asset */
+    /** @var AssetAmount */
     private $balance;
     /** @var int */
     private $policyNumber;
     /** @var VestingPolicy */
     private $policy;
 
+    public function __construct()
+    {
+        $this->balance = new AssetAmount();
+        $this->policy = new VestingPolicy();
+    }
+
     /**
-     * @return string
+     * @return ChainObject
      */
-    public function getId(): string
+    public function getId(): ChainObject
     {
         return $this->id;
     }
 
     /**
-     * @param string $id
+     * @param ChainObject|string $id
      * @return VestingBalance
+     * @throws \DCorePHP\Exception\ValidationException
      */
-    public function setId(string $id): VestingBalance
+    public function setId($id): VestingBalance
     {
+        if (is_string($id)) {
+            $id = new ChainObject($id);
+        }
         $this->id = $id;
 
         return $this;
     }
 
     /**
-     * @return string
+     * @return ChainObject
      */
-    public function getOwner(): string
+    public function getOwner(): ChainObject
     {
         return $this->owner;
     }
 
     /**
-     * @param string $owner
+     * @param ChainObject|string $owner
      * @return VestingBalance
+     * @throws \DCorePHP\Exception\ValidationException
      */
-    public function setOwner(string $owner): VestingBalance
+    public function setOwner($owner): VestingBalance
     {
+        if (is_string($owner)) {
+            $owner = new ChainObject($owner);
+        }
         $this->owner = $owner;
 
         return $this;
     }
 
     /**
-     * @return Asset
+     * @return AssetAmount
      */
-    public function getBalance(): Asset
+    public function getBalance(): AssetAmount
     {
         return $this->balance;
     }
 
     /**
-     * @param Asset $balance
+     * @param AssetAmount $balance
      * @return VestingBalance
      */
-    public function setBalance(Asset $balance): VestingBalance
+    public function setBalance(AssetAmount $balance): VestingBalance
     {
         $this->balance = $balance;
 
