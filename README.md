@@ -1,4 +1,7 @@
-# DCorePHP SDK
+# DCore SDK for PHP
+
+Set of APIs for accessing the DCore Blockchain.<br>
+If you are looking for other platforms you can find info [below](#official-dcore-sdks-for-other-platforms).
 
 ## Requirements
 
@@ -151,3 +154,9 @@ docker-compose up -d
 docker-compose exec php composer install --dev --prefer-dist --optimize-autoloader
 docker-compose exec php ./vendor/bin/phpunit --bootstrap vendor/autoload.php tests
 ```
+
+## Official DCore SDKs for other platforms
+
+- [iOS/Swift](https://github.com/DECENTfoundation/DCoreSwift-SDK)
+- [Android/Java/Kotlin](https://github.com/DECENTfoundation/DCoreKt-SDK)
+- [JavaScript/TypeScript/Node.js](https://github.com/DECENTfoundation/DCoreJS-SDK)
