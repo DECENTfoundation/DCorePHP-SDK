@@ -40,6 +40,8 @@ composer require decentfoundation/dcorephp-sdk
 
 ## Usage
 
+You can find example project with SDK usage [here](https://github.com/DECENTfoundation/DCore-SDK-Examples/tree/master/sdk-php).
+
 ### DCore API initialization
 
 ```php
