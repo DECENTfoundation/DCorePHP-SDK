@@ -3,6 +3,7 @@
 namespace DCorePHP\Model;
 
 use DCorePHP\Model\Asset\AssetAmount;
+use DCorePHP\Utils\Math;
 
 class RegionalPrice
 {
@@ -71,7 +72,7 @@ class RegionalPrice
     {
         return implode('', [
             implode('', array_reverse(str_split(
-                str_pad(dechex($this->getRegion()), 8, '0', STR_PAD_LEFT),
+                str_pad(Math::gmpDecHex($this->getRegion()), 8, '0', STR_PAD_LEFT),
                 2
             ))),
             $this->getPrice()->toBytes()

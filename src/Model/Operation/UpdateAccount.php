@@ -8,6 +8,7 @@ use DCorePHP\Model\Authority;
 use DCorePHP\Model\BaseOperation;
 use DCorePHP\Model\ChainObject;
 use DCorePHP\Model\Options;
+use DCorePHP\Utils\Math;
 use Exception;
 use Symfony\Component\PropertyAccess\Exception\NoSuchPropertyException;
 
@@ -189,8 +190,8 @@ class UpdateAccount extends BaseOperation
             $this->getTypeBytes(),
             $this->getFee()->toBytes(),
             $this->getAccountId() ? $this->getAccountId()->toBytes() : '00',
-            $this->getOwner() ? str_pad(dechex(count($this->getOwner()->getKeyAuths())), 2, '0', STR_PAD_LEFT) . $this->getOwner()->toBytes() : '00',
-            $this->getActive() ? str_pad(dechex(count($this->getActive()->getKeyAuths())), 2, '0', STR_PAD_LEFT) . $this->getActive()->toBytes() : '00',
+            $this->getOwner() ? str_pad(Math::gmpDecHex(count($this->getOwner()->getKeyAuths())), 2, '0', STR_PAD_LEFT) . $this->getOwner()->toBytes() : '00',
+            $this->getActive() ? str_pad(Math::gmpDecHex(count($this->getActive()->getKeyAuths())), 2, '0', STR_PAD_LEFT) . $this->getActive()->toBytes() : '00',
             $this->getOptions() ? '01' . $this->getOptions()->toBytes() : '00',
             '00',
         ]);

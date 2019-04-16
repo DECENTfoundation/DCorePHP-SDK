@@ -70,7 +70,7 @@ class CustomOperation extends BaseOperation
             implode('', array_map(function (ChainObject $auth) {
                 return $auth->toBytes();
             }, $this->getRequiredAuths())),
-            str_pad(dechex(Math::reverseBytesShort($this->getId())), 4, '0', STR_PAD_LEFT),
+            str_pad(Math::gmpDecHex(Math::reverseBytesShort($this->getId())), 4, '0', STR_PAD_LEFT),
             // Data size
             Math::writeUnsignedVarIntHex(sizeof(Math::hexToByteArray($this->getData()))),
             $this->getData()

@@ -3,6 +3,7 @@
 namespace DCorePHP\Model;
 
 use DCorePHP\Model\Asset\AssetAmount;
+use DCorePHP\Utils\Math;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 
@@ -91,7 +92,7 @@ abstract class BaseOperation
      */
     protected function getTypeBytes(): string
     {
-        return str_pad(dechex(static::OPERATION_TYPE), 2, '0', STR_PAD_LEFT);
+        return str_pad(Math::gmpDecHex(static::OPERATION_TYPE), 2, '0', STR_PAD_LEFT);
     }
 
     /**

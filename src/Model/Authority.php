@@ -3,6 +3,7 @@
 namespace DCorePHP\Model;
 
 use DCorePHP\Model\Subscription\AuthMap;
+use DCorePHP\Utils\Math;
 
 class Authority
 {
@@ -101,11 +102,11 @@ class Authority
     {
         return implode('', [
             implode('', array_reverse(str_split(
-                str_pad(dechex($this->getWeightThreshold()), 8, '0', STR_PAD_LEFT),
+                str_pad(Math::gmpDecHex($this->getWeightThreshold()), 8, '0', STR_PAD_LEFT),
                 2
             ))),
             '00',
-            str_pad(dechex(count($this->getKeyAuths())), 2, '0', STR_PAD_LEFT),
+            str_pad(Math::gmpDecHex(count($this->getKeyAuths())), 2, '0', STR_PAD_LEFT),
             implode('', array_map(function (AuthMap $authMap) {
                 return $authMap->toBytes();
             }, $this->getKeyAuths()))

@@ -4,6 +4,7 @@ namespace DCorePHP\Model;
 
 use DCorePHP\Crypto\ECKeyPair;
 use DCorePHP\Crypto\PrivateKey;
+use DCorePHP\Utils\Math;
 
 class Transaction
 {
@@ -122,11 +123,11 @@ class Transaction
     {
         return implode('', [
             implode('', [ // block data bytes
-                implode('', array_reverse(str_split(str_pad(dechex($this->getDynamicGlobalProps()->getRefBlockNum()), 4, '0', STR_PAD_LEFT), 2))),
-                implode('', array_reverse(str_split(str_pad(dechex($this->getDynamicGlobalProps()->getRefBlockPrefix()), 8, '0', STR_PAD_LEFT), 2))),
-                implode('', array_reverse(str_split(str_pad(dechex($this->getDynamicGlobalProps()->getExpiration()->format('U')), 8, '0', STR_PAD_LEFT), 2))),
+                implode('', array_reverse(str_split(str_pad(Math::gmpDecHex($this->getDynamicGlobalProps()->getRefBlockNum()), 4, '0', STR_PAD_LEFT), 2))),
+                implode('', array_reverse(str_split(str_pad(Math::gmpDecHex($this->getDynamicGlobalProps()->getRefBlockPrefix()), 8, '0', STR_PAD_LEFT), 2))),
+                implode('', array_reverse(str_split(str_pad(Math::gmpDecHex($this->getDynamicGlobalProps()->getExpiration()->format('U')), 8, '0', STR_PAD_LEFT), 2))),
             ]),
-            str_pad(dechex(\count($this->getOperations())), 2, '0', STR_PAD_LEFT), // number of operations
+            str_pad(Math::gmpDecHex(\count($this->getOperations())), 2, '0', STR_PAD_LEFT), // number of operations
             $this->getOperations() ? implode('', array_map(static function (BaseOperation $transfer) { // operation bytes
                 return $transfer->toBytes();
             }, $this->getOperations())) : '00',

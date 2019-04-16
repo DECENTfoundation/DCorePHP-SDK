@@ -5,6 +5,7 @@ namespace DCorePHP\Crypto;
 use BitcoinPHP\BitcoinECDSA\BitcoinECDSA;
 use DCorePHP\DCoreSdk;
 use DCorePHP\Exception\ValidationException;
+use DCorePHP\Utils\Math;
 use kornrunner\Secp256k1;
 use kornrunner\Serializer\HexSignatureSerializer;
 use Mdanter\Ecc\Crypto\Signature\SignatureInterface;
@@ -155,7 +156,7 @@ class ECKeyPair
             throw new \Exception('Could not construct a recoverable keyPair. This should never happen.');
         }
 
-        $canonicalSignature = dechex($finalRecId + 31) . $signatureHex;
+        $canonicalSignature = Math::gmpDecHex($finalRecId + 31) . $signatureHex;
         $sigData = str_split($canonicalSignature, 2);
 
         if ((hexdec($sigData[0]) & 0x80) !== 0 ||
