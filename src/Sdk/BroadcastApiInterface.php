@@ -4,15 +4,19 @@ namespace DCorePHP\Sdk;
 
 use DCorePHP\Crypto\ECKeyPair;
 use DCorePHP\DCoreApi;
+use DCorePHP\Exception\InvalidApiCallException;
 use DCorePHP\Model\BaseOperation;
 use DCorePHP\Model\Transaction;
 use DCorePHP\Model\TransactionConfirmation;
+use WebSocket\BadOpcodeException;
 
 interface BroadcastApiInterface
 {
     /**
      * Broadcast transaction to DCore
      * @param Transaction $transaction to broadcast
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
      */
     public function broadcast(Transaction $transaction): void;
 
@@ -21,6 +25,7 @@ interface BroadcastApiInterface
      * @param ECKeyPair $privateKey key
      * @param BaseOperation[] $operations to be submitted to DCore
      * @param int $expiration transaction expiration in seconds, after the expiry the transaction is removed from recent pool and will be dismissed if not included in DCore block
+     * @throws \Exception
      */
     public function broadcastOperationsWithECKeyPair(ECKeyPair $privateKey, array $operations, int $expiration = DCoreApi::TRANSACTION_EXPIRATION): void;
 
@@ -29,6 +34,7 @@ interface BroadcastApiInterface
      * @param ECKeyPair $privateKey key
      * @param BaseOperation $operation to be submitted to DCore
      * @param int $expiration transaction expiration in seconds, after the expiry the transaction is removed from recent pool and will be dismissed if not included in DCore block
+     * @throws \Exception
      */
     public function broadcastOperationWithECKeyPair(ECKeyPair $privateKey, BaseOperation $operation, int $expiration = DCoreApi::TRANSACTION_EXPIRATION): void;
 
@@ -37,6 +43,7 @@ interface BroadcastApiInterface
      * @param string $privateKey
      * @param BaseOperation[] $operations to be submitted to DCore
      * @param int $expiration transaction expiration in seconds, after the expiry the transaction is removed from recent pool and will be dismissed if not included in DCore block
+     * @throws \Exception
      */
     public function broadcastOperationsWithPrivateKey(string $privateKey, array $operations, int $expiration = DCoreApi::TRANSACTION_EXPIRATION): void;
 
@@ -45,6 +52,7 @@ interface BroadcastApiInterface
      * @param string $privateKey
      * @param BaseOperation $operation to be submitted to DCore
      * @param int $expiration transaction expiration in seconds, after the expiry the transaction is removed from recent pool and will be dismissed if not included in DCore block
+     * @throws \Exception
      */
     public function broadcastOperationWithPrivateKey(string $privateKey, BaseOperation $operation, int $expiration = DCoreApi::TRANSACTION_EXPIRATION): void;
 
@@ -53,7 +61,7 @@ interface BroadcastApiInterface
      * @param Transaction $transaction to broadcast
      *
      * @throws \DCorePHP\Exception\InvalidApiCallException
-     * @throws \WebSocket\BadOpcodeException
+     * @throws BadOpcodeException
      * @return TransactionConfirmation
      */
     public function broadcastWithCallback(Transaction $transaction): ?TransactionConfirmation;
@@ -88,7 +96,7 @@ interface BroadcastApiInterface
      *
      * @throws \Exception
      * @throws \DCorePHP\Exception\InvalidApiCallException
-     * @throws \WebSocket\BadOpcodeException
+     * @throws BadOpcodeException
      * @return TransactionConfirmation
      */
     public function broadcastOperationsWithPrivateKeyWithCallback(string $privateKey, array $operations, int $expiration = DCoreApi::TRANSACTION_EXPIRATION): ?TransactionConfirmation;
@@ -101,7 +109,7 @@ interface BroadcastApiInterface
      *
      * @throws \Exception
      * @throws \DCorePHP\Exception\InvalidApiCallException
-     * @throws \WebSocket\BadOpcodeException
+     * @throws BadOpcodeException
      * @return TransactionConfirmation
      */
     public function broadcastOperationWithPrivateKeyWithCallback(string $privateKey, BaseOperation $operation, int $expiration = DCoreApi::TRANSACTION_EXPIRATION): ?TransactionConfirmation;

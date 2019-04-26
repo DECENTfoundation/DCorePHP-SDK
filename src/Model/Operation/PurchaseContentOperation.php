@@ -40,7 +40,7 @@ class PurchaseContentOperation extends BaseOperation
             ->setConsumer($credentials->getAccount())
             ->setPrice($content->getPriceNone())
             ->setPublicElGamal(parse_url($content->getURI(), PHP_URL_SCHEME) !== 'ipfs' ? new PubKey() : (new PubKey())->setPubKey($credentials->getKeyPair()->getPrivate()->toElGamalPublicKey()))
-            ->setRegionCode(ContentObject::REGIONS_NONE_ID);
+            ->setRegionCode(ContentObject::REGIONS_ALL_ID);
     }
 
     /**

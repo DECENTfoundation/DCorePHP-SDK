@@ -2,10 +2,10 @@
 
 namespace DCorePHP\Sdk;
 
-use DCorePHP\Model\Address;
+use DCorePHP\Crypto\Address;
 use DCorePHP\Model\Asset\AssetAmount;
 use DCorePHP\Model\BaseOperation;
-use DCorePHP\Model\OperationType;
+use DCorePHP\Model\ChainObject;
 use DCorePHP\Model\ProcessedTransaction;
 use DCorePHP\Model\Transaction;
 
@@ -44,12 +44,12 @@ interface ValidationApiInterface
     /**
      * Verifies if the signers have enough authority to authorize an account.
      *
-     * @param string $account name or object id
+     * @param string $nameOrId name or object id
      * @param Address[] $keys signer keys
      *
      * @return bool if the signers have enough authority
      */
-    public function verifyAccountAuthority(string $account, array $keys): bool;
+    public function verifyAccountAuthority(string $nameOrId, array $keys): bool;
 
     /**
      * Validates a transaction against the current state without broadcasting it on the network.
@@ -65,25 +65,28 @@ interface ValidationApiInterface
      *
      * @param BaseOperation[] $op of operations
      *
+     * @param ChainObject $assetId
      * @return AssetAmount[] of fee asset amounts
      */
-    public function getFees(array $op): array;
+    public function getFees(array $op, ChainObject $assetId = null): array;
 
     /**
      * Returns fee for operation.
      *
      * @param BaseOperation $op
      *
+     * @param ChainObject $assetId
      * @return AssetAmount
      */
-    public function getFee(BaseOperation $op): AssetAmount;
+    public function getFee(BaseOperation $op, ChainObject $assetId = null): AssetAmount;
 
     /**
      * Returns fee for operation type, not valid for operation per size fees:
      *
-     * @param OperationType $type
+     * @param $type
      *
+     * @param ChainObject|null $assetId
      * @return AssetAmount
      */
-    public function getFeeByType(OperationType $type): AssetAmount;
+    public function getFeeByType($type, ChainObject $assetId = null): AssetAmount;
 }

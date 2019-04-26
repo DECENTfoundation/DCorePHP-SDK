@@ -50,7 +50,7 @@ class HistoryApi extends BaseApi implements HistoryApiInterface
         string $fromBlock = '0',
         string $toBlock = '0',
         string $startOffset = '0',
-        int $limit = 0
+        int $limit = 100
     ): array {
         return $this->dcoreApi->requestWebsocket(History::class, new SearchAccountBalanceHistory($accountId, $assets, $recipientAccount, $fromBlock, $toBlock, $startOffset, $limit));
     }

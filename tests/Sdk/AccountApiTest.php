@@ -12,11 +12,10 @@ use DCorePHP\Model\BrainKeyInfo;
 use DCorePHP\Model\ChainObject;
 use DCorePHP\Model\ElGamalKeys;
 use DCorePHP\Model\FullAccount;
-use DCorePHP\Model\Operation\CreateAccountParameters;
-use DCorePHP\Model\Operation\UpdateAccountParameters;
 use DCorePHP\Model\Options;
 use DCorePHP\Model\TransactionDetail;
 use DCorePHP\Net\Model\Request\BaseRequest;
+use DCorePHP\Net\Model\Request\BroadcastTransaction;
 use DCorePHP\Net\Model\Request\BroadcastTransactionWithCallback;
 use DCorePHP\Net\Model\Request\Database;
 use DCorePHP\Net\Model\Request\GetAccountById;
@@ -24,6 +23,7 @@ use DCorePHP\Net\Model\Request\GetAccountByName;
 use DCorePHP\Net\Model\Request\GetAccountCount;
 use DCorePHP\Net\Model\Request\GetAccountReferences;
 use DCorePHP\Net\Model\Request\GetAccountsById;
+use DCorePHP\Net\Model\Request\GetChainId;
 use DCorePHP\Net\Model\Request\GetDynamicGlobalProperties;
 use DCorePHP\Net\Model\Request\GetFullAccounts;
 use DCorePHP\Net\Model\Request\GetKeyReferences;
@@ -98,19 +98,19 @@ class AccountApiTest extends DCoreSDKTest
                 ->withConsecutive(
                     [$this->callback(function(BaseRequest $req) { return $req->setId(1)->toJson() === '{"jsonrpc":"2.0","id":1,"method":"call","params":[1,"login",["",""]]}'; })],
                     [$this->callback(function(BaseRequest $req) { return $req->setId(2)->toJson() === '{"jsonrpc":"2.0","id":2,"method":"call","params":[1,"database",[]]}'; })],
-                    [$this->callback(function(BaseRequest $req) { return $req->setId(3)->toJson() === '{"jsonrpc":"2.0","id":3,"method":"call","params":[6,"get_account_by_name",["u961279ec8b7ae7bd62f304f7c1c3d345"]]}'; })]
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(3)->toJson() === '{"jsonrpc":"2.0","id":3,"method":"call","params":[6,"get_account_by_name",["public-account-9"]]}'; })]
                 )
                 ->will($this->onConsecutiveCalls(
                     Login::responseToModel(new BaseResponse('{"id":1,"result":true}')),
                     Database::responseToModel(new BaseResponse('{"id":2,"result":6}')),
-                    GetAccountByName::responseToModel(new BaseResponse('{"id":3,"result":{"id":"1.2.34","registrar":"1.2.15","name":"u961279ec8b7ae7bd62f304f7c1c3d345","owner":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz",1]]},"active":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz",1]]},"options":{"memo_key":"DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz","voting_account":"1.2.3","num_miner":0,"votes":["0:5","0:8"],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":0,"asset_id":"1.3.0"},"subscription_period":0},"rights_to_publish":{"is_publishing_manager":false,"publishing_rights_received":[],"publishing_rights_forwarded":[]},"statistics":"2.5.34","top_n_control_flags":0}}'))
+                    GetAccountByName::responseToModel(new BaseResponse('{"id":3,"result":{"id":"1.2.27","registrar":"1.2.2","name":"public-account-9","owner":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT51ojM7TUGVpFNUJWX8wi5dYp4iA4brRG16zWfcteVZRZHnkWCF",1]]},"active":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6TjLhr8uESvgtxrbWuXNAN3vcqzBMw5eyEup3PMiD2gnVxeuTb",1]]},"options":{"memo_key":"DCT6TjLhr8uESvgtxrbWuXNAN3vcqzBMw5eyEup3PMiD2gnVxeuTb","voting_account":"1.2.3","num_miner":0,"votes":["0:3"],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":0,"asset_id":"1.3.0"},"subscription_period":0},"rights_to_publish":{"is_publishing_manager":false,"publishing_rights_received":[],"publishing_rights_forwarded":[]},"statistics":"2.5.27","top_n_control_flags":0}}'))
                 ));
         }
 
-        $account = $this->sdk->getAccountApi()->getByName('u961279ec8b7ae7bd62f304f7c1c3d345');
+        $account = $this->sdk->getAccountApi()->getByName(DCoreSDKTest::ACCOUNT_NAME_1);
 
         $this->assertInstanceOf(Account::class, $account);
-        $this->assertEquals('u961279ec8b7ae7bd62f304f7c1c3d345', $account->getName());
+        $this->assertEquals(DCoreSDKTest::ACCOUNT_NAME_1, $account->getName());
     }
 
     public function testGetByNameOrId()
@@ -182,6 +182,9 @@ class AccountApiTest extends DCoreSDKTest
         $this->assertGreaterThanOrEqual(0, $count);
     }
 
+    /**
+     * @throws \DCorePHP\Exception\ValidationException
+     */
     public function testFindAllReferencesByKeys(): void
     {
         if ($this->websocketMock) {
@@ -191,12 +194,12 @@ class AccountApiTest extends DCoreSDKTest
                 ->withConsecutive(
                     [$this->callback(function(BaseRequest $req) { return $req->setId(1)->toJson() === '{"jsonrpc":"2.0","id":1,"method":"call","params":[1,"login",["",""]]}'; })],
                     [$this->callback(function(BaseRequest $req) { return $req->setId(2)->toJson() === '{"jsonrpc":"2.0","id":2,"method":"call","params":[1,"database",[]]}'; })],
-                    [$this->callback(function(BaseRequest $req) { return $req->setId(3)->toJson() === '{"jsonrpc":"2.0","id":3,"method":"call","params":[6,"get_key_references",[["DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz"]]]}'; })]
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(3)->toJson() === '{"jsonrpc":"2.0","id":3,"method":"call","params":[6,"get_key_references",[["DCT6TjLhr8uESvgtxrbWuXNAN3vcqzBMw5eyEup3PMiD2gnVxeuTb"]]]}'; })]
                 )
                 ->will($this->onConsecutiveCalls(
                     Login::responseToModel(new BaseResponse('{"id":1,"result":true}')),
                     Database::responseToModel(new BaseResponse('{"id":2,"result":6}')),
-                    GetKeyReferences::responseToModel(new BaseResponse('{"id":3,"result":[["1.2.34","1.2.775","1.2.12319","1.2.12342","1.2.12343","1.2.12344","1.2.12350","1.2.12354","1.2.12355","1.2.12357","1.2.12359","1.2.12361","1.2.12363","1.2.12365","1.2.12367","1.2.12370","1.2.12376","1.2.12378","1.2.12379","1.2.12380","1.2.12381","1.2.12382","1.2.12384","1.2.12386","1.2.12388","1.2.12390","1.2.12393","1.2.12395","1.2.12397","1.2.12398","1.2.12400","1.2.12401","1.2.12403","1.2.12404","1.2.12405","1.2.12406","1.2.12408","1.2.12410","1.2.12412","1.2.12414","1.2.12416","1.2.12418","1.2.12420","1.2.12422","1.2.12424","1.2.12426","1.2.12428","1.2.12430","1.2.12432","1.2.12434","1.2.12436","1.2.12438","1.2.12440","1.2.12443","1.2.12445","1.2.12448","1.2.12450","1.2.12451","1.2.12453","1.2.12454","1.2.12455","1.2.12457","1.2.12459","1.2.12461","1.2.12463","1.2.12466","1.2.12468","1.2.12470","1.2.12472","1.2.12474","1.2.12476","1.2.12478","1.2.12480","1.2.12483","1.2.12485","1.2.12498","1.2.12508","1.2.12509","1.2.12511","1.2.12513","1.2.12516","1.2.12518","1.2.12520","1.2.12522","1.2.12526","1.2.12529","1.2.12531","1.2.12533","1.2.12535","1.2.12537","1.2.12539","1.2.12541","1.2.12543","1.2.12545","1.2.12547","1.2.12550","1.2.12552","1.2.12554","1.2.12556","1.2.12558","1.2.12560","1.2.12563","1.2.12565","1.2.12567","1.2.12569","1.2.12574","1.2.12576","1.2.12578","1.2.12580","1.2.12582","1.2.12583","1.2.12584","1.2.12587","1.2.12599","1.2.12601","1.2.12626","1.2.12628","1.2.12631","1.2.12633","1.2.12635","1.2.12637","1.2.12643","1.2.12646","1.2.12659","1.2.12661","1.2.12663","1.2.12665","1.2.12670","1.2.12671","1.2.12672"]]}'))
+                    GetKeyReferences::responseToModel(new BaseResponse('{"id":3,"result":[["1.2.27","1.2.51","1.2.52","1.2.53","1.2.132","1.2.133","1.2.135","1.2.137","1.2.139","1.2.141","1.2.143","1.2.145","1.2.147","1.2.148","1.2.149","1.2.150","1.2.151","1.2.153"]]}'))
                 ));
         }
 
@@ -243,19 +246,19 @@ class AccountApiTest extends DCoreSDKTest
                 ->withConsecutive(
                     [$this->callback(function(BaseRequest $req) { return $req->setId(1)->toJson() === '{"jsonrpc":"2.0","id":1,"method":"call","params":[1,"login",["",""]]}'; })],
                     [$this->callback(function(BaseRequest $req) { return $req->setId(2)->toJson() === '{"jsonrpc":"2.0","id":2,"method":"call","params":[1,"database",[]]}'; })],
-                    [$this->callback(function(BaseRequest $req) { return $req->setId(3)->toJson() === '{"jsonrpc":"2.0","id":3,"method":"call","params":[6,"get_objects",[["1.2.34"]]]}'; })]
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(3)->toJson() === '{"jsonrpc":"2.0","id":3,"method":"call","params":[6,"get_objects",[["1.2.27"]]]}'; })]
                 )
                 ->will($this->onConsecutiveCalls(
                     Login::responseToModel(new BaseResponse('{"id":1,"result":true}')),
                     Database::responseToModel(new BaseResponse('{"id":2,"result":6}')),
-                    GetAccountsById::responseToModel(new BaseResponse('{"id":3,"result":[{"id":"1.2.34","registrar":"1.2.15","name":"u961279ec8b7ae7bd62f304f7c1c3d345","owner":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz",1]]},"active":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz",1]]},"options":{"memo_key":"DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz","voting_account":"1.2.3","num_miner":0,"votes":["0:5","0:8"],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":0,"asset_id":"1.3.0"},"subscription_period":0},"rights_to_publish":{"is_publishing_manager":false,"publishing_rights_received":[],"publishing_rights_forwarded":[]},"statistics":"2.5.34","top_n_control_flags":0}]}'))
+                    GetAccountsById::responseToModel(new BaseResponse('{"id":3,"result":[{"id":"1.2.27","registrar":"1.2.2","name":"public-account-9","owner":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT51ojM7TUGVpFNUJWX8wi5dYp4iA4brRG16zWfcteVZRZHnkWCF",1]]},"active":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6TjLhr8uESvgtxrbWuXNAN3vcqzBMw5eyEup3PMiD2gnVxeuTb",1]]},"options":{"memo_key":"DCT6TjLhr8uESvgtxrbWuXNAN3vcqzBMw5eyEup3PMiD2gnVxeuTb","voting_account":"1.2.3","num_miner":0,"votes":["0:3"],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":0,"asset_id":"1.3.0"},"subscription_period":0},"rights_to_publish":{"is_publishing_manager":false,"publishing_rights_received":[],"publishing_rights_forwarded":[]},"statistics":"2.5.27","top_n_control_flags":0}]}'))
                 ));
         }
 
         /** @var Account[] $accounts */
-        $accounts = $this->sdk->getAccountApi()->getAll([new ChainObject('1.2.34')]);
-        $this->assertEquals('1.2.34', $accounts[0]->getId());
-        $this->assertEquals('u961279ec8b7ae7bd62f304f7c1c3d345', $accounts[0]->getName());
+        $accounts = $this->sdk->getAccountApi()->getAll([new ChainObject(DCoreSDKTest::ACCOUNT_ID_1)]);
+        $this->assertEquals(DCoreSDKTest::ACCOUNT_ID_1, $accounts[0]->getId());
+        $this->assertEquals(DCoreSDKTest::ACCOUNT_NAME_1, $accounts[0]->getName());
     }
 
     /**
@@ -270,20 +273,20 @@ class AccountApiTest extends DCoreSDKTest
                 ->withConsecutive(
                     [$this->callback(function(BaseRequest $req) { return $req->setId(1)->toJson() === '{"jsonrpc":"2.0","id":1,"method":"call","params":[1,"login",["",""]]}'; })],
                     [$this->callback(function(BaseRequest $req) { return $req->setId(2)->toJson() === '{"jsonrpc":"2.0","id":2,"method":"call","params":[1,"database",[]]}'; })],
-                    [$this->callback(function(BaseRequest $req) { return $req->setId(3)->toJson() === '{"jsonrpc":"2.0","id":3,"method":"call","params":[6,"get_full_accounts",[["u961279ec8b7ae7bd62f304f7c1c3d345","1.2.34"],false]]}'; })]
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(3)->toJson() === '{"jsonrpc":"2.0","id":3,"method":"call","params":[6,"get_full_accounts",[["public-account-10","1.2.27"],false]]}'; })]
                 )
                 ->will($this->onConsecutiveCalls(
                     Login::responseToModel(new BaseResponse('{"id":1,"result":true}')),
                     Database::responseToModel(new BaseResponse('{"id":2,"result":6}')),
-                    GetFullAccounts::responseToModel(new BaseResponse('{"id":3,"result":[["1.2.34",{"account":{"id":"1.2.34","registrar":"1.2.15","name":"u961279ec8b7ae7bd62f304f7c1c3d345","owner":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz",1]]},"active":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz",1]]},"options":{"memo_key":"DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz","voting_account":"1.2.3","num_miner":0,"votes":["0:5","0:8"],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":0,"asset_id":"1.3.0"},"subscription_period":0},"rights_to_publish":{"is_publishing_manager":false,"publishing_rights_received":[],"publishing_rights_forwarded":[]},"statistics":"2.5.34","top_n_control_flags":0},"statistics":{"id":"2.5.34","owner":"1.2.34","most_recent_op":"2.8.115606","total_ops":2165,"total_core_in_orders":0,"pending_fees":0,"pending_vested_fees":0},"registrar_name":"decent","votes":[{"id":"1.4.6","miner_account":"1.2.9","last_aslot":10590863,"signing_key":"DCT5j2bMj7XVWLxUW7AXeMiYPambYFZfCcMroXDvbCfX1VoswcZG4","pay_vb":"1.9.3","vote_id":"0:5","total_votes":"25243546611","url":"","total_missed":478966,"last_confirmed_block_num":4516262,"vote_ranking":10},{"id":"1.4.9","miner_account":"1.2.12","last_aslot":10590873,"signing_key":"DCT5j2bMj7XVWLxUW7AXeMiYPambYFZfCcMroXDvbCfX1VoswcZG4","pay_vb":"1.9.8","vote_id":"0:8","total_votes":"727726339739","url":"","total_missed":477819,"last_confirmed_block_num":4516270,"vote_ranking":5}],"balances":[{"id":"2.4.29","owner":"1.2.34","asset_type":"1.3.0","balance":"18744844406"},{"id":"2.4.7564","owner":"1.2.34","asset_type":"1.3.44","balance":101},{"id":"2.4.7563","owner":"1.2.34","asset_type":"1.3.53","balance":979600000},{"id":"2.4.238","owner":"1.2.34","asset_type":"1.3.54","balance":"4764856000"}],"vesting_balances":[],"proposals":[]}],["u961279ec8b7ae7bd62f304f7c1c3d345",{"account":{"id":"1.2.34","registrar":"1.2.15","name":"u961279ec8b7ae7bd62f304f7c1c3d345","owner":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz",1]]},"active":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz",1]]},"options":{"memo_key":"DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz","voting_account":"1.2.3","num_miner":0,"votes":["0:5","0:8"],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":0,"asset_id":"1.3.0"},"subscription_period":0},"rights_to_publish":{"is_publishing_manager":false,"publishing_rights_received":[],"publishing_rights_forwarded":[]},"statistics":"2.5.34","top_n_control_flags":0},"statistics":{"id":"2.5.34","owner":"1.2.34","most_recent_op":"2.8.115606","total_ops":2165,"total_core_in_orders":0,"pending_fees":0,"pending_vested_fees":0},"registrar_name":"decent","votes":[{"id":"1.4.6","miner_account":"1.2.9","last_aslot":10590863,"signing_key":"DCT5j2bMj7XVWLxUW7AXeMiYPambYFZfCcMroXDvbCfX1VoswcZG4","pay_vb":"1.9.3","vote_id":"0:5","total_votes":"25243546611","url":"","total_missed":478966,"last_confirmed_block_num":4516262,"vote_ranking":10},{"id":"1.4.9","miner_account":"1.2.12","last_aslot":10590873,"signing_key":"DCT5j2bMj7XVWLxUW7AXeMiYPambYFZfCcMroXDvbCfX1VoswcZG4","pay_vb":"1.9.8","vote_id":"0:8","total_votes":"727726339739","url":"","total_missed":477819,"last_confirmed_block_num":4516270,"vote_ranking":5}],"balances":[{"id":"2.4.29","owner":"1.2.34","asset_type":"1.3.0","balance":"18744844406"},{"id":"2.4.7564","owner":"1.2.34","asset_type":"1.3.44","balance":101},{"id":"2.4.7563","owner":"1.2.34","asset_type":"1.3.53","balance":979600000},{"id":"2.4.238","owner":"1.2.34","asset_type":"1.3.54","balance":"4764856000"}],"vesting_balances":[],"proposals":[]}]]}'))
+                    GetFullAccounts::responseToModel(new BaseResponse('{"id":3,"result":[["1.2.27",{"account":{"id":"1.2.27","registrar":"1.2.2","name":"public-account-9","owner":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT51ojM7TUGVpFNUJWX8wi5dYp4iA4brRG16zWfcteVZRZHnkWCF",1]]},"active":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6TjLhr8uESvgtxrbWuXNAN3vcqzBMw5eyEup3PMiD2gnVxeuTb",1]]},"options":{"memo_key":"DCT6TjLhr8uESvgtxrbWuXNAN3vcqzBMw5eyEup3PMiD2gnVxeuTb","voting_account":"1.2.3","num_miner":0,"votes":["0:3"],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":0,"asset_id":"1.3.0"},"subscription_period":0},"rights_to_publish":{"is_publishing_manager":false,"publishing_rights_received":[],"publishing_rights_forwarded":[]},"statistics":"2.5.27","top_n_control_flags":0},"statistics":{"id":"2.5.27","owner":"1.2.27","most_recent_op":"2.8.1836364","total_ops":1336,"total_core_in_orders":0,"pending_fees":0,"pending_vested_fees":0},"registrar_name":"temp-account","votes":[{"id":"1.4.4","miner_account":"1.2.7","last_aslot":984345,"signing_key":"DCT51ojM7TUGVpFNUJWX8wi5dYp4iA4brRG16zWfcteVZRZHnkWCF","pay_vb":"1.9.4","vote_id":"0:3","total_votes":"1999062898072","url":"","total_missed":36110,"last_confirmed_block_num":587126,"vote_ranking":0}],"balances":[{"id":"2.4.13","owner":"1.2.27","asset_type":"1.3.0","balance":"995275624334"},{"id":"2.4.73","owner":"1.2.27","asset_type":"1.3.36","balance":990}],"vesting_balances":[],"proposals":[]}],["public-account-10",{"account":{"id":"1.2.28","registrar":"1.2.2","name":"public-account-10","owner":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT51ojM7TUGVpFNUJWX8wi5dYp4iA4brRG16zWfcteVZRZHnkWCF",1]]},"active":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT5PwcSiigfTPTwubadt85enxMFC18TtVoti3gnTbG7TN9f9R3Fp",1]]},"options":{"memo_key":"DCT5PwcSiigfTPTwubadt85enxMFC18TtVoti3gnTbG7TN9f9R3Fp","voting_account":"1.2.3","num_miner":0,"votes":["0:3"],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":0,"asset_id":"1.3.0"},"subscription_period":0},"rights_to_publish":{"is_publishing_manager":false,"publishing_rights_received":[],"publishing_rights_forwarded":[]},"statistics":"2.5.28","top_n_control_flags":0},"statistics":{"id":"2.5.28","owner":"1.2.28","most_recent_op":"2.8.1836359","total_ops":950,"total_core_in_orders":0,"pending_fees":0,"pending_vested_fees":0},"registrar_name":"temp-account","votes":[{"id":"1.4.4","miner_account":"1.2.7","last_aslot":984345,"signing_key":"DCT51ojM7TUGVpFNUJWX8wi5dYp4iA4brRG16zWfcteVZRZHnkWCF","pay_vb":"1.9.4","vote_id":"0:3","total_votes":"1999062898072","url":"","total_missed":36110,"last_confirmed_block_num":587126,"vote_ranking":0}],"balances":[{"id":"2.4.14","owner":"1.2.28","asset_type":"1.3.0","balance":"1003781973736"}],"vesting_balances":[],"proposals":[]}]]}'))
                 ));
         }
 
         /** @var FullAccount[] $accounts */
-        $accounts = $this->sdk->getAccountApi()->getFullAccounts(['u961279ec8b7ae7bd62f304f7c1c3d345', new ChainObject('1.2.34')]);
-        $this->assertEquals('1.2.15', $accounts['1.2.34']->getAccount()->getRegistrar());
-        $this->assertEquals('u961279ec8b7ae7bd62f304f7c1c3d345', $accounts['1.2.34']->getAccount()->getName());
-        $this->assertEquals('decent', $accounts['u961279ec8b7ae7bd62f304f7c1c3d345']->getRegistrarName());
+        $accounts = $this->sdk->getAccountApi()->getFullAccounts([DCoreSDKTest::ACCOUNT_NAME_2, new ChainObject(DCoreSDKTest::ACCOUNT_ID_1)]);
+        $this->assertEquals(DCoreSDKTest::ACCOUNT_ID_1, $accounts[DCoreSDKTest::ACCOUNT_ID_1]->getAccount()->getId());
+        $this->assertEquals(DCoreSDKTest::ACCOUNT_NAME_1, $accounts[DCoreSDKTest::ACCOUNT_ID_1]->getAccount()->getName());
+        $this->assertEquals(DCoreSDKTest::ACCOUNT_NAME_2, $accounts[DCoreSDKTest::ACCOUNT_NAME_2]->getAccount()->getName());
     }
 
     public function testGetAllByNames(): void
@@ -295,22 +298,22 @@ class AccountApiTest extends DCoreSDKTest
                 ->withConsecutive(
                     [$this->callback(function(BaseRequest $req) { return $req->setId(1)->toJson() === '{"jsonrpc":"2.0","id":1,"method":"call","params":[1,"login",["",""]]}'; })],
                     [$this->callback(function(BaseRequest $req) { return $req->setId(2)->toJson() === '{"jsonrpc":"2.0","id":2,"method":"call","params":[1,"database",[]]}'; })],
-                    [$this->callback(function(BaseRequest $req) { return $req->setId(3)->toJson() === '{"jsonrpc":"2.0","id":3,"method":"call","params":[6,"lookup_account_names",[["u961279ec8b7ae7bd62f304f7c1c3d345","u3a7b78084e7d3956442d5a4d439dad51"]]]}'; })]
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(3)->toJson() === '{"jsonrpc":"2.0","id":3,"method":"call","params":[6,"lookup_account_names",[["public-account-9","public-account-10"]]]}'; })]
                 )
                 ->will($this->onConsecutiveCalls(
                     Login::responseToModel(new BaseResponse('{"id":1,"result":true}')),
                     Database::responseToModel(new BaseResponse('{"id":2,"result":6}')),
-                    LookupAccountNames::responseToModel(new BaseResponse('{"id":3,"result":[{"id":"1.2.34","registrar":"1.2.15","name":"u961279ec8b7ae7bd62f304f7c1c3d345","owner":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz",1]]},"active":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz",1]]},"options":{"memo_key":"DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz","voting_account":"1.2.3","num_miner":0,"votes":["0:5","0:8"],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":0,"asset_id":"1.3.0"},"subscription_period":0},"rights_to_publish":{"is_publishing_manager":false,"publishing_rights_received":[],"publishing_rights_forwarded":[]},"statistics":"2.5.34","top_n_control_flags":0},{"id":"1.2.35","registrar":"1.2.15","name":"u3a7b78084e7d3956442d5a4d439dad51","owner":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6bVmimtYSvWQtwdrkVVQGHkVsTJZVKtBiUqf4YmJnrJPnk89QP",1]]},"active":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6bVmimtYSvWQtwdrkVVQGHkVsTJZVKtBiUqf4YmJnrJPnk89QP",1]]},"options":{"memo_key":"DCT6bVmimtYSvWQtwdrkVVQGHkVsTJZVKtBiUqf4YmJnrJPnk89QP","voting_account":"1.2.3","num_miner":0,"votes":[],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":0,"asset_id":"1.3.0"},"subscription_period":0},"rights_to_publish":{"is_publishing_manager":false,"publishing_rights_received":[],"publishing_rights_forwarded":[]},"statistics":"2.5.35","top_n_control_flags":0}]}'))
+                    LookupAccountNames::responseToModel(new BaseResponse('{"id":3,"result":[{"id":"1.2.27","registrar":"1.2.2","name":"public-account-9","owner":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT51ojM7TUGVpFNUJWX8wi5dYp4iA4brRG16zWfcteVZRZHnkWCF",1]]},"active":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6TjLhr8uESvgtxrbWuXNAN3vcqzBMw5eyEup3PMiD2gnVxeuTb",1]]},"options":{"memo_key":"DCT6TjLhr8uESvgtxrbWuXNAN3vcqzBMw5eyEup3PMiD2gnVxeuTb","voting_account":"1.2.3","num_miner":0,"votes":["0:3"],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":0,"asset_id":"1.3.0"},"subscription_period":0},"rights_to_publish":{"is_publishing_manager":false,"publishing_rights_received":[],"publishing_rights_forwarded":[]},"statistics":"2.5.27","top_n_control_flags":0},{"id":"1.2.28","registrar":"1.2.2","name":"public-account-10","owner":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT51ojM7TUGVpFNUJWX8wi5dYp4iA4brRG16zWfcteVZRZHnkWCF",1]]},"active":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT5PwcSiigfTPTwubadt85enxMFC18TtVoti3gnTbG7TN9f9R3Fp",1]]},"options":{"memo_key":"DCT5PwcSiigfTPTwubadt85enxMFC18TtVoti3gnTbG7TN9f9R3Fp","voting_account":"1.2.3","num_miner":0,"votes":["0:3"],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":0,"asset_id":"1.3.0"},"subscription_period":0},"rights_to_publish":{"is_publishing_manager":false,"publishing_rights_received":[],"publishing_rights_forwarded":[]},"statistics":"2.5.28","top_n_control_flags":0}]}'))
                 ));
         }
 
         /** @var Account[] $accounts */
-        $accounts = $this->sdk->getAccountApi()->getAllByNames(['u961279ec8b7ae7bd62f304f7c1c3d345', 'u3a7b78084e7d3956442d5a4d439dad51']);
+        $accounts = $this->sdk->getAccountApi()->getAllByNames([DCoreSDKTest::ACCOUNT_NAME_1, DCoreSDKTest::ACCOUNT_NAME_2]);
         foreach ($accounts as $account) {
             $this->assertInstanceOf(Account::class, $account);
         }
-        $this->assertEquals('1.2.15', $accounts[0]->getRegistrar());
-        $this->assertEquals('1.2.35', $accounts[1]->getId());
+        $this->assertEquals(DCoreSDKTest::ACCOUNT_ID_1, $accounts[0]->getId());
+        $this->assertEquals(DCoreSDKTest::ACCOUNT_ID_2, $accounts[1]->getId());
     }
 
     public function testListAllRelative(): void
@@ -350,16 +353,16 @@ class AccountApiTest extends DCoreSDKTest
                 ->withConsecutive(
                     [$this->callback(function(BaseRequest $req) { return $req->setId(1)->toJson() === '{"jsonrpc":"2.0","id":1,"method":"call","params":[1,"login",["",""]]}'; })],
                     [$this->callback(function(BaseRequest $req) { return $req->setId(2)->toJson() === '{"jsonrpc":"2.0","id":2,"method":"call","params":[1,"database",[]]}'; })],
-                    [$this->callback(function(BaseRequest $req) { return $req->setId(3)->toJson() === '{"jsonrpc":"2.0","id":3,"method":"call","params":[6,"search_accounts",["u961279ec8b7ae7bd62f304f7c1c3d345","","1.2.34",1]]}'; })]
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(3)->toJson() === '{"jsonrpc":"2.0","id":3,"method":"call","params":[6,"search_accounts",["public-account-9","","1.2.27",1]]}'; })]
                 )
                 ->will($this->onConsecutiveCalls(
                     Login::responseToModel(new BaseResponse('{"id":1,"result":true}')),
                     Database::responseToModel(new BaseResponse('{"id":2,"result":6}')),
-                    SearchAccounts::responseToModel(new BaseResponse('{"id":3,"result":[{"id":"1.2.34","registrar":"1.2.15","name":"u961279ec8b7ae7bd62f304f7c1c3d345","owner":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz",1]]},"active":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz",1]]},"options":{"memo_key":"DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz","voting_account":"1.2.3","num_miner":0,"votes":["0:5","0:8"],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":0,"asset_id":"1.3.0"},"subscription_period":0},"rights_to_publish":{"is_publishing_manager":false,"publishing_rights_received":[],"publishing_rights_forwarded":[]},"statistics":"2.5.34","top_n_control_flags":0}]}'))
+                    SearchAccounts::responseToModel(new BaseResponse('{"id":3,"result":[{"id":"1.2.27","registrar":"1.2.2","name":"public-account-9","owner":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT51ojM7TUGVpFNUJWX8wi5dYp4iA4brRG16zWfcteVZRZHnkWCF",1]]},"active":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6TjLhr8uESvgtxrbWuXNAN3vcqzBMw5eyEup3PMiD2gnVxeuTb",1]]},"options":{"memo_key":"DCT6TjLhr8uESvgtxrbWuXNAN3vcqzBMw5eyEup3PMiD2gnVxeuTb","voting_account":"1.2.3","num_miner":0,"votes":["0:3"],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":0,"asset_id":"1.3.0"},"subscription_period":0},"rights_to_publish":{"is_publishing_manager":false,"publishing_rights_received":[],"publishing_rights_forwarded":[]},"statistics":"2.5.27","top_n_control_flags":0}]}'))
                 ));
         }
 
-        $accounts = $this->sdk->getAccountApi()->findAll('u961279ec8b7ae7bd62f304f7c1c3d345', '', '1.2.34', 1);
+        $accounts = $this->sdk->getAccountApi()->findAll(DCoreSDKTest::ACCOUNT_NAME_1, '', DCoreSDKTest::ACCOUNT_ID_1, 1);
 
         $this->assertInternalType('array', $accounts);
         $this->assertCount(1, $accounts);
@@ -367,7 +370,7 @@ class AccountApiTest extends DCoreSDKTest
         $account = reset($accounts);
 
         $this->assertInstanceOf(Account::class, $account);
-        $this->assertEquals('1.2.34', $account->getId());
+        $this->assertEquals(DCoreSDKTest::ACCOUNT_ID_1, $account->getId());
     }
 
     public function testSearchAccountHistory(): void
@@ -422,45 +425,45 @@ class AccountApiTest extends DCoreSDKTest
                 ->withConsecutive(
                     [$this->callback(function(BaseRequest $req) { return $req->setId(1)->toJson() === '{"jsonrpc":"2.0","id":1,"method":"call","params":[1,"login",["",""]]}'; })],
                     [$this->callback(function(BaseRequest $req) { return $req->setId(2)->toJson() === '{"jsonrpc":"2.0","id":2,"method":"call","params":[1,"database",[]]}'; })],
-                    [$this->callback(function(BaseRequest $req) { return $req->setId(3)->toJson() === '{"jsonrpc":"2.0","id":3,"method":"call","params":[6,"get_accounts",[["1.2.35"]]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(3)->toJson() === '{"jsonrpc":"2.0","id":3,"method":"call","params":[6,"get_dynamic_global_properties",[]]}'; })],
                     [$this->callback(function(BaseRequest $req) { return $req->setId(4)->toJson() === '{"jsonrpc":"2.0","id":4,"method":"call","params":[1,"database",[]]}'; })],
-                    [$this->callback(function(BaseRequest $req) { return $req->setId(5)->toJson() === '{"jsonrpc":"2.0","id":5,"method":"call","params":[6,"get_dynamic_global_properties",[]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(5)->toJson() === '{"jsonrpc":"2.0","id":5,"method":"call","params":[6,"get_chain_id",[]]}'; })],
                     [$this->callback(function(BaseRequest $req) { return $req->setId(6)->toJson() === '{"jsonrpc":"2.0","id":6,"method":"call","params":[1,"database",[]]}'; })],
-                    [$this->callback(function(BaseRequest $req) { return $req->setId(7)->toJson() === '{"jsonrpc":"2.0","id":7,"method":"call","params":[6,"get_required_fees",[[[39,{"extensions":[],"from":"1.2.34","to":"1.2.35","amount":{"amount":1500000,"asset_id":"1.3.0"},"fee":{"amount":0,"asset_id":"1.3.0"},"memo":{"from":"DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz","to":"DCT6bVmimtYSvWQtwdrkVVQGHkVsTJZVKtBiUqf4YmJnrJPnk89QP","message":"'.$req->getParams()[0][0][1]['memo']['message'].'","nonce":"'.$req->getParams()[0][0][1]['memo']['nonce'].'"}}]],"1.3.0"]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(7)->toJson() === '{"jsonrpc":"2.0","id":7,"method":"call","params":[6,"get_required_fees",[[[39,{"from":"1.2.27","to":"1.2.28","amount":{"amount":1500000,"asset_id":"1.3.0"},"fee":{"amount":0,"asset_id":"1.3.0"},"memo":{"message":"0000000068656c6c6f206d656d6f2068657265206920616d","nonce":"0"}}]],"1.3.0"]]}'; })],
                     [$this->callback(function(BaseRequest $req) { return $req->setId(8)->toJson() === '{"jsonrpc":"2.0","id":8,"method":"call","params":[1,"network_broadcast",[]]}'; })],
-                    [$this->callback(function(BaseRequest $req) { return $req->setId(9)->toJson() === '{"jsonrpc":"2.0","id":9,"method":"call","params":[7,"broadcast_transaction_with_callback",[6,{"extensions":[],"operations":[[39,{"extensions":[],"from":"1.2.34","to":"1.2.35","amount":{"amount":1500000,"asset_id":"1.3.0"},"fee":{"amount":500000,"asset_id":"1.3.0"},"memo":{"from":"DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz","to":"DCT6bVmimtYSvWQtwdrkVVQGHkVsTJZVKtBiUqf4YmJnrJPnk89QP","message":"'.$req->getParams()[1]['operations'][0][1]['memo']['message'].'","nonce":"'.$req->getParams()[1]['operations'][0][1]['memo']['nonce'].'"}}]],"ref_block_num":40579,"ref_block_prefix":"3631349325","expiration":"'.$req->getParams()[1]['expiration'].'","signatures":["'.$req->getParams()[1]['signatures'][0].'"]}]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(9)->toJson() === '{"jsonrpc":"2.0","id":9,"method":"call","params":[7,"broadcast_transaction_with_callback",[6,{"extensions":[],"operations":[[39,{"from":"1.2.27","to":"1.2.28","amount":{"amount":1500000,"asset_id":"1.3.0"},"fee":{"amount":100000,"asset_id":"1.3.0"},"memo":{"message":"0000000068656c6c6f206d656d6f2068657265206920616d","nonce":"0"}}]],"ref_block_num":62894,"ref_block_prefix":"688203992","expiration":"2019-04-18T12:22:51","signatures":["207183eb88c555c4ad173cb532dd55570ed3b0c908bf11134f1c92d9bd20f566344558932260c855c217fcb970165fa0b61998cb8d01b3cb6853362258f69f7169"]}]]}'; })],
                     [$this->callback(function(BaseRequest $req) { return $req->setId(10)->toJson() === '{"jsonrpc":"2.0","id":10,"method":"call","params":[1,"database",[]]}'; })],
-                    [$this->callback(function(BaseRequest $req) { return $req->setId(11)->toJson() === '{"jsonrpc":"2.0","id":11,"method":"call","params":[6,"search_account_history",["1.2.34","-time","0.0.0",1]]}'; })]
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(11)->toJson() === '{"jsonrpc":"2.0","id":11,"method":"call","params":[6,"search_account_history",["1.2.27","-time","0.0.0",1]]}'; })]
                 )
                 ->will($this->onConsecutiveCalls(
                     Login::responseToModel(new BaseResponse('{"id":1,"result":true}')),
                     Database::responseToModel(new BaseResponse('{"id":2,"result":6}')),
-                    GetAccountById::responseToModel(new BaseResponse('{"id":3,"result":[{"id":"1.2.35","registrar":"1.2.15","name":"u3a7b78084e7d3956442d5a4d439dad51","owner":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6bVmimtYSvWQtwdrkVVQGHkVsTJZVKtBiUqf4YmJnrJPnk89QP",1]]},"active":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6bVmimtYSvWQtwdrkVVQGHkVsTJZVKtBiUqf4YmJnrJPnk89QP",1]]},"options":{"memo_key":"DCT6bVmimtYSvWQtwdrkVVQGHkVsTJZVKtBiUqf4YmJnrJPnk89QP","voting_account":"1.2.3","num_miner":0,"votes":[],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":0,"asset_id":"1.3.0"},"subscription_period":0},"rights_to_publish":{"is_publishing_manager":false,"publishing_rights_received":[],"publishing_rights_forwarded":[]},"statistics":"2.5.35","top_n_control_flags":0}]}')),
+                    GetDynamicGlobalProperties::responseToModel(new BaseResponse('{"id":3,"result":{"id":"2.1.0","head_block_number":587182,"head_block_id":"0008f5aed8280529f5e39a4b15cd862d5420d83a","time":"2019-04-18T12:22:10","current_miner":"1.4.6","next_maintenance_time":"2019-04-19T00:00:00","last_budget_time":"2019-04-18T00:00:00","unspent_fee_budget":1755461,"mined_rewards":"329411000000","miner_budget_from_fees":3616188,"miner_budget_from_rewards":"639249000000","accounts_registered_this_interval":55,"recently_missed_count":0,"current_aslot":984401,"recent_slots_filled":"340282366920938463463374607431768211455","dynamic_flags":0,"last_irreversible_block_num":587182}}')),
                     Database::responseToModel(new BaseResponse('{"id":4,"result":6}')),
-                    GetDynamicGlobalProperties::responseToModel(new BaseResponse('{"id":5,"result":{"id":"2.1.0","head_block_number":4234883,"head_block_id":"00409e834dfe71d81b1d897feabadafd5ba2253d","time":"2019-02-13T12:48:45","current_miner":"1.4.6","next_maintenance_time":"2019-02-14T00:00:00","last_budget_time":"2019-02-13T00:00:00","unspent_fee_budget":28586956,"mined_rewards":"279868000000","miner_budget_from_fees":50840244,"miner_budget_from_rewards":"639249000000","accounts_registered_this_interval":10,"recently_missed_count":0,"current_aslot":10248186,"recent_slots_filled":"212323399330671546460679194953624321407","dynamic_flags":0,"last_irreversible_block_num":4234883}}')),
+                    GetChainId::responseToModel(new BaseResponse('{"id":5,"result":"a76a2db75f7a8018d41f2d648c766fdb0ddc79ac77104d243074ebdd5186bfbe"}')),
                     Database::responseToModel(new BaseResponse('{"id":6,"result":6}')),
-                    GetRequiredFees::responseToModel(new BaseResponse('{"id":7,"result":[{"amount":500000,"asset_id":"1.3.0"}]}')),
+                    GetRequiredFees::responseToModel(new BaseResponse('{"id":7,"result":[{"amount":100000,"asset_id":"1.3.0"}]}')),
                     NetworkBroadcast::responseToModel(new BaseResponse('{"id":8,"result":7}')),
                     BroadcastTransactionWithCallback::responseToModel(new BaseResponse('{"id":9,"result":null}')),
                     Database::responseToModel(new BaseResponse('{"id":10,"result":6}')),
-                    SearchAccountHistory::responseToModel(new BaseResponse('{"id":11,"result":[{"id":"2.17.54776","m_from_account":"1.2.34","m_to_account":"1.2.35","m_operation_type":0,"m_transaction_amount":{"amount":1500000,"asset_id":"1.3.0"},"m_transaction_fee":{"amount":500000,"asset_id":"1.3.0"},"m_str_description":"transfer","m_transaction_encrypted_memo":{"from":"DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz","to":"DCT6bVmimtYSvWQtwdrkVVQGHkVsTJZVKtBiUqf4YmJnrJPnk89QP","nonce":"15500621254968895","message":"386fb34b9ea715ccbf94074bbdbb986f89ec7e2fd22692c490ff9ace66b8d58c097d8901615f7375edb3b52e8cae6531833a3fea2c7483edb4457db6920bd768"},"m_timestamp":"2019-02-13T12:48:45"}]}'))
+                    SearchAccountHistory::responseToModel(new BaseResponse('{"id":11,"result":[{"id":"2.17.916335","m_from_account":"1.2.27","m_to_account":"1.2.28","m_operation_type":0,"m_transaction_amount":{"amount":1500000,"asset_id":"1.3.0"},"m_transaction_fee":{"amount":100000,"asset_id":"1.3.0"},"m_str_description":"transfer","m_transaction_encrypted_memo":{"from":"DCT1111111111111111111111111111111114T1Anm","to":"DCT1111111111111111111111111111111114T1Anm","nonce":0,"message":"0000000068656c6c6f206d656d6f2068657265206920616d"},"m_timestamp":"2019-04-18T12:22:15"}]}'))
                 ));
         }
 
         $this->sdk->getAccountApi()->transfer(
-            new Credentials(new ChainObject('1.2.34'), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1)),
-            '1.2.35',
+            new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1)),
+            DCoreSDKTest::ACCOUNT_ID_2,
             (new AssetAmount())->setAmount(1500000),
             'hello memo here i am',
             false
         );
 
         /** @var TransactionDetail[] $transactions */
-        $transactions = $this->sdk->getAccountApi()->searchAccountHistory(new ChainObject('1.2.34'), '0.0.0', SearchAccountHistory::ORDER_TIME_DESC, 1);
+        $transactions = $this->sdk->getAccountApi()->searchAccountHistory(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), '0.0.0', SearchAccountHistory::ORDER_TIME_DESC, 1);
         $lastTransaction = reset($transactions);
         $this->assertInstanceOf(TransactionDetail::class, $lastTransaction);
-        $this->assertEquals('1.2.34', $lastTransaction->getFrom());
-        $this->assertEquals('1.2.35', $lastTransaction->getTo());
+        $this->assertEquals(DCoreSDKTest::ACCOUNT_ID_1, $lastTransaction->getFrom());
+        $this->assertEquals(DCoreSDKTest::ACCOUNT_ID_2, $lastTransaction->getTo());
         $this->assertEquals('1.3.0', $lastTransaction->getAmount()->getAssetId());
         $this->assertEquals(1500000, $lastTransaction->getAmount()->getAmount());
     }
@@ -470,7 +473,7 @@ class AccountApiTest extends DCoreSDKTest
         $privateKey = $this->sdk->getAccountApi()->derivePrivateKey(DCoreSDKTest::PRIVATE_KEY_1);
 
         $this->assertInstanceOf(PrivateKey::class, $privateKey);
-        $this->assertEquals('8db568dae0e0d3708649e6cccf94c71909488f01c92369c28fdb090e40203f93', $privateKey->toHex());
+        $this->assertEquals('b3011460ed115b70996d769dcbf8db173d9f113649ac4d16df57bdb66514a595', $privateKey->toHex());
     }
 
     public function testSuggestBrainKey(): void
@@ -519,29 +522,33 @@ class AccountApiTest extends DCoreSDKTest
 
         if ($this->websocketMock) {
             $this->websocketMock
-                ->expects($this->exactly(9))
+                ->expects($this->exactly(11))
                 ->method('send')
                 ->withConsecutive(
                     [$this->callback(function(BaseRequest $req) { return $req->setId(1)->toJson() === '{"jsonrpc":"2.0","id":1,"method":"call","params":[1,"login",["",""]]}'; })],
                     [$this->callback(function(BaseRequest $req) { return $req->setId(2)->toJson() === '{"jsonrpc":"2.0","id":2,"method":"call","params":[1,"database",[]]}'; })],
                     [$this->callback(function(BaseRequest $req) { return $req->setId(3)->toJson() === '{"jsonrpc":"2.0","id":3,"method":"call","params":[6,"get_dynamic_global_properties",[]]}'; })],
                     [$this->callback(function(BaseRequest $req) { return $req->setId(4)->toJson() === '{"jsonrpc":"2.0","id":4,"method":"call","params":[1,"database",[]]}'; })],
-                    [$this->callback(function(BaseRequest $req) { return $req->setId(5)->toJson() === '{"jsonrpc":"2.0","id":5,"method":"call","params":[6,"get_required_fees",[[[1,{"fee":{"amount":0,"asset_id":"1.3.0"},"registrar":"1.2.34","name":"'.$req->getParams()[0][0][1]['name'].'","owner":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz",1]]},"active":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz",1]]},"options":{"memo_key":"DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz","voting_account":"1.2.3","num_miner":0,"votes":[],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":0,"asset_id":"1.3.0"},"subscription_period":0},"extensions":[]}]],"1.3.0"]]}'; })],
-                    [$this->callback(function(BaseRequest $req) { return $req->setId(6)->toJson() === '{"jsonrpc":"2.0","id":6,"method":"call","params":[1,"network_broadcast",[]]}'; })],
-                    [$this->callback(function(BaseRequest $req) { return $req->setId(7)->toJson() === '{"jsonrpc":"2.0","id":7,"method":"call","params":[7,"broadcast_transaction_with_callback",[6,{"extensions":[],"operations":[[1,{"fee":{"amount":500000,"asset_id":"1.3.0"},"registrar":"1.2.34","name":"'.$req->getParams()[1]['operations'][0][1]['name'].'","owner":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz",1]]},"active":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz",1]]},"options":{"memo_key":"DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz","voting_account":"1.2.3","num_miner":0,"votes":[],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":0,"asset_id":"1.3.0"},"subscription_period":0},"extensions":[]}]],"ref_block_num":41571,"ref_block_prefix":"3758552026","expiration":"'.$req->getParams()[1]['expiration'].'","signatures":["'.$req->getParams()[1]['signatures'][0].'"]}]]}'; })],
-                    [$this->callback(function(BaseRequest $req) { return $req->setId(8)->toJson() === '{"jsonrpc":"2.0","id":8,"method":"call","params":[1,"database",[]]}'; })],
-                    [$this->callback(function(BaseRequest $req) { return $req->setId(9)->toJson() === '{"jsonrpc":"2.0","id":9,"method":"call","params":[6,"get_account_by_name",["'.$req->getParams()[0].'"]]}'; })]
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(5)->toJson() === '{"jsonrpc":"2.0","id":5,"method":"call","params":[6,"get_chain_id",[]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(6)->toJson() === '{"jsonrpc":"2.0","id":6,"method":"call","params":[1,"database",[]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(7)->toJson() === '{"jsonrpc":"2.0","id":7,"method":"call","params":[6,"get_required_fees",[[[1,{"fee":{"amount":0,"asset_id":"1.3.0"},"registrar":"1.2.27","name":"'.$req->getParams()[0][0][1]['name'].'","owner":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6TjLhr8uESvgtxrbWuXNAN3vcqzBMw5eyEup3PMiD2gnVxeuTb",1]]},"active":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6TjLhr8uESvgtxrbWuXNAN3vcqzBMw5eyEup3PMiD2gnVxeuTb",1]]},"options":{"memo_key":"DCT6TjLhr8uESvgtxrbWuXNAN3vcqzBMw5eyEup3PMiD2gnVxeuTb","voting_account":"1.2.3","num_miner":0,"votes":[],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":0,"asset_id":"1.3.0"},"subscription_period":0},"extensions":[]}]],"1.3.0"]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(8)->toJson() === '{"jsonrpc":"2.0","id":8,"method":"call","params":[1,"network_broadcast",[]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(9)->toJson() === '{"jsonrpc":"2.0","id":9,"method":"call","params":[7,"broadcast_transaction_with_callback",[6,{"extensions":[],"operations":[[1,{"fee":{"amount":100000,"asset_id":"1.3.0"},"registrar":"1.2.27","name":"'.$req->getParams()[1]['operations'][0][1]['name'].'","owner":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6TjLhr8uESvgtxrbWuXNAN3vcqzBMw5eyEup3PMiD2gnVxeuTb",1]]},"active":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6TjLhr8uESvgtxrbWuXNAN3vcqzBMw5eyEup3PMiD2gnVxeuTb",1]]},"options":{"memo_key":"DCT6TjLhr8uESvgtxrbWuXNAN3vcqzBMw5eyEup3PMiD2gnVxeuTb","voting_account":"1.2.3","num_miner":0,"votes":[],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":0,"asset_id":"1.3.0"},"subscription_period":0},"extensions":[]}]],"ref_block_num":62918,"ref_block_prefix":"2411247732","expiration":"'.$req->getParams()[1]['expiration'].'","signatures":["'.$req->getParams()[1]['signatures'][0].'"]}]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(10)->toJson() === '{"jsonrpc":"2.0","id":10,"method":"call","params":[1,"database",[]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(11)->toJson() === '{"jsonrpc":"2.0","id":11,"method":"call","params":[6,"get_account_by_name",["'.$req->getParams()[0].'"]]}'; })]
                 )
                 ->will($this->onConsecutiveCalls(
                     Login::responseToModel(new BaseResponse('{"id":1,"result":true}')),
                     Database::responseToModel(new BaseResponse('{"id":2,"result":6}')),
-                    GetDynamicGlobalProperties::responseToModel(new BaseResponse('{"id":3,"result":{"id":"2.1.0","head_block_number":4235875,"head_block_id":"0040a263daf306e0329735fd8ed255fe5b481033","time":"2019-02-13T14:28:55","current_miner":"1.4.8","next_maintenance_time":"2019-02-14T00:00:00","last_budget_time":"2019-02-13T00:00:00","unspent_fee_budget":25668492,"mined_rewards":"316572000000","miner_budget_from_fees":50840244,"miner_budget_from_rewards":"639249000000","accounts_registered_this_interval":12,"recently_missed_count":0,"current_aslot":10249388,"recent_slots_filled":"317672503911711937783877557590480124671","dynamic_flags":0,"last_irreversible_block_num":4235875}}')),
+                    GetDynamicGlobalProperties::responseToModel(new BaseResponse('{"id":3,"result":{"id":"2.1.0","head_block_number":587206,"head_block_id":"0008f5c674b8b88f42ccddb6eea226e55b489e6a","time":"2019-04-18T12:24:10","current_miner":"1.4.9","next_maintenance_time":"2019-04-19T00:00:00","last_budget_time":"2019-04-18T00:00:00","unspent_fee_budget":1750445,"mined_rewards":"330299000000","miner_budget_from_fees":3616188,"miner_budget_from_rewards":"639249000000","accounts_registered_this_interval":55,"recently_missed_count":0,"current_aslot":984425,"recent_slots_filled":"340282366920938463463374607431768211455","dynamic_flags":0,"last_irreversible_block_num":587206}}')),
                     Database::responseToModel(new BaseResponse('{"id":4,"result":6}')),
-                    GetRequiredFees::responseToModel(new BaseResponse('{"id":5,"result":[{"amount":500000,"asset_id":"1.3.0"}]}')),
-                    NetworkBroadcast::responseToModel(new BaseResponse('{"id":6,"result":7}')),
-                    BroadcastTransactionWithCallback::responseToModel(new BaseResponse('{"id":7,"result":null}')),
-                    Database::responseToModel(new BaseResponse('{"id":8,"result":6}')),
-                    GetAccountByName::responseToModel(new BaseResponse('{"id":9,"result":{"id":"1.2.12584","registrar":"1.2.34","name":"'.$accountName.'","owner":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz",1]]},"active":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz",1]]},"options":{"memo_key":"DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz","voting_account":"1.2.3","num_miner":0,"votes":[],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":0,"asset_id":"1.3.0"},"subscription_period":0},"rights_to_publish":{"is_publishing_manager":false,"publishing_rights_received":[],"publishing_rights_forwarded":[]},"statistics":"2.5.12584","top_n_control_flags":0}}'))
+                    GetChainId::responseToModel(new BaseResponse('{"id":5,"result":"a76a2db75f7a8018d41f2d648c766fdb0ddc79ac77104d243074ebdd5186bfbe"}')),
+                    Database::responseToModel(new BaseResponse('{"id":6,"result":6}')),
+                    GetRequiredFees::responseToModel(new BaseResponse('{"id":7,"result":[{"amount":100000,"asset_id":"1.3.0"}]}')),
+                    NetworkBroadcast::responseToModel(new BaseResponse('{"id":8,"result":7}')),
+                    BroadcastTransactionWithCallback::responseToModel(new BaseResponse('{"id":9,"result":null}')),
+                    Database::responseToModel(new BaseResponse('{"id":10,"result":6}')),
+                    GetAccountByName::responseToModel(new BaseResponse('{"id":11,"result":{"id":"1.2.157","registrar":"1.2.27","name":"'.$accountName.'","owner":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6TjLhr8uESvgtxrbWuXNAN3vcqzBMw5eyEup3PMiD2gnVxeuTb",1]]},"active":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6TjLhr8uESvgtxrbWuXNAN3vcqzBMw5eyEup3PMiD2gnVxeuTb",1]]},"options":{"memo_key":"DCT6TjLhr8uESvgtxrbWuXNAN3vcqzBMw5eyEup3PMiD2gnVxeuTb","voting_account":"1.2.3","num_miner":0,"votes":[],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":0,"asset_id":"1.3.0"},"subscription_period":0},"rights_to_publish":{"is_publishing_manager":false,"publishing_rights_received":[],"publishing_rights_forwarded":[]},"statistics":"2.5.157","top_n_control_flags":0}}'))
                 ));
         }
 
@@ -550,7 +557,7 @@ class AccountApiTest extends DCoreSDKTest
             DCoreSDKTest::PUBLIC_KEY_1,
             DCoreSDKTest::PUBLIC_KEY_1,
             DCoreSDKTest::PUBLIC_KEY_1,
-            new ChainObject('1.2.34'),
+            new ChainObject(DCoreSDKTest::ACCOUNT_ID_1),
             DCoreSDKTest::PRIVATE_KEY_1
         );
 
@@ -565,36 +572,40 @@ class AccountApiTest extends DCoreSDKTest
 
         if ($this->websocketMock) {
             $this->websocketMock
-                ->expects($this->exactly(9))
+                ->expects($this->exactly(11))
                 ->method('send')
                 ->withConsecutive(
                     [$this->callback(function(BaseRequest $req) { return $req->setId(1)->toJson() === '{"jsonrpc":"2.0","id":1,"method":"call","params":[1,"login",["",""]]}'; })],
                     [$this->callback(function(BaseRequest $req) { return $req->setId(2)->toJson() === '{"jsonrpc":"2.0","id":2,"method":"call","params":[1,"database",[]]}'; })],
                     [$this->callback(function(BaseRequest $req) { return $req->setId(3)->toJson() === '{"jsonrpc":"2.0","id":3,"method":"call","params":[6,"get_dynamic_global_properties",[]]}'; })],
                     [$this->callback(function(BaseRequest $req) { return $req->setId(4)->toJson() === '{"jsonrpc":"2.0","id":4,"method":"call","params":[1,"database",[]]}'; })],
-                    [$this->callback(function(BaseRequest $req) { return $req->setId(5)->toJson() === '{"jsonrpc":"2.0","id":5,"method":"call","params":[6,"get_required_fees",[[[1,{"fee":{"amount":0,"asset_id":"1.3.0"},"registrar":"1.2.34","name":"'.$req->getParams()[0][0][1]['name'].'","owner":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6BU82XJnfLLtBYsweEVSSsEy3fNNNuZoWxV2mcESjvrH5cLLtw",1]]},"active":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6BU82XJnfLLtBYsweEVSSsEy3fNNNuZoWxV2mcESjvrH5cLLtw",1]]},"options":{"memo_key":"DCT6BU82XJnfLLtBYsweEVSSsEy3fNNNuZoWxV2mcESjvrH5cLLtw","voting_account":"1.2.3","num_miner":0,"votes":[],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":0,"asset_id":"1.3.0"},"subscription_period":0},"extensions":[]}]],"1.3.0"]]}'; })],
-                    [$this->callback(function(BaseRequest $req) { return $req->setId(6)->toJson() === '{"jsonrpc":"2.0","id":6,"method":"call","params":[1,"network_broadcast",[]]}'; })],
-                    [$this->callback(function(BaseRequest $req) { return $req->setId(7)->toJson() === '{"jsonrpc":"2.0","id":7,"method":"call","params":[7,"broadcast_transaction_with_callback",[6,{"extensions":[],"operations":[[1,{"fee":{"amount":500000,"asset_id":"1.3.0"},"registrar":"1.2.34","name":"'.$req->getParams()[1]['operations'][0][1]['name'].'","owner":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6BU82XJnfLLtBYsweEVSSsEy3fNNNuZoWxV2mcESjvrH5cLLtw",1]]},"active":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6BU82XJnfLLtBYsweEVSSsEy3fNNNuZoWxV2mcESjvrH5cLLtw",1]]},"options":{"memo_key":"DCT6BU82XJnfLLtBYsweEVSSsEy3fNNNuZoWxV2mcESjvrH5cLLtw","voting_account":"1.2.3","num_miner":0,"votes":[],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":0,"asset_id":"1.3.0"},"subscription_period":0},"extensions":[]}]],"ref_block_num":41571,"ref_block_prefix":"3758552026","expiration":"'.$req->getParams()[1]['expiration'].'","signatures":["'.$req->getParams()[1]['signatures'][0].'"]}]]}'; })],
-                    [$this->callback(function(BaseRequest $req) { return $req->setId(8)->toJson() === '{"jsonrpc":"2.0","id":8,"method":"call","params":[1,"database",[]]}'; })],
-                    [$this->callback(function(BaseRequest $req) { return $req->setId(9)->toJson() === '{"jsonrpc":"2.0","id":9,"method":"call","params":[6,"get_account_by_name",["'.$req->getParams()[0].'"]]}'; })]
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(5)->toJson() === '{"jsonrpc":"2.0","id":5,"method":"call","params":[6,"get_chain_id",[]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(6)->toJson() === '{"jsonrpc":"2.0","id":6,"method":"call","params":[1,"database",[]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(7)->toJson() === '{"jsonrpc":"2.0","id":7,"method":"call","params":[6,"get_required_fees",[[[1,{"fee":{"amount":0,"asset_id":"1.3.0"},"registrar":"1.2.27","name":"'.$req->getParams()[0][0][1]['name'].'","owner":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6BU82XJnfLLtBYsweEVSSsEy3fNNNuZoWxV2mcESjvrH5cLLtw",1]]},"active":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6BU82XJnfLLtBYsweEVSSsEy3fNNNuZoWxV2mcESjvrH5cLLtw",1]]},"options":{"memo_key":"DCT6BU82XJnfLLtBYsweEVSSsEy3fNNNuZoWxV2mcESjvrH5cLLtw","voting_account":"1.2.3","num_miner":0,"votes":[],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":0,"asset_id":"1.3.0"},"subscription_period":0},"extensions":[]}]],"1.3.0"]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(8)->toJson() === '{"jsonrpc":"2.0","id":8,"method":"call","params":[1,"network_broadcast",[]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(9)->toJson() === '{"jsonrpc":"2.0","id":9,"method":"call","params":[7,"broadcast_transaction_with_callback",[6,{"extensions":[],"operations":[[1,{"fee":{"amount":100000,"asset_id":"1.3.0"},"registrar":"1.2.27","name":"'.$req->getParams()[1]['operations'][0][1]['name'].'","owner":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6BU82XJnfLLtBYsweEVSSsEy3fNNNuZoWxV2mcESjvrH5cLLtw",1]]},"active":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6BU82XJnfLLtBYsweEVSSsEy3fNNNuZoWxV2mcESjvrH5cLLtw",1]]},"options":{"memo_key":"DCT6BU82XJnfLLtBYsweEVSSsEy3fNNNuZoWxV2mcESjvrH5cLLtw","voting_account":"1.2.3","num_miner":0,"votes":[],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":0,"asset_id":"1.3.0"},"subscription_period":0},"extensions":[]}]],"ref_block_num":62968,"ref_block_prefix":"3271140771","expiration":"'.$req->getParams()[1]['expiration'].'","signatures":["'.$req->getParams()[1]['signatures'][0].'"]}]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(10)->toJson() === '{"jsonrpc":"2.0","id":10,"method":"call","params":[1,"database",[]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(11)->toJson() === '{"jsonrpc":"2.0","id":11,"method":"call","params":[6,"get_account_by_name",["'.$req->getParams()[0].'"]]}'; })]
                 )
                 ->will($this->onConsecutiveCalls(
                     Login::responseToModel(new BaseResponse('{"id":1,"result":true}')),
                     Database::responseToModel(new BaseResponse('{"id":2,"result":6}')),
-                    GetDynamicGlobalProperties::responseToModel(new BaseResponse('{"id":3,"result":{"id":"2.1.0","head_block_number":4235875,"head_block_id":"0040a263daf306e0329735fd8ed255fe5b481033","time":"2019-02-13T14:28:55","current_miner":"1.4.8","next_maintenance_time":"2019-02-14T00:00:00","last_budget_time":"2019-02-13T00:00:00","unspent_fee_budget":25668492,"mined_rewards":"316572000000","miner_budget_from_fees":50840244,"miner_budget_from_rewards":"639249000000","accounts_registered_this_interval":12,"recently_missed_count":0,"current_aslot":10249388,"recent_slots_filled":"317672503911711937783877557590480124671","dynamic_flags":0,"last_irreversible_block_num":4235875}}')),
+                    GetDynamicGlobalProperties::responseToModel(new BaseResponse('{"id":3,"result":{"id":"2.1.0","head_block_number":587256,"head_block_id":"0008f5f8a3a5f9c23929882be9218a5747560c78","time":"2019-04-18T12:28:20","current_miner":"1.4.4","next_maintenance_time":"2019-04-19T00:00:00","last_budget_time":"2019-04-18T00:00:00","unspent_fee_budget":1739995,"mined_rewards":"332149000000","miner_budget_from_fees":3616188,"miner_budget_from_rewards":"639249000000","accounts_registered_this_interval":56,"recently_missed_count":0,"current_aslot":984475,"recent_slots_filled":"340282366920938463463374607431768211455","dynamic_flags":0,"last_irreversible_block_num":587256}}')),
                     Database::responseToModel(new BaseResponse('{"id":4,"result":6}')),
-                    GetRequiredFees::responseToModel(new BaseResponse('{"id":5,"result":[{"amount":500000,"asset_id":"1.3.0"}]}')),
-                    NetworkBroadcast::responseToModel(new BaseResponse('{"id":6,"result":7}')),
-                    BroadcastTransactionWithCallback::responseToModel(new BaseResponse('{"id":7,"result":null}')),
-                    Database::responseToModel(new BaseResponse('{"id":8,"result":6}')),
-                    GetAccountByName::responseToModel(new BaseResponse('{"id":9,"result":{"id":"1.2.12586","registrar":"1.2.34","name":"'.$accountName.'","owner":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6BU82XJnfLLtBYsweEVSSsEy3fNNNuZoWxV2mcESjvrH5cLLtw",1]]},"active":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6BU82XJnfLLtBYsweEVSSsEy3fNNNuZoWxV2mcESjvrH5cLLtw",1]]},"options":{"memo_key":"DCT6BU82XJnfLLtBYsweEVSSsEy3fNNNuZoWxV2mcESjvrH5cLLtw","voting_account":"1.2.3","num_miner":0,"votes":[],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":0,"asset_id":"1.3.0"},"subscription_period":0},"rights_to_publish":{"is_publishing_manager":false,"publishing_rights_received":[],"publishing_rights_forwarded":[]},"statistics":"2.5.12584","top_n_control_flags":0}}'))
+                    GetChainId::responseToModel(new BaseResponse('{"id":5,"result":"a76a2db75f7a8018d41f2d648c766fdb0ddc79ac77104d243074ebdd5186bfbe"}')),
+                    Database::responseToModel(new BaseResponse('{"id":6,"result":6}')),
+                    GetRequiredFees::responseToModel(new BaseResponse('{"id":7,"result":[{"amount":100000,"asset_id":"1.3.0"}]}')),
+                    NetworkBroadcast::responseToModel(new BaseResponse('{"id":8,"result":7}')),
+                    BroadcastTransactionWithCallback::responseToModel(new BaseResponse('{"id":9,"result":null}')),
+                    Database::responseToModel(new BaseResponse('{"id":10,"result":6}')),
+                    GetAccountByName::responseToModel(new BaseResponse('{"id":11,"result":{"id":"1.2.158","registrar":"1.2.27","name":"'.$accountName.'","owner":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6BU82XJnfLLtBYsweEVSSsEy3fNNNuZoWxV2mcESjvrH5cLLtw",1]]},"active":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6BU82XJnfLLtBYsweEVSSsEy3fNNNuZoWxV2mcESjvrH5cLLtw",1]]},"options":{"memo_key":"DCT6BU82XJnfLLtBYsweEVSSsEy3fNNNuZoWxV2mcESjvrH5cLLtw","voting_account":"1.2.3","num_miner":0,"votes":[],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":0,"asset_id":"1.3.0"},"subscription_period":0},"rights_to_publish":{"is_publishing_manager":false,"publishing_rights_received":[],"publishing_rights_forwarded":[]},"statistics":"2.5.158","top_n_control_flags":0}}'))
                 ));
         }
 
         $this->sdk->getAccountApi()->createAccountWithBrainKey(
             'FAILING AHIMSA INFLECT RETOUR OVERWEB PODIUM UNPILED DEVELIN BATED PUDGILY EXUDATE PASTEL ISOTOPY OSOPHY SELLAR SWAYING',
             $accountName,
-            new ChainObject('1.2.34'),
+            new ChainObject(DCoreSDKTest::ACCOUNT_ID_1),
             DCoreSDKTest::PRIVATE_KEY_1
         );
 
@@ -603,50 +614,64 @@ class AccountApiTest extends DCoreSDKTest
         $this->assertEquals($accountName, $account->getName());
     }
 
-    public function testUpdateAccount()
+    /**
+     * @throws \DCorePHP\Exception\InvalidApiCallException
+     * @throws \DCorePHP\Exception\ObjectNotFoundException
+     * @throws \DCorePHP\Exception\ValidationException
+     * @throws \WebSocket\BadOpcodeException
+     */
+    public function testUpdateAccount(): void
     {
         if ($this->websocketMock) {
             $this->websocketMock
-                ->expects($this->exactly(9))
+                ->expects($this->exactly(13))
                 ->method('send')
                 ->withConsecutive(
                     [$this->callback(static function(BaseRequest $req) { return $req->setId(1)->toJson() === '{"jsonrpc":"2.0","id":1,"method":"call","params":[1,"login",["",""]]}'; })],
                     [$this->callback(static function(BaseRequest $req) { return $req->setId(2)->toJson() === '{"jsonrpc":"2.0","id":2,"method":"call","params":[1,"database",[]]}'; })],
-                    [$this->callback(static function(BaseRequest $req) { return $req->setId(3)->toJson() === '{"jsonrpc":"2.0","id":3,"method":"call","params":[6,"get_accounts",[["1.2.34"]]]}'; })],
+                    [$this->callback(static function(BaseRequest $req) { return $req->setId(3)->toJson() === '{"jsonrpc":"2.0","id":3,"method":"call","params":[6,"get_accounts",[["1.2.27"]]]}'; })],
                     [$this->callback(static function(BaseRequest $req) { return $req->setId(4)->toJson() === '{"jsonrpc":"2.0","id":4,"method":"call","params":[1,"database",[]]}'; })],
-                    [$this->callback(static function(BaseRequest $req) { return $req->setId(5)->toJson() === '{"jsonrpc":"2.0","id":5,"method":"call","params":[6,"get_dynamic_global_properties",[]]}'; })],
+                    [$this->callback(static function(BaseRequest $req) { return $req->setId(5)->toJson() === '{"jsonrpc":"2.0","id":5,"method":"call","params":[6,"get_accounts",[["1.2.27"]]]}'; })],
                     [$this->callback(static function(BaseRequest $req) { return $req->setId(6)->toJson() === '{"jsonrpc":"2.0","id":6,"method":"call","params":[1,"database",[]]}'; })],
-                    [$this->callback(static function(BaseRequest $req) { return $req->setId(7)->toJson() === '{"jsonrpc":"2.0","id":7,"method":"call","params":[6,"get_required_fees",[[[2,{"fee":{"amount":0,"asset_id":"1.3.0"},"account":"1.2.34","owner":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz",1]]},"active":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz",1]]},"new_options":{"memo_key":"DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz","voting_account":"1.2.3","num_miner":0,"votes":["0:3"],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":0,"asset_id":"1.3.0"},"subscription_period":0}}]],"1.3.0"]]}'; })],
-                    [$this->callback(static function(BaseRequest $req) { return $req->setId(8)->toJson() === '{"jsonrpc":"2.0","id":8,"method":"call","params":[1,"network_broadcast",[]]}'; })],
-                    [$this->callback(static function(BaseRequest $req) { return $req->setId(9)->toJson() === '{"jsonrpc":"2.0","id":9,"method":"call","params":[7,"broadcast_transaction_with_callback",[6,{"extensions":[],"operations":[[2,{"fee":{"amount":500000,"asset_id":"1.3.0"},"account":"1.2.34","owner":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz",1]]},"active":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz",1]]},"new_options":{"memo_key":"DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz","voting_account":"1.2.3","num_miner":0,"votes":["0:3"],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":0,"asset_id":"1.3.0"},"subscription_period":0}}]],"ref_block_num":42260,"ref_block_prefix":"3188303955","expiration":"2019-04-05T11:18:04","signatures":["1f7b93ed5c6583f7f4ebf404eb2788057242395a42ea77cba8cd31c9b3cca2ab5d3c642613df6134543402a4f92175fc705ee218272a66122fbd075c6278f0874b"]}]]}'; })]
+                    [$this->callback(static function(BaseRequest $req) { return $req->setId(7)->toJson() === '{"jsonrpc":"2.0","id":7,"method":"call","params":[6,"get_dynamic_global_properties",[]]}'; })],
+                    [$this->callback(static function(BaseRequest $req) { return $req->setId(8)->toJson() === '{"jsonrpc":"2.0","id":8,"method":"call","params":[1,"database",[]]}'; })],
+                    [$this->callback(static function(BaseRequest $req) { return $req->setId(9)->toJson() === '{"jsonrpc":"2.0","id":9,"method":"call","params":[6,"get_chain_id",[]]}'; })],
+                    [$this->callback(static function(BaseRequest $req) { return $req->setId(10)->toJson() === '{"jsonrpc":"2.0","id":10,"method":"call","params":[1,"database",[]]}'; })],
+                    [$this->callback(static function(BaseRequest $req) { return $req->setId(11)->toJson() === '{"jsonrpc":"2.0","id":11,"method":"call","params":[6,"get_required_fees",[[[2,{"fee":{"amount":0,"asset_id":"1.3.0"},"account":"1.2.27","new_options":{"memo_key":"DCT6TjLhr8uESvgtxrbWuXNAN3vcqzBMw5eyEup3PMiD2gnVxeuTb","voting_account":"1.2.3","num_miner":0,"votes":["0:3"],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":0,"asset_id":"1.3.0"},"subscription_period":0}}]],"1.3.0"]]}'; })],
+                    [$this->callback(static function(BaseRequest $req) { return $req->setId(12)->toJson() === '{"jsonrpc":"2.0","id":12,"method":"call","params":[1,"network_broadcast",[]]}'; })],
+                    [$this->callback(static function(BaseRequest $req) { return $req->setId(13)->toJson() === '{"jsonrpc":"2.0","id":13,"method":"call","params":[7,"broadcast_transaction_with_callback",[6,{"extensions":[],"operations":[[2,{"fee":{"amount":100000,"asset_id":"1.3.0"},"account":"1.2.27","new_options":{"memo_key":"DCT6TjLhr8uESvgtxrbWuXNAN3vcqzBMw5eyEup3PMiD2gnVxeuTb","voting_account":"1.2.3","num_miner":0,"votes":["0:3"],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":0,"asset_id":"1.3.0"},"subscription_period":0}}]],"ref_block_num":63003,"ref_block_prefix":"206020986","expiration":"2019-04-18T12:31:48","signatures":["2017cfff5e4e4e85ee3d4262c17cbaccbd4d4dbfffa8e03f752e10d9ac807ac635460c6b8f0c6ebb02121397c5844c6010d5561f06e957651f7c9cb30cf40fad6a"]}]]}'; })]
                 )
                 ->will($this->onConsecutiveCalls(
                     Login::responseToModel(new BaseResponse('{"id":1,"result":true}')),
                     Database::responseToModel(new BaseResponse('{"id":2,"result":6}')),
-                    GetAccountById::responseToModel(new BaseResponse('{"id":3,"result":[{"id":"1.2.34","registrar":"1.2.15","name":"u961279ec8b7ae7bd62f304f7c1c3d345","owner":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz",1]]},"active":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz",1]]},"options":{"memo_key":"DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz","voting_account":"1.2.3","num_miner":0,"votes":["0:3"],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":0,"asset_id":"1.3.0"},"subscription_period":0},"rights_to_publish":{"is_publishing_manager":false,"publishing_rights_received":[],"publishing_rights_forwarded":[]},"statistics":"2.5.34","top_n_control_flags":0}]}')),
+                    GetAccountById::responseToModel(new BaseResponse('{"id":3,"result":[{"id":"1.2.27","registrar":"1.2.2","name":"public-account-9","owner":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT51ojM7TUGVpFNUJWX8wi5dYp4iA4brRG16zWfcteVZRZHnkWCF",1]]},"active":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6TjLhr8uESvgtxrbWuXNAN3vcqzBMw5eyEup3PMiD2gnVxeuTb",1]]},"options":{"memo_key":"DCT6TjLhr8uESvgtxrbWuXNAN3vcqzBMw5eyEup3PMiD2gnVxeuTb","voting_account":"1.2.3","num_miner":0,"votes":["0:3"],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":0,"asset_id":"1.3.0"},"subscription_period":0},"rights_to_publish":{"is_publishing_manager":false,"publishing_rights_received":[],"publishing_rights_forwarded":[]},"statistics":"2.5.27","top_n_control_flags":0}]}')),
                     Database::responseToModel(new BaseResponse('{"id":4,"result":6}')),
-                    GetDynamicGlobalProperties::responseToModel(new BaseResponse('{"id":5,"result":{"id":"2.1.0","head_block_number":4957460,"head_block_id":"004ba51453a809bef1f102dd5ba7ca92deb679c2","time":"2019-04-05T11:17:30","current_miner":"1.4.5","next_maintenance_time":"2019-04-06T00:00:00","last_budget_time":"2019-04-05T00:00:00","unspent_fee_budget":767399621,"mined_rewards":"247271000000","miner_budget_from_fees":1251355749,"miner_budget_from_rewards":"639249000000","accounts_registered_this_interval":15,"recently_missed_count":0,"current_aslot":11128218,"recent_slots_filled":"323661495008065045209634813307898297215","dynamic_flags":0,"last_irreversible_block_num":4957460}}')),
+                    GetAccountById::responseToModel(new BaseResponse('{"id":5,"result":[{"id":"1.2.27","registrar":"1.2.2","name":"public-account-9","owner":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT51ojM7TUGVpFNUJWX8wi5dYp4iA4brRG16zWfcteVZRZHnkWCF",1]]},"active":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6TjLhr8uESvgtxrbWuXNAN3vcqzBMw5eyEup3PMiD2gnVxeuTb",1]]},"options":{"memo_key":"DCT6TjLhr8uESvgtxrbWuXNAN3vcqzBMw5eyEup3PMiD2gnVxeuTb","voting_account":"1.2.3","num_miner":0,"votes":["0:3"],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":0,"asset_id":"1.3.0"},"subscription_period":0},"rights_to_publish":{"is_publishing_manager":false,"publishing_rights_received":[],"publishing_rights_forwarded":[]},"statistics":"2.5.27","top_n_control_flags":0}]}')),
                     Database::responseToModel(new BaseResponse('{"id":6,"result":6}')),
-                    GetRequiredFees::responseToModel(new BaseResponse('{"id":7,"result":[{"amount":500000,"asset_id":"1.3.0"}]}')),
-                    NetworkBroadcast::responseToModel(new BaseResponse('{"id":8,"result":7}')),
-                    BroadcastTransactionWithCallback::responseToModel(new BaseResponse('{"id":9,"result":null}'))
+                    GetDynamicGlobalProperties::responseToModel(new BaseResponse('{"id":7,"result":{"id":"2.1.0","head_block_number":587291,"head_block_id":"0008f61b7aa1470c9d9e11b9ec05404f2c8a147e","time":"2019-04-18T12:31:15","current_miner":"1.4.7","next_maintenance_time":"2019-04-19T00:00:00","last_budget_time":"2019-04-18T00:00:00","unspent_fee_budget":1732680,"mined_rewards":"333444000000","miner_budget_from_fees":3616188,"miner_budget_from_rewards":"639249000000","accounts_registered_this_interval":57,"recently_missed_count":0,"current_aslot":984510,"recent_slots_filled":"340282366920938463463374607431768211455","dynamic_flags":0,"last_irreversible_block_num":587291}}')),
+                    Database::responseToModel(new BaseResponse('{"id":8,"result":6}')),
+                    GetChainId::responseToModel(new BaseResponse('{"id":9,"result":"a76a2db75f7a8018d41f2d648c766fdb0ddc79ac77104d243074ebdd5186bfbe"}')),
+                    Database::responseToModel(new BaseResponse('{"id":10,"result":6}')),
+                    GetRequiredFees::responseToModel(new BaseResponse('{"id":11,"result":[{"amount":100000,"asset_id":"1.3.0"}]}')),
+                    NetworkBroadcast::responseToModel(new BaseResponse('{"id":12,"result":7}')),
+                    BroadcastTransactionWithCallback::responseToModel(new BaseResponse('{"id":13,"result":null}'))
                 ));
         }
 
-        $options = new Options();
-        $options
-            ->setMemoKey(DCoreSDKTest::PUBLIC_KEY_1)
-            ->setVotingAccount(new ChainObject('1.2.3'))
-            ->setAllowSubscription(false)
-            ->setPricePerSubscribe((new AssetAmount())->setAmount(0)->setAssetId(new ChainObject('1.3.0')))
-            ->setNumMiner(0)
-            ->setVotes(['0:3'])
-            ->setExtensions([])
-            ->setSubscriptionPeriod(0);
+        $account = $this->sdk->getAccountApi()->get(new ChainObject(self::ACCOUNT_ID_1));
+
+        $oldOptions = $account->getOptions();
+        $newOptions =
+            $oldOptions
+                ->setAllowSubscription(false)
+                ->setNumMiner(0)
+                ->setVotes(['0:3'])
+                ->setExtensions([])
+                ->setSubscriptionPeriod(0);
 
         $this->sdk->getAccountApi()->updateAccount(
-            new ChainObject('1.2.34'),
-            $options,
+            new ChainObject(DCoreSDKTest::ACCOUNT_ID_1),
+            $newOptions,
             DCoreSDKTest::PRIVATE_KEY_1
         );
 

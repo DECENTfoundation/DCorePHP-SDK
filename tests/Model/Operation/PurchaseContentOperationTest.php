@@ -23,12 +23,12 @@ class PurchaseContentOperationTest extends TestCase
         $credentials = new Credentials(new ChainObject('1.2.34'), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
         $content = (new ContentObject())
             ->setAuthor('1.2.34')
-            ->setPrice((new PricePerRegion())->setPrices([1 => (new AssetAmount())->setAssetId(new ChainObject('1.3.0'))->setAmount(1000)]))
+            ->setPrice((new PricePerRegion())->setPrices([2 => (new AssetAmount())->setAssetId(new ChainObject('1.3.0'))->setAmount(1000)]))
             ->setURI('http://decent.ch?testtime=1552986916');
         $operation = new PurchaseContentOperation($credentials, $content);
 
         $this->assertEquals(
-            '1500000000000000000024687474703a2f2f646563656e742e63683f7465737474696d653d3135353239383639313622e803000000000000000100000002302e',
+            '1500000000000000000024687474703a2f2f646563656e742e63683f7465737474696d653d3135353239383639313622e803000000000000000200000002302e',
             $operation->toBytes()
         );
     }

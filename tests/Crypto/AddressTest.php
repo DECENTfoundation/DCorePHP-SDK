@@ -43,7 +43,7 @@ class AddressTest extends TestCase
         $address = Address::decode(DCoreSDKTest::PUBLIC_KEY_1);
         $checksum = $method->invokeArgs($address, [PublicKey::fromWif(DCoreSDKTest::PUBLIC_KEY_1)->toCompressedPublicKey()]);
 
-        $this->assertEquals('951c37f5', $checksum);
+        $this->assertEquals('c732b4ce', $checksum);
     }
 
     public function testGetPublicKeyPoint(): void

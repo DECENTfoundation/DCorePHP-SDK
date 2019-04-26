@@ -2,14 +2,12 @@
 
 namespace DCorePHP;
 
-use DCorePHP\Model\Asset\AssetAmount;
 use DCorePHP\Model\BaseOperation;
+use DCorePHP\Model\BlockData;
 use DCorePHP\Model\DynamicGlobalProps;
 use DCorePHP\Model\Transaction;
 use DCorePHP\Net\JsonRpc;
 use DCorePHP\Net\Model\Request\BaseRequest;
-use DCorePHP\Net\Model\Request\Database;
-use DCorePHP\Net\Model\Request\GetRequiredFees;
 use DCorePHP\Net\Model\Request\Login;
 use DCorePHP\Net\Websocket;
 use DCorePHP\Sdk\AccountApi;
@@ -455,8 +453,7 @@ class DCoreApi extends DCoreSdk
      * @param BaseOperation[] $operations
      * @param int $expiration
      * @return Transaction
-     * @throws \DCorePHP\Exception\InvalidApiCallException
-     * @throws \WebSocket\BadOpcodeException
+     * @throws \Exception
      */
     public function prepareTransaction(array $operations, int $expiration): Transaction
     {
@@ -464,19 +461,21 @@ class DCoreApi extends DCoreSdk
         $dynamicGlobalProperties = $this->getGeneralApi()->getDynamicGlobalProperties();
         $dynamicGlobalProperties->setExpirationInterval($expiration);
 
+        $chainId = $this->getGeneralApi()->getChainId();
+
         foreach ($operations as $operation) {
             if ($operation->getFee()->getAmount() === 0) {
-                /** @var AssetAmount[] $fees */
-                $fees = $this->requestWebsocket(Database::class, new GetRequiredFees($operations, $operation->getFee()->getAssetId()));
-                $operation->setFee(clone reset($fees));
+                $fee = $this->getValidationApi()->getFee($operation, $operation->getFee()->getAssetId());
+                $operation->setFee($fee);
             }
         }
 
         $transaction = new Transaction();
         $transaction
-            ->setDynamicGlobalProps($dynamicGlobalProperties)
+            ->setBlockData(BlockData::fromDynamicGlobalProps($dynamicGlobalProperties, $expiration))
             ->setOperations($operations)
-            ->setExtensions([]);
+            ->setExtensions([])
+            ->setChainId($chainId);
 
         return $transaction;
     }

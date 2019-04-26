@@ -28,7 +28,7 @@ class BalanceApiTest extends DCoreSDKTest
                 ->withConsecutive(
                     [$this->callback(function(BaseRequest $req) { return $req->setId(1)->toJson() === '{"jsonrpc":"2.0","id":1,"method":"call","params":[1,"login",["",""]]}'; })],
                     [$this->callback(function(BaseRequest $req) { return $req->setId(2)->toJson() === '{"jsonrpc":"2.0","id":2,"method":"call","params":[1,"database",[]]}'; })],
-                    [$this->callback(function(BaseRequest $req) { return $req->setId(3)->toJson() === '{"jsonrpc":"2.0","id":3,"method":"call","params":[6,"get_account_balances",["1.2.34",["1.3.56576"]]]}'; })]
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(3)->toJson() === '{"jsonrpc":"2.0","id":3,"method":"call","params":[6,"get_account_balances",["1.2.27",["1.3.56576"]]]}'; })]
                 )
                 ->will($this->onConsecutiveCalls(
                     Login::responseToModel(new BaseResponse('{"id":1,"result":true}')),
@@ -55,12 +55,12 @@ class BalanceApiTest extends DCoreSDKTest
                 ->withConsecutive(
                     [$this->callback(function(BaseRequest $req) { return $req->setId(1)->toJson() === '{"jsonrpc":"2.0","id":1,"method":"call","params":[1,"login",["",""]]}'; })],
                     [$this->callback(function(BaseRequest $req) { return $req->setId(2)->toJson() === '{"jsonrpc":"2.0","id":2,"method":"call","params":[1,"database",[]]}'; })],
-                    [$this->callback(function(BaseRequest $req) { return $req->setId(3)->toJson() === '{"jsonrpc":"2.0","id":3,"method":"call","params":[6,"get_account_balances",["1.2.34",[]]]}'; })]
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(3)->toJson() === '{"jsonrpc":"2.0","id":3,"method":"call","params":[6,"get_account_balances",["1.2.27",[]]]}'; })]
                 )
                 ->will($this->onConsecutiveCalls(
                     Login::responseToModel(new BaseResponse('{"id":1,"result":true}')),
                     Database::responseToModel(new BaseResponse('{"id":2,"result":6}')),
-                    GetAccountBalances::responseToModel(new BaseResponse('{"id":3,"result":[{"amount":"19098589442","asset_id":"1.3.0"},{"amount":101,"asset_id":"1.3.44"},{"amount":979600000,"asset_id":"1.3.53"},{"amount":"4764856000","asset_id":"1.3.54"}]}'))
+                    GetAccountBalances::responseToModel(new BaseResponse('{"id":3,"result":[{"amount":"995270224334","asset_id":"1.3.0"},{"amount":990,"asset_id":"1.3.36"}]}'))
                 ));
         }
 
@@ -87,16 +87,16 @@ class BalanceApiTest extends DCoreSDKTest
                 ->withConsecutive(
                     [$this->callback(function(BaseRequest $req) { return $req->setId(1)->toJson() === '{"jsonrpc":"2.0","id":1,"method":"call","params":[1,"login",["",""]]}'; })],
                     [$this->callback(function(BaseRequest $req) { return $req->setId(2)->toJson() === '{"jsonrpc":"2.0","id":2,"method":"call","params":[1,"database",[]]}'; })],
-                    [$this->callback(function(BaseRequest $req) { return $req->setId(3)->toJson() === '{"jsonrpc":"2.0","id":3,"method":"call","params":[6,"get_named_account_balances",["u961279ec8b7ae7bd62f304f7c1c3d345",["1.3.0"]]]}'; })]
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(3)->toJson() === '{"jsonrpc":"2.0","id":3,"method":"call","params":[6,"get_named_account_balances",["public-account-9",["1.3.0"]]]}'; })]
                 )
                 ->will($this->onConsecutiveCalls(
                     Login::responseToModel(new BaseResponse('{"id":1,"result":true}')),
                     Database::responseToModel(new BaseResponse('{"id":2,"result":6}')),
-                    GetAccountBalances::responseToModel(new BaseResponse('{"id":3,"result":[{"amount":"18437730145","asset_id":"1.3.0"}]}'))
+                    GetAccountBalances::responseToModel(new BaseResponse('{"id":3,"result":[{"amount":"995270224334","asset_id":"1.3.0"}]}'))
                 ));
         }
 
-        $asset = $this->sdk->getBalanceApi()->getByName('u961279ec8b7ae7bd62f304f7c1c3d345', new ChainObject('1.3.0'));
+        $asset = $this->sdk->getBalanceApi()->getByName(DCoreSDKTest::ACCOUNT_NAME_1, new ChainObject('1.3.0'));
 
         $this->assertEquals('1.3.0', $asset->getAssetId()->getId());
     }
@@ -113,17 +113,17 @@ class BalanceApiTest extends DCoreSDKTest
                 ->withConsecutive(
                     [$this->callback(function(BaseRequest $req) { return $req->setId(1)->toJson() === '{"jsonrpc":"2.0","id":1,"method":"call","params":[1,"login",["",""]]}'; })],
                     [$this->callback(function(BaseRequest $req) { return $req->setId(2)->toJson() === '{"jsonrpc":"2.0","id":2,"method":"call","params":[1,"database",[]]}'; })],
-                    [$this->callback(function(BaseRequest $req) { return $req->setId(3)->toJson() === '{"jsonrpc":"2.0","id":3,"method":"call","params":[6,"get_named_account_balances",["u961279ec8b7ae7bd62f304f7c1c3d345",["1.3.0"]]]}'; })]
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(3)->toJson() === '{"jsonrpc":"2.0","id":3,"method":"call","params":[6,"get_named_account_balances",["public-account-9",["1.3.0"]]]}'; })]
                 )
                 ->will($this->onConsecutiveCalls(
                     Login::responseToModel(new BaseResponse('{"id":1,"result":true}')),
                     Database::responseToModel(new BaseResponse('{"id":2,"result":6}')),
-                    GetAccountBalances::responseToModel(new BaseResponse('{"id":3,"result":[{"amount":"18437730145","asset_id":"1.3.0"}]}'))
+                    GetAccountBalances::responseToModel(new BaseResponse('{"id":3,"result":[{"amount":"995270224334","asset_id":"1.3.0"}]}'))
                 ));
         }
 
         /** @var AssetAmount[] $assets */
-        $assets = $this->sdk->getBalanceApi()->getAllByName('u961279ec8b7ae7bd62f304f7c1c3d345', [new ChainObject('1.3.0')]);
+        $assets = $this->sdk->getBalanceApi()->getAllByName(DCoreSDKTest::ACCOUNT_NAME_1, [new ChainObject('1.3.0')]);
 
         $this->assertEquals('1.3.0', $assets[0]->getAssetId()->getId());
     }
@@ -202,18 +202,18 @@ class BalanceApiTest extends DCoreSDKTest
                     [$this->callback(function(BaseRequest $req) { return $req->setId(2)->toJson() === '{"jsonrpc":"2.0","id":2,"method":"call","params":[1,"database",[]]}'; })],
                     [$this->callback(function(BaseRequest $req) { return $req->setId(3)->toJson() === '{"jsonrpc":"2.0","id":3,"method":"call","params":[6,"lookup_asset_symbols",[["DCT"]]]}'; })],
                     [$this->callback(function(BaseRequest $req) { return $req->setId(4)->toJson() === '{"jsonrpc":"2.0","id":4,"method":"call","params":[1,"database",[]]}'; })],
-                    [$this->callback(function(BaseRequest $req) { return $req->setId(5)->toJson() === '{"jsonrpc":"2.0","id":5,"method":"call","params":[6,"get_named_account_balances",["u961279ec8b7ae7bd62f304f7c1c3d345",["1.3.0"]]]}'; })]
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(5)->toJson() === '{"jsonrpc":"2.0","id":5,"method":"call","params":[6,"get_named_account_balances",["public-account-9",["1.3.0"]]]}'; })]
                 )
                 ->will($this->onConsecutiveCalls(
                     Login::responseToModel(new BaseResponse('{"id":1,"result":true}')),
                     Database::responseToModel(new BaseResponse('{"id":2,"result":6}')),
                     LookupAssets::responseToModel(new BaseResponse('{"id":3,"result":[{"id":"1.3.0","symbol":"DCT","precision":8,"issuer":"1.2.1","description":"","options":{"max_supply":"7319777577456900","core_exchange_rate":{"base":{"amount":1,"asset_id":"1.3.0"},"quote":{"amount":1,"asset_id":"1.3.0"}},"is_exchangeable":true,"extensions":[]},"dynamic_asset_data_id":"2.3.0"}]}')),
                     Database::responseToModel(new BaseResponse('{"id":4,"result":6}')),
-                    GetAccountBalances::responseToModel(new BaseResponse('{"id":5,"result":[{"amount":"18437730145","asset_id":"1.3.0"}]}'))
+                    GetAccountBalances::responseToModel(new BaseResponse('{"id":5,"result":[{"amount":"995270224334","asset_id":"1.3.0"}]}'))
                 ));
         }
 
-        [$asset, $assetAmount] = $this->sdk->getBalanceApi()->getWithAssetByName('u961279ec8b7ae7bd62f304f7c1c3d345');
+        [$asset, $assetAmount] = $this->sdk->getBalanceApi()->getWithAssetByName(DCoreSDKTest::ACCOUNT_NAME_1);
 
         $this->assertEquals('DCT', $asset->getSymbol());
         $this->assertEquals('1.3.0', $asset->getId()->getId());
@@ -231,18 +231,18 @@ class BalanceApiTest extends DCoreSDKTest
                     [$this->callback(function(BaseRequest $req) { return $req->setId(2)->toJson() === '{"jsonrpc":"2.0","id":2,"method":"call","params":[1,"database",[]]}'; })],
                     [$this->callback(function(BaseRequest $req) { return $req->setId(3)->toJson() === '{"jsonrpc":"2.0","id":3,"method":"call","params":[6,"lookup_asset_symbols",[["DCT","DCT"]]]}'; })],
                     [$this->callback(function(BaseRequest $req) { return $req->setId(4)->toJson() === '{"jsonrpc":"2.0","id":4,"method":"call","params":[1,"database",[]]}'; })],
-                    [$this->callback(function(BaseRequest $req) { return $req->setId(5)->toJson() === '{"jsonrpc":"2.0","id":5,"method":"call","params":[6,"get_named_account_balances",["u961279ec8b7ae7bd62f304f7c1c3d345",["1.3.0","1.3.0"]]]}'; })]
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(5)->toJson() === '{"jsonrpc":"2.0","id":5,"method":"call","params":[6,"get_named_account_balances",["public-account-9",["1.3.0","1.3.0"]]]}'; })]
                 )
                 ->will($this->onConsecutiveCalls(
                     Login::responseToModel(new BaseResponse('{"id":1,"result":true}')),
                     Database::responseToModel(new BaseResponse('{"id":2,"result":6}')),
                     LookupAssets::responseToModel(new BaseResponse('{"id":3,"result":[{"id":"1.3.0","symbol":"DCT","precision":8,"issuer":"1.2.1","description":"","options":{"max_supply":"7319777577456900","core_exchange_rate":{"base":{"amount":1,"asset_id":"1.3.0"},"quote":{"amount":1,"asset_id":"1.3.0"}},"is_exchangeable":true,"extensions":[]},"dynamic_asset_data_id":"2.3.0"},{"id":"1.3.0","symbol":"DCT","precision":8,"issuer":"1.2.1","description":"","options":{"max_supply":"7319777577456900","core_exchange_rate":{"base":{"amount":1,"asset_id":"1.3.0"},"quote":{"amount":1,"asset_id":"1.3.0"}},"is_exchangeable":true,"extensions":[]},"dynamic_asset_data_id":"2.3.0"}]}')),
                     Database::responseToModel(new BaseResponse('{"id":4,"result":6}')),
-                    GetAccountBalances::responseToModel(new BaseResponse('{"id":5,"result":[{"amount":"18437730145","asset_id":"1.3.0"}]}'))
+                    GetAccountBalances::responseToModel(new BaseResponse('{"id":5,"result":[{"amount":"995270224334","asset_id":"1.3.0"}]}'))
                 ));
         }
 
-        $assetPairs = $this->sdk->getBalanceApi()->getAllWithAssetByName('u961279ec8b7ae7bd62f304f7c1c3d345', ['DCT', 'DCT']);
+        $assetPairs = $this->sdk->getBalanceApi()->getAllWithAssetByName(DCoreSDKTest::ACCOUNT_NAME_1, ['DCT', 'DCT']);
 
         foreach ($assetPairs as [$asset, $assetAmount]) {
             $this->assertEquals('DCT', $asset->getSymbol());

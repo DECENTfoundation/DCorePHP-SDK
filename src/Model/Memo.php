@@ -6,6 +6,7 @@ use DCorePHP\Crypto\Credentials;
 use DCorePHP\Crypto\ECKeyPair;
 use DCorePHP\Crypto\PublicKey;
 use DCorePHP\Crypto\Address;
+use DCorePHP\Model\Subscription\AuthMap;
 use DCorePHP\Utils\Crypto;
 use DCorePHP\Utils\Math;
 
@@ -29,6 +30,7 @@ class Memo
     {
         $instance = new self();
         $instance->message = '00000000' . Math::byteArrayToHex(Math::stringToByteArray($message));
+        $instance->nonce = '0';
         return $instance;
     }
 
@@ -43,7 +45,9 @@ class Memo
      */
     public static function withCredentials(string $message, Credentials $credentials, Account $recipient): Memo
     {
-        return self::fromECKeyPair($message, $credentials->getKeyPair(), $recipient->getActive()->getKeyAuths()[0][0]);
+        /** @var AuthMap $authMap */
+        $authMap = $recipient->getActive()->getKeyAuths()[0];
+        return self::fromECKeyPair($message, $credentials->getKeyPair(), Address::decode($authMap->getValue()));
     }
 
     /**
@@ -60,7 +64,7 @@ class Memo
     {
         $instance = new self();
         $instance->nonce = $nonce ?? Crypto::getInstance()->generateNonce();
-        $instance->from = Address::decodeCheckNull($keyPair->getPublic());
+        $instance->from = Address::decodeCheckNull($keyPair->getPublic()->toAddress());
         $instance->to = $recipient;
         $instance->message = Crypto::getInstance()->encryptWithChecksum($message, $keyPair->getPrivate(), PublicKey::fromWif($recipient->encode()), $instance->getNonce());
 
@@ -129,7 +133,7 @@ class Memo
     private function generateNonce(): string
     {
         try {
-            return (string)((int)str_pad(str_replace('.', '', microtime(true)), 18, '0') + random_int(0, PHP_INT_MAX));
+            return gmp_strval(gmp_add(gmp_init(str_pad(str_replace('.', '', microtime(true)), 18, '0')), random_int(0, PHP_INT_MAX)));
         } catch (\Exception $e) {
             return $this->generateNonce();
         }
@@ -141,9 +145,15 @@ class Memo
      */
     public function toArray(): array
     {
+        if ($this->getFrom() !== null && $this->getTo() !== null) {
+            return [
+                'from' => PublicKey::fromWif($this->getFrom()->encode())->toAddress(),
+                'to' => PublicKey::fromWif($this->getTo()->encode())->toAddress(),
+                'message' => $this->getMessage(),
+                'nonce' => $this->getNonce(),
+            ];
+        }
         return [
-            'from' => PublicKey::fromWif($this->getFrom()->encode())->toAddress(),
-            'to' => PublicKey::fromWif($this->getTo()->encode())->toAddress(),
             'message' => $this->getMessage(),
             'nonce' => $this->getNonce(),
         ];
@@ -157,10 +167,11 @@ class Memo
     {
         return implode('', [
             '01',
-            PublicKey::fromWif($this->getFrom()->encode())->toCompressedPublicKey(),
-            PublicKey::fromWif($this->getTo()->encode())->toCompressedPublicKey(),
+            $this->getFrom() ? PublicKey::fromWif($this->getFrom()->encode())->toCompressedPublicKey() : str_pad('', 66, '0'),
+            $this->getTo() ? PublicKey::fromWif($this->getTo()->encode())->toCompressedPublicKey() : str_pad('', 66, '0'),
             str_pad(Math::gmpDecHex(Math::reverseBytesLong($this->getNonce())), 16, '0', STR_PAD_LEFT),
-            Math::gmpDecHex(strlen($this->getMessage()) / 2) . $this->getMessage(),
+            Math::writeUnsignedVarIntHex(sizeof(Math::stringToByteArray(hex2bin($this->getMessage())))),
+            $this->getMessage()
         ]);
     }
 }

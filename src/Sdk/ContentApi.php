@@ -4,7 +4,6 @@ namespace DCorePHP\Sdk;
 
 use DCorePHP\Crypto\Credentials;
 use DCorePHP\Crypto\PrivateKey;
-use DCorePHP\Exception\InvalidApiCallException;
 use DCorePHP\Exception\ObjectAlreadyFoundException;
 use DCorePHP\Exception\ObjectNotFoundException;
 use DCorePHP\Exception\ValidationException;
@@ -27,7 +26,6 @@ use DCorePHP\Net\Model\Request\Database;
 use DCorePHP\Net\Model\Request\GenerateContentKeys;
 use DCorePHP\Net\Model\Request\GetContentById;
 use DCorePHP\Net\Model\Request\GetContentByURI;
-use DCorePHP\Net\Model\Request\GetRequiredFees;
 use DCorePHP\Net\Model\Request\ListPublishingManagers;
 use DCorePHP\Net\Model\Request\NetworkBroadcast;
 use DCorePHP\Net\Model\Request\RestoreEncryptionKey;
@@ -275,9 +273,8 @@ class ContentApi extends BaseApi implements ContentApiInterface
             // TODO: Better Public Key Implementation
             ->setElGamalPublicKey((new PubKey())->setPubKey($elGamalPublicKey));
 
-        /** @var AssetAmount[] $fees */
-        $fees = $this->dcoreApi->requestWebsocket(Database::class, new GetRequiredFees([$operation], new ChainObject($priceAssetName)));
-        $operation->setFee(clone reset($fees));
+        $fee = $this->dcoreApi->getValidationApi()->getFee($operation, new ChainObject($priceAssetName));
+        $operation->setFee($fee);
 
         $transaction = new Transaction();
         $transaction

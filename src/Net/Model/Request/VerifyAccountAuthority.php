@@ -2,16 +2,17 @@
 
 namespace DCorePHP\Net\Model\Request;
 
+use DCorePHP\Crypto\Address;
 use DCorePHP\Net\Model\Response\BaseResponse;
 
-class GetTransactionHex extends BaseRequest
+class VerifyAccountAuthority extends BaseRequest
 {
-    public function __construct($transaction)
+    public function __construct(string $nameOrId, array $keys)
     {
         parent::__construct(
             'database',
-            'get_transaction_hex',
-            [$transaction]
+            'verify_account_authority',
+            [$nameOrId, array_map(function (Address $key) { return $key->encode(); }, $keys)]
         );
     }
 

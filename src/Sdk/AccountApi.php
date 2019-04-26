@@ -17,15 +17,11 @@ use DCorePHP\Model\ChainObject;
 use DCorePHP\Model\ElGamalKeys;
 use DCorePHP\Model\Memo;
 use DCorePHP\Model\Operation\CreateAccount;
-use DCorePHP\Model\Operation\CreateAccountParameters;
 use DCorePHP\Model\Operation\Transfer2;
 use DCorePHP\Model\Operation\UpdateAccount;
-use DCorePHP\Model\Operation\UpdateAccountParameters;
 use DCorePHP\Model\Options;
 use DCorePHP\Model\Subscription\AuthMap;
-use DCorePHP\Model\Transaction;
 use DCorePHP\Model\TransactionConfirmation;
-use DCorePHP\Net\Model\Request\BroadcastTransactionWithCallback;
 use DCorePHP\Net\Model\Request\Database;
 use DCorePHP\Net\Model\Request\GetAccountById;
 use DCorePHP\Net\Model\Request\GetAccountByName;
@@ -34,10 +30,8 @@ use DCorePHP\Net\Model\Request\GetAccountReferences;
 use DCorePHP\Net\Model\Request\GetAccountsById;
 use DCorePHP\Net\Model\Request\GetFullAccounts;
 use DCorePHP\Net\Model\Request\GetKeyReferences;
-use DCorePHP\Net\Model\Request\GetRequiredFees;
 use DCorePHP\Net\Model\Request\ListAccounts;
 use DCorePHP\Net\Model\Request\LookupAccountNames;
-use DCorePHP\Net\Model\Request\NetworkBroadcast;
 use DCorePHP\Net\Model\Request\SearchAccountHistory;
 use DCorePHP\Net\Model\Request\SearchAccounts;
 use DCorePHP\Resources\BrainKeyDictionary;
@@ -205,36 +199,34 @@ class AccountApi extends BaseApi implements AccountApiInterface
         AssetAmount $fee = null
     ): Transfer2 {
         $fee = $fee ?: new AssetAmount();
-        $recipient = $this->getByNameOrId($nameOrId);
-        $recipientPublicKeyWif = $recipient->getActive()->getKeyAuths()[0]->getValue();
 
+        if ((($memo === '' || $memo === null) || !$encrypted) && ChainObject::isValid($nameOrId)) {
+            $transferOperation = new Transfer2();
+            $transferOperation
+                ->setFrom($credentials->getAccount())
+                ->setTo(new ChainObject($nameOrId))
+                ->setAmount($amount)
+                ->setMemo(Memo::withMessage($memo))
+                ->setFee($fee);
+            return $transferOperation;
+        }
+
+        $receiver = $this->getByNameOrId($nameOrId);
+        $msg = null;
+        if ($memo) {
+            if ($encrypted) {
+                $msg = Memo::withCredentials($memo, $credentials, $receiver);
+            } else {
+                $msg = Memo::withMessage($memo);
+            }
+        }
         $transferOperation = new Transfer2();
         $transferOperation
-            ->setFrom($credentials->getAccount()->getId())
-            ->setTo((new ChainObject($nameOrId))->getId())
+            ->setFrom($credentials->getAccount())
+            ->setTo($receiver->getId())
             ->setAmount($amount)
+            ->setMemo($msg)
             ->setFee($fee);
-
-        if ($memo) {
-            $memoObject = new Memo();
-            $memoObject
-                ->setFrom(Address::decodeCheckNull($credentials->getKeyPair()->getPublic()->toAddress()))
-                ->setTo(Address::decodeCheckNull($recipientPublicKeyWif))
-                ->setMessage($memo);
-
-            if (!$encrypted) {
-                $memoObject
-                    ->setNonce(Crypto::getInstance()->generateNonce())
-                    ->setMessage(Crypto::getInstance()->encryptWithChecksum(
-                        $memoObject->getMessage(),
-                        PrivateKey::fromWif($credentials->getKeyPair()->getPrivate()->toWif()),
-                        PublicKey::fromWif($recipientPublicKeyWif),
-                        $memoObject->getNonce()
-                    ));
-            }
-
-            $transferOperation->setMemo($memoObject);
-        }
 
         return $transferOperation;
     }
@@ -434,8 +426,6 @@ class AccountApi extends BaseApi implements AccountApiInterface
         $operation = new UpdateAccount();
         $operation
             ->setAccountId($accountId)
-            ->setOwner($account->getOwner())
-            ->setActive($account->getActive())
             ->setOptions($newOptions);
 
         return $this->dcoreApi->getBroadcastApi()->broadcastOperationWithECKeyPairWithCallback(ECKeyPair::fromBase58($privateKeyWif), $operation);

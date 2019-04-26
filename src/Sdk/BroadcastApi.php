@@ -7,6 +7,7 @@ use DCorePHP\DCoreApi;
 use DCorePHP\Model\BaseOperation;
 use DCorePHP\Model\Transaction;
 use DCorePHP\Model\TransactionConfirmation;
+use DCorePHP\Net\Model\Request\BroadcastTransaction;
 use DCorePHP\Net\Model\Request\BroadcastTransactionWithCallback;
 use DCorePHP\Net\Model\Request\NetworkBroadcast;
 
@@ -17,7 +18,7 @@ class BroadcastApi extends BaseApi implements BroadcastApiInterface
      */
     public function broadcast(Transaction $transaction): void
     {
-        // TODO: Implement broadcast() method.
+        $this->dcoreApi->requestWebsocket(NetworkBroadcast::class, new BroadcastTransaction($transaction));
     }
 
     /**
@@ -28,7 +29,7 @@ class BroadcastApi extends BaseApi implements BroadcastApiInterface
         array $operations,
         int $expiration = DCoreApi::TRANSACTION_EXPIRATION
     ): void {
-        // TODO: Implement broadcastOperationsWithECKeyPair() method.
+        $this->broadcastOperationsWithPrivateKey($privateKey->getPrivate()->toWif(), $operations, $expiration);
     }
 
     /**
@@ -39,7 +40,7 @@ class BroadcastApi extends BaseApi implements BroadcastApiInterface
         BaseOperation $operation,
         int $expiration = DCoreApi::TRANSACTION_EXPIRATION
     ): void {
-        // TODO: Implement broadcastOperationWithECKeyPair() method.
+        $this->broadcastOperationWithPrivateKey($privateKey->getPrivate()->toWif(), $operation, $expiration);
     }
 
     /**
@@ -50,7 +51,10 @@ class BroadcastApi extends BaseApi implements BroadcastApiInterface
         array $operations,
         int $expiration = DCoreApi::TRANSACTION_EXPIRATION
     ): void {
-        // TODO: Implement broadcastOperationsWithPrivateKey() method.
+        $transaction = $this->dcoreApi->getTransactionApi()->createTransaction($operations, $expiration);
+        $transaction->sign($privateKey);
+
+        $this->broadcast($transaction);
     }
 
     /**
@@ -61,7 +65,10 @@ class BroadcastApi extends BaseApi implements BroadcastApiInterface
         BaseOperation $operation,
         int $expiration = DCoreApi::TRANSACTION_EXPIRATION
     ): void {
-        // TODO: Implement broadcastOperationWithPrivateKey() method.
+        $transaction = $this->dcoreApi->getTransactionApi()->createTransactionSingleOperation($operation, $expiration);
+        $transaction->sign($privateKey);
+
+        $this->broadcast($transaction);
     }
 
     /**

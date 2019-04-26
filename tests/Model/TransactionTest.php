@@ -4,6 +4,7 @@ namespace DCorePHPTests\Model;
 
 use DCorePHP\Model\Asset\AssetAmount;
 use DCorePHP\Model\Authority;
+use DCorePHP\Model\BlockData;
 use DCorePHP\Model\DynamicGlobalProps;
 use DCorePHP\Model\Memo;
 use DCorePHP\Model\ChainObject;
@@ -79,13 +80,13 @@ class TransactionTest extends TestCase
 
         $transaction = new Transaction();
         $transaction
-            ->setDynamicGlobalProps($dynamicGlobalProperties)
+            ->setBlockData(BlockData::fromDynamicGlobalProps($dynamicGlobalProperties, '30'))
             ->setOperations([$operation])
             ->setExtensions([])
             ->sign($senderPrivateKeyWif);
 
         $this->assertEquals(
-            '1f5f3f23f11fbd9d97754c0341788c51fb848588738e9f8c4591cd0311360864112244e11c19ea02e5febee1f3b97dd9c8e4a8f0f6353d4ff5c8919aac9bea194e',
+            '1f17b43e3880bac9def96110a654a9caa960a485c46e3820492cd0829d2cbb6d5f635d375091f5bc464a4f1cac9e4ee9be307a1974610fcbe8e90537d47c627676',
             $transaction->getSignature()
         );
     }
@@ -140,7 +141,7 @@ class TransactionTest extends TestCase
 
         $transaction = new Transaction();
         $transaction
-            ->setDynamicGlobalProps($dynamicGlobalProperties)
+            ->setBlockData(BlockData::fromDynamicGlobalProps($dynamicGlobalProperties, 30))
             ->setOperations([$operation])
             ->setExtensions([])
             ->sign(DCoreSDKTest::PRIVATE_KEY_1);
@@ -150,7 +151,7 @@ class TransactionTest extends TestCase
             $transaction->toBytes()
         );
         $this->assertEquals(
-            '1f246288a9167fa71269bdb2ceaefa02334cecf1363db112b560476aad76ac1d5a66e17ffb6a209261aa6052142373955fb007ed815a46ee3cca1402862a85ae19',
+            '20617f01ff5f796567531ee2b4c1ae6713cc2e1ea2c20693663a6f3097c943931f5a709703037224eb216a08f5840a26c1c609316524bffa9802fbe7345ad0bc81',
             $transaction->getSignature()
         );
     }
@@ -201,20 +202,20 @@ class TransactionTest extends TestCase
 
         $transaction = new Transaction();
         $transaction
-            ->setDynamicGlobalProps($dynamicGlobalProperties)
+            ->setBlockData(BlockData::fromDynamicGlobalProps($dynamicGlobalProperties, 30))
             ->setOperations([$operation])
-            ->setExtensions([])
-            ->increment();
+            ->setExtensions([]);
+        $transaction->getBlockData()->increment();
 
         $this->assertEquals(
-            'ff82012880f8fd501a5c010220a1070000000000002200000102c03f8e840c1699fd7808c2bb858e249c688c5be8acf0a0c1c484ab0cfb27f0a803000001000300000000000000000000000000000000000000',
+            'ff82012880f8fd501a5c010220a1070000000000002200000102cf2c986e78776c21e5a75d42dd858dfe8ef06cf663ee0e8363db89ad5999d84f03000001000300000000000000000000000000000000000000',
             $transaction->toBytes()
         );
 
         $transaction->sign(DCoreSDKTest::PRIVATE_KEY_1);
 
         $this->assertEquals(
-            '2046d64bf6b11931d29d8b125894d807f81c9af9c1e270ac0bb9212c3f3800fc7677cca63f79303fcac448adc79f820cd559dfc4c4aa76f34ba3a4755b7c48387b',
+            '1f135f72ee56c9d4b79d9a418442fd9e595e6a1bd2c30a7bc8d4ee9f818fd8f65f3a929e6aa2f19f616d260d6a912bb66f1a6029142e171469cf67e08475841bdf',
             $transaction->getSignature()
         );
     }

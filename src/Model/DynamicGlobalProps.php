@@ -108,6 +108,7 @@ class DynamicGlobalProps
     /**
      * @param \DateTime|string $time
      * @return DynamicGlobalProps
+     * @throws \Exception
      */
     public function setTime($time): DynamicGlobalProps
     {

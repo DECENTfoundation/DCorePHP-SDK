@@ -2,16 +2,17 @@
 
 namespace DCorePHP\Net\Model\Request;
 
+use DCorePHP\Model\Transaction;
 use DCorePHP\Net\Model\Response\BaseResponse;
 
-class GetTransactionHex extends BaseRequest
+class GetPotentialSignatures extends BaseRequest
 {
-    public function __construct($transaction)
+    public function __construct(Transaction $transaction)
     {
         parent::__construct(
             'database',
-            'get_transaction_hex',
-            [$transaction]
+            'get_potential_signatures',
+            [$transaction->toArray()]
         );
     }
 

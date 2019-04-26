@@ -15,7 +15,7 @@ class ECKeyPairTest extends TestCase
     {
         $this->assertEquals(
             DCoreSDKTest::PRIVATE_KEY_1,
-            ECKeyPair::fromPrivate('6a580c0110d83829afedbf339d64dfa5fb5b21b011445ba792f0f2bb17273473')->getPrivate()->toWif()
+            ECKeyPair::fromPrivate('13a9b612a993aaf5b6f9de0b4a9a373d8ff3f19036bef5d7d51bad55820563eb')->getPrivate()->toWif()
         );
     }
 
@@ -31,12 +31,12 @@ class ECKeyPairTest extends TestCase
     {
         $this->assertEquals(
             DCoreSDKTest::PUBLIC_KEY_1,
-            ECKeyPair::fromCompressedPublicKey('02c03f8e840c1699fd7808c2bb858e249c688c5be8acf0a0c1c484ab0cfb27f0a8')->getPublic()->toAddress()
+            ECKeyPair::fromCompressedPublicKey('02cf2c986e78776c21e5a75d42dd858dfe8ef06cf663ee0e8363db89ad5999d84f')->getPublic()->toAddress()
         );
 
         $this->assertEquals(
             DCoreSDKTest::PUBLIC_KEY_2,
-            ECKeyPair::fromCompressedPublicKey('02e0ced80260630f641f61f6d6959f32b5c43b1a38be55666b98abfe8bafcc556b')->getPublic()->toAddress()
+            ECKeyPair::fromCompressedPublicKey('0242e0431837a5843252a0ecfab9565bdb20bdb0fc4c88398455f64589fdc7b93d')->getPublic()->toAddress()
         );
     }
 
@@ -64,7 +64,7 @@ class ECKeyPairTest extends TestCase
     {
         $this->assertEquals(
             DCoreSDKTest::PRIVATE_KEY_1,
-            ECKeyPair::fromPrivate('6a580c0110d83829afedbf339d64dfa5fb5b21b011445ba792f0f2bb17273473')->getPrivate()->toWif()
+            ECKeyPair::fromPrivate('13a9b612a993aaf5b6f9de0b4a9a373d8ff3f19036bef5d7d51bad55820563eb')->getPrivate()->toWif()
         );
     }
 
@@ -72,7 +72,7 @@ class ECKeyPairTest extends TestCase
     {
         $this->assertEquals(
             DCoreSDKTest::PUBLIC_KEY_1,
-            ECKeyPair::fromCompressedPublicKey('02c03f8e840c1699fd7808c2bb858e249c688c5be8acf0a0c1c484ab0cfb27f0a8')->getPublic()->toAddress()
+            ECKeyPair::fromCompressedPublicKey('02cf2c986e78776c21e5a75d42dd858dfe8ef06cf663ee0e8363db89ad5999d84f')->getPublic()->toAddress()
         );
 
         $this->assertEquals(
@@ -84,8 +84,8 @@ class ECKeyPairTest extends TestCase
     public function testSignature(): void
     {
         $this->assertEquals(
-            '1f246288a9167fa71269bdb2ceaefa02334cecf1363db112b560476aad76ac1d5a66e17ffb6a209261aa6052142373955fb007ed815a46ee3cca1402862a85ae19',
-            ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1)->signature('e061b1d5fbff20e80b5b010120a10700000000000022076d696b6565656501000000000102a01c045821676cfc191832ad22cc5c9ade0ea1760131c87ff2dd3fed2f13dd33010001000000000102a01c045821676cfc191832ad22cc5c9ade0ea1760131c87ff2dd3fed2f13dd33010002a01c045821676cfc191832ad22cc5c9ade0ea1760131c87ff2dd3fed2f13dd33030000000000000000000000000000000000000000')
+            '1f660d8c65db7d586a4f33ce0161c94e79880abeff119961ec5b5713062b870f7739dd7a996f8741ce3bad7566a8e3b261637f54e47364c6c8c5847fd328f53be2',
+            ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_2)->signature('366507de4ced67d6b55c012720a107000000000000232200000000000201b09aea2900000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c0000000041686f79205048500000', '17401602b201b3c45a3ad98afc6fb458f91f519bd30d1058adf6f2bed66376bc')
         );
     }
 

@@ -58,7 +58,7 @@ class GeneralApiTest extends DCoreSDKTest
                 ->will($this->onConsecutiveCalls(
                     Login::responseToModel(new BaseResponse('{"id":1,"result":true}')),
                     Database::responseToModel(new BaseResponse('{"id":2,"result":6}')),
-                    GetChainProperties::responseToModel(new BaseResponse('{"id":3,"result":{"id":"2.9.0","chain_id":"17401602b201b3c45a3ad98afc6fb458f91f519bd30d1058adf6f2bed66376bc","immutable_parameters":{"min_miner_count":11,"num_special_accounts":0,"num_special_assets":0}}}'))
+                    GetChainProperties::responseToModel(new BaseResponse('{"id":3,"result":{"id":"2.9.0","chain_id":"a76a2db75f7a8018d41f2d648c766fdb0ddc79ac77104d243074ebdd5186bfbe","immutable_parameters":{"min_miner_count":11,"num_special_accounts":0,"num_special_assets":0}}}'))
                 ));
         }
 
@@ -66,7 +66,7 @@ class GeneralApiTest extends DCoreSDKTest
 
         $this->assertInstanceOf(ChainProperty::class, $chainProps);
         $this->assertEquals('2.9.0', $chainProps->getId()->getId());
-        $this->assertEquals('17401602b201b3c45a3ad98afc6fb458f91f519bd30d1058adf6f2bed66376bc', $chainProps->getChainId());
+        $this->assertEquals('a76a2db75f7a8018d41f2d648c766fdb0ddc79ac77104d243074ebdd5186bfbe', $chainProps->getChainId());
     }
 
     public function testGetGlobalProps(): void
@@ -132,12 +132,12 @@ class GeneralApiTest extends DCoreSDKTest
                 ->will($this->onConsecutiveCalls(
                     Login::responseToModel(new BaseResponse('{"id":1,"result":true}')),
                     Database::responseToModel(new BaseResponse('{"id":2,"result":6}')),
-                    GetChainId::responseToModel(new BaseResponse('{"id":3,"result":"17401602b201b3c45a3ad98afc6fb458f91f519bd30d1058adf6f2bed66376bc"}'))
+                    GetChainId::responseToModel(new BaseResponse('{"id":3,"result":"a76a2db75f7a8018d41f2d648c766fdb0ddc79ac77104d243074ebdd5186bfbe"}'))
                 ));
         }
 
         $chainId = $this->sdk->getGeneralApi()->getChainId();
-        $this->assertEquals('17401602b201b3c45a3ad98afc6fb458f91f519bd30d1058adf6f2bed66376bc', $chainId);
+        $this->assertEquals('a76a2db75f7a8018d41f2d648c766fdb0ddc79ac77104d243074ebdd5186bfbe', $chainId);
     }
 
     public function testGetDynamicProperties(): void

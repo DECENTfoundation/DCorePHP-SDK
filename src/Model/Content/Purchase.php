@@ -10,9 +10,9 @@ use DCorePHP\Model\ChainObject;
 class Purchase
 {
 
-    /** ChainObject */
+    /** @var ChainObject */
     private $id;
-    /** @var string */
+    /** @var ChainObject */
     private $consumer;
     /** @var string */
     private $uri;
@@ -60,19 +60,23 @@ class Purchase
     }
 
     /**
-     * @return string
+     * @return ChainObject
      */
-    public function getConsumer(): string
+    public function getConsumer(): ChainObject
     {
         return $this->consumer;
     }
 
     /**
-     * @param string $consumer
+     * @param ChainObject|string $consumer
      * @return Purchase
+     * @throws \DCorePHP\Exception\ValidationException
      */
-    public function setConsumer(string $consumer): Purchase
+    public function setConsumer($consumer): Purchase
     {
+        if (is_string($consumer)) {
+            $consumer = new ChainObject($consumer);
+        }
         $this->consumer = $consumer;
 
         return $this;
@@ -382,6 +386,7 @@ class Purchase
     /**
      * @param ChainObject | string $id
      * @return Purchase
+     * @throws \DCorePHP\Exception\ValidationException
      */
     public function setId($id): Purchase
     {

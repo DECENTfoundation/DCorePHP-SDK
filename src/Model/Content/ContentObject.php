@@ -454,7 +454,7 @@ class ContentObject
 
     public function getPriceNone(): AssetAmount
     {
-        return $this->getPrice()->getPrices()[self::REGIONS_NONE_ID];
+        return $this->getPrice()->getPrices()[self::REGIONS_ALL_ID];
     }
 
 }

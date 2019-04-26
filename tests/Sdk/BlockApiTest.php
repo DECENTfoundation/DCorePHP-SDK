@@ -27,14 +27,14 @@ class BlockApiTest extends DCoreSDKTest
                 ->will($this->onConsecutiveCalls(
                     Login::responseToModel(new BaseResponse('{"id":1,"result":true}')),
                     Database::responseToModel(new BaseResponse('{"id":2,"result":6}')),
-                    GetBlock::responseToModel(new BaseResponse('{"id":3,"result":{"previous":"00000009fdaa51c1bbb7ca167aa87cf36ef330a1","timestamp":"2018-04-26T11:24:45","miner":"1.4.8","transaction_merkle_root":"0000000000000000000000000000000000000000","extensions":[],"miner_signature":"204d599f40e6413e6c1c0a009e8ae244f56872ca4f501d42ba61c8a8aa6e08eff9399b71973512fb40cdb33a7faf9d8c743f618f348ef00c39dbd0119a0e934028","transactions":[]}}'))
+                    GetBlock::responseToModel(new BaseResponse('{"id":3,"result":{"previous":"000000094d148629bdafab2648fce14f44267150","timestamp":"2019-03-15T12:42:00","miner":"1.4.1","transaction_merkle_root":"0000000000000000000000000000000000000000","extensions":[],"miner_signature":"201214c80b5d7a371e11326d095584de86709fed6d4d217772e6aa3e9502ea971a1856ba9f5cb21730176ebeee687cca15c265f679cc872daf1a84628cdd6a3204","transactions":[]}}'))
                 ));
         }
 
         $block = $this->sdk->getBlockApi()->get('10');
 
-        $this->assertEquals('00000009fdaa51c1bbb7ca167aa87cf36ef330a1', $block->getPrevious());
-        $this->assertEquals('1.4.8', $block->getMiner()->getId());
+        $this->assertEquals('000000094d148629bdafab2648fce14f44267150', $block->getPrevious());
+        $this->assertEquals('1.4.1', $block->getMiner()->getId());
     }
 
     public function testGetHeader(): void
@@ -51,14 +51,14 @@ class BlockApiTest extends DCoreSDKTest
                 ->will($this->onConsecutiveCalls(
                     Login::responseToModel(new BaseResponse('{"id":1,"result":true}')),
                     Database::responseToModel(new BaseResponse('{"id":2,"result":6}')),
-                    GetBlockHeader::responseToModel(new BaseResponse('{"id":3,"result":{"previous":"00000009fdaa51c1bbb7ca167aa87cf36ef330a1","timestamp":"2018-04-26T11:24:45","miner":"1.4.8","transaction_merkle_root":"0000000000000000000000000000000000000000","extensions":[]}}'))
+                    GetBlockHeader::responseToModel(new BaseResponse('{"id":3,"result":{"previous":"000000094d148629bdafab2648fce14f44267150","timestamp":"2019-03-15T12:42:00","miner":"1.4.1","transaction_merkle_root":"0000000000000000000000000000000000000000","extensions":[]}}'))
                 ));
         }
 
         $blockHeader = $this->sdk->getBlockApi()->getHeader('10');
 
-        $this->assertEquals('00000009fdaa51c1bbb7ca167aa87cf36ef330a1', $blockHeader->getPrevious());
-        $this->assertEquals('1.4.8', $blockHeader->getMiner()->getId());
+        $this->assertEquals('000000094d148629bdafab2648fce14f44267150', $blockHeader->getPrevious());
+        $this->assertEquals('1.4.1', $blockHeader->getMiner()->getId());
     }
 
     /**

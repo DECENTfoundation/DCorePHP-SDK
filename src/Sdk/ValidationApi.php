@@ -4,9 +4,22 @@ namespace DCorePHP\Sdk;
 
 use DCorePHP\Model\Asset\AssetAmount;
 use DCorePHP\Model\BaseOperation;
-use DCorePHP\Model\OperationType;
+use DCorePHP\Model\ChainObject;
+use DCorePHP\Model\Operation\CustomOperation;
+use DCorePHP\Model\Operation\EmptyOperation;
+use DCorePHP\Model\Operation\ProposalCreate;
+use DCorePHP\Model\Operation\ProposalUpdate;
+use DCorePHP\Model\Operation\WithdrawPermissionClaim;
 use DCorePHP\Model\ProcessedTransaction;
 use DCorePHP\Model\Transaction;
+use DCorePHP\Net\Model\Request\Database;
+use DCorePHP\Net\Model\Request\GetPotentialSignatures;
+use DCorePHP\Net\Model\Request\GetRequiredFees;
+use DCorePHP\Net\Model\Request\GetRequiredSignatures;
+use DCorePHP\Net\Model\Request\ValidateTransaction;
+use DCorePHP\Net\Model\Request\VerifyAccountAuthority;
+use DCorePHP\Net\Model\Request\VerifyAuthority;
+use InvalidArgumentException;
 
 class ValidationApi extends BaseApi implements ValidationApiInterface
 {
@@ -15,7 +28,7 @@ class ValidationApi extends BaseApi implements ValidationApiInterface
      */
     public function getRequiredSignatures(Transaction $transaction, array $keys): array
     {
-        // TODO: Implement getRequiredSignatures() method.
+        return $this->dcoreApi->requestWebsocket(Database::class, new GetRequiredSignatures($transaction, $keys));
     }
 
     /**
@@ -23,7 +36,7 @@ class ValidationApi extends BaseApi implements ValidationApiInterface
      */
     public function getPotentialSignatures(Transaction $transaction): array
     {
-        // TODO: Implement getPotentialSignatures() method.
+        return $this->dcoreApi->requestWebsocket(Database::class, new GetPotentialSignatures($transaction));
     }
 
     /**
@@ -31,15 +44,15 @@ class ValidationApi extends BaseApi implements ValidationApiInterface
      */
     public function verifyAuthority(Transaction $transaction): bool
     {
-        // TODO: Implement verifyAuthority() method.
+        return $this->dcoreApi->requestWebsocket(Database::class, new VerifyAuthority($transaction));
     }
 
     /**
      * @inheritDoc
      */
-    public function verifyAccountAuthority(string $account, array $keys): bool
+    public function verifyAccountAuthority(string $nameOrId, array $keys): bool
     {
-        // TODO: Implement verifyAccountAuthority() method.
+        return $this->dcoreApi->requestWebsocket(Database::class, new VerifyAccountAuthority($nameOrId, $keys));
     }
 
     /**
@@ -47,30 +60,43 @@ class ValidationApi extends BaseApi implements ValidationApiInterface
      */
     public function validateTransaction(Transaction $transaction): ProcessedTransaction
     {
-        // TODO: Implement validateTransaction() method.
+        return $this->dcoreApi->requestWebsocket(Database::class, new ValidateTransaction($transaction));
     }
 
     /**
      * @inheritDoc
      */
-    public function getFees(array $op): array
+    public function getFees(array $op, ChainObject $assetId = null): array
     {
-        // TODO: Implement getFees() method.
+        return $this->dcoreApi->requestWebsocket(Database::class, new GetRequiredFees($op, $assetId));
     }
 
     /**
      * @inheritDoc
      */
-    public function getFee(BaseOperation $op): AssetAmount
+    public function getFee(BaseOperation $op, ChainObject $assetId = null): AssetAmount
     {
-        // TODO: Implement getFee() method.
+        $fees = $this->getFees([$op], $assetId);
+        return reset($fees);
     }
 
     /**
      * @inheritDoc
      */
-    public function getFeeByType(OperationType $type): AssetAmount
+    public function getFeeByType($type, ChainObject $assetId = null): AssetAmount
     {
-        // TODO: Implement getFeeByType() method.
+        if (in_array(
+            $type,
+            [
+                ProposalCreate::OPERATION_TYPE,
+                ProposalUpdate::OPERATION_TYPE,
+                WithdrawPermissionClaim::OPERATION_TYPE,
+                CustomOperation::OPERATION_TYPE
+            ],
+            true
+        )) {
+            throw new InvalidArgumentException('This type of operation is not allowed!');
+        }
+        return $this->getFee(new EmptyOperation($type), $assetId);
     }
 }

@@ -125,19 +125,16 @@ class ECKeyPair
      * transaction needs to be incremented at the beginning on each iteration before this method is called
      *
      * @param string $hexData
+     * @param string $chainId
      * @return string|null canonical signature on success, null if signature is not canonical
-     * @throws \Exception
+     * @throws ValidationException
      */
-    public function signature(string $hexData): ?string
+    public function signature(string $hexData, string $chainId): ?string
     {
-        $hash = hash('sha256', pack('H*', DCoreSdk::DCT_CHAIN_ID . $hexData)); // 1cb9ecc48ea039dda1c4626965db67c241486ce886a007903c8d5446465d7c0c
+        $hash = hash('sha256', pack('H*', $chainId . $hexData)); // 1cb9ecc48ea039dda1c4626965db67c241486ce886a007903c8d5446465d7c0c
         $derPrivateKey = $this->getPrivate()->toHex();
         $derPublicKey = $this->getPublic()->toCompressedPublicKey(); // compressed public key
         $signature = (new Secp256k1())->sign($hash, $derPrivateKey); // [98168512353566611467237581092075278762442757234040552549754768745652925038257, 44848356081555762428592265712819773562446994169847499152120711725219453447745]
-
-        // possible bug in the hex serializer
-        // https://github.com/kornrunner/php-secp256k1/commit/915f0ef1ec748606a1117b171093266de349b058
-        // we are using version 0.1.1 because transfer doesn't work with 0.1.2 = after this commit
         $signatureHex = (new HexSignatureSerializer())->serialize($signature); // d90968b241bfdce430bc1dfd15039b08429783d3f1380364294311ca86e0feb16327451e425f07be71768a7fe25d60f232cd12eafe036b9f24b600104415ae41
 
         $finalRecId = -1;

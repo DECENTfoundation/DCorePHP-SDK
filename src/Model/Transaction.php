@@ -12,10 +12,12 @@ class Transaction
     private $extensions = [];
     /** @var BaseOperation[] */
     private $operations = [];
-    /** @var DynamicGlobalProps */
-    private $dynamicGlobalProps;
+    /** @var BlockData */
+    private $blockData;
     /** @var string */
     private $signature;
+    /** @var string */
+    private $chainId = '';
 
     /**
      * @return array
@@ -54,24 +56,6 @@ class Transaction
     }
 
     /**
-     * @return DynamicGlobalProps
-     */
-    public function getDynamicGlobalProps(): DynamicGlobalProps
-    {
-        return $this->dynamicGlobalProps;
-    }
-
-    /**
-     * @param DynamicGlobalProps $dynamicGlobalProps
-     * @return Transaction
-     */
-    public function setDynamicGlobalProps(DynamicGlobalProps $dynamicGlobalProps): Transaction
-    {
-        $this->dynamicGlobalProps = $dynamicGlobalProps;
-        return $this;
-    }
-
-    /**
      * @return string
      */
     public function getSignature(): ?string
@@ -90,11 +74,39 @@ class Transaction
     }
 
     /**
+     * @return BlockData
+     */
+    public function getBlockData(): BlockData
+    {
+        return $this->blockData;
+    }
+
+    /**
+     * @param BlockData $blockData
      * @return Transaction
      */
-    public function increment(): self
+    public function setBlockData(BlockData $blockData): Transaction
     {
-        $this->getDynamicGlobalProps()->getExpiration()->modify('+1 second');
+        $this->blockData = $blockData;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getChainId(): string
+    {
+        return $this->chainId;
+    }
+
+    /**
+     * @param string $chainId
+     * @return Transaction
+     */
+    public function setChainId(string $chainId): Transaction
+    {
+        $this->chainId = $chainId;
 
         return $this;
     }
@@ -109,9 +121,9 @@ class Transaction
             'operations' => array_map(function (BaseOperation $operation) {
                 return $operation->toArray();
             }, $this->getOperations()),
-            'ref_block_num' => $this->getDynamicGlobalProps()->getRefBlockNum(),
-            'ref_block_prefix' => $this->getDynamicGlobalProps()->getRefBlockPrefix(),
-            'expiration' => $this->getDynamicGlobalProps()->getExpiration()->format('Y-m-d\TH:i:s'),
+            'ref_block_num' => $this->getBlockData()->getRefBlockNum(),
+            'ref_block_prefix' => $this->getBlockData()->getRefBlockPrefix(),
+            'expiration' => $this->getBlockData()->getExpiration()->format('Y-m-d\TH:i:s'),
             'signatures' => $this->getSignature() ? [$this->getSignature()] : [],
         ];
     }
@@ -122,11 +134,7 @@ class Transaction
     public function toBytes(): string
     {
         return implode('', [
-            implode('', [ // block data bytes
-                implode('', array_reverse(str_split(str_pad(Math::gmpDecHex($this->getDynamicGlobalProps()->getRefBlockNum()), 4, '0', STR_PAD_LEFT), 2))),
-                implode('', array_reverse(str_split(str_pad(Math::gmpDecHex($this->getDynamicGlobalProps()->getRefBlockPrefix()), 8, '0', STR_PAD_LEFT), 2))),
-                implode('', array_reverse(str_split(str_pad(Math::gmpDecHex($this->getDynamicGlobalProps()->getExpiration()->format('U')), 8, '0', STR_PAD_LEFT), 2))),
-            ]),
+            $this->getBlockData()->toBytes(),
             str_pad(Math::gmpDecHex(\count($this->getOperations())), 2, '0', STR_PAD_LEFT), // number of operations
             $this->getOperations() ? implode('', array_map(static function (BaseOperation $transfer) { // operation bytes
                 return $transfer->toBytes();
@@ -150,18 +158,18 @@ class Transaction
      */
     public function sign(string $privateKeyWif): self
     {
-        $ecKeyPair = new ECKeyPair(PrivateKey::fromWif($privateKeyWif));
+        $ecKeyPair = ECKeyPair::fromBase58($privateKeyWif);
 
         $signature = null;
         do {
             try {
-                $signature = $ecKeyPair->signature($this->toBytes());
+                $signature = $ecKeyPair->signature($this->toBytes(), $this->getChainId());
             } catch (\Exception $e) {
                 // try again
             }
 
             if (!$signature) {
-                $this->increment();
+                $this->getBlockData()->increment();
             }
         } while (!$signature);
 

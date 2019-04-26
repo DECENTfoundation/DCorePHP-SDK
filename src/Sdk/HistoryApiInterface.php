@@ -57,6 +57,6 @@ interface HistoryApiInterface
      * @param int $limit the number of entries to return (starting from the most recent), max 100
      * @return BalanceChange[] of balance changes
      */
-    public function findAllOperations(ChainObject $accountId, array $assets = [], ChainObject $recipientAccount = null, string $fromBlock = '0', string $toBlock = '0', string $startOffset = '0', int $limit = 0): array;
+    public function findAllOperations(ChainObject $accountId, array $assets = [], ChainObject $recipientAccount = null, string $fromBlock = '0', string $toBlock = '0', string $startOffset = '0', int $limit = 100): array;
 
 }

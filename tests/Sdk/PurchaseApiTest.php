@@ -106,7 +106,7 @@ class PurchaseApiTest extends DCoreSDKTest
                 ->withConsecutive(
                     [$this->callback(function(BaseRequest $req) { return $req->setId(1)->toJson() === '{"jsonrpc":"2.0","id":1,"method":"call","params":[1,"login",["",""]]}'; })],
                     [$this->callback(function(BaseRequest $req) { return $req->setId(2)->toJson() === '{"jsonrpc":"2.0","id":2,"method":"call","params":[1,"database",[]]}'; })],
-                    [$this->callback(function(BaseRequest $req) { return $req->setId(3)->toJson() === '{"jsonrpc":"2.0","id":3,"method":"call","params":[6,"get_open_buyings_by_consumer",["1.2.34"]]}'; })]
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(3)->toJson() === '{"jsonrpc":"2.0","id":3,"method":"call","params":[6,"get_open_buyings_by_consumer",["1.2.27"]]}'; })]
                 )
                 ->will($this->onConsecutiveCalls(
                     Login::responseToModel(new BaseResponse('{"id":1,"result":true}')),
@@ -115,7 +115,7 @@ class PurchaseApiTest extends DCoreSDKTest
                 ));
         }
 
-        $purchases = $this->sdk->getPurchaseApi()->getAllOpenByAccount(new ChainObject('1.2.34'));
+        $purchases = $this->sdk->getPurchaseApi()->getAllOpenByAccount(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1));
 
         foreach ($purchases as $purchase) {
             $this->assertInstanceOf(Purchase::class, $purchase);
@@ -124,6 +124,9 @@ class PurchaseApiTest extends DCoreSDKTest
         $this->assertInternalType('array', $purchases);
     }
 
+    /**
+     * @throws \DCorePHP\Exception\ValidationException
+     */
     public function testGet():void {
         // TODO: Mocking server -> slashes in response ///
         if ($this->websocketMock) {
@@ -133,18 +136,19 @@ class PurchaseApiTest extends DCoreSDKTest
                 ->withConsecutive(
                     [$this->callback(function(BaseRequest $req) { return $req->setId(1)->toJson() === '{"jsonrpc":"2.0","id":1,"method":"call","params":[1,"login",["",""]]}'; })],
                     [$this->callback(function(BaseRequest $req) { return $req->setId(2)->toJson() === '{"jsonrpc":"2.0","id":2,"method":"call","params":[1,"database",[]]}'; })],
-                    [$this->callback(function(BaseRequest $req) { return $req->setId(3)->toJson() === '{"jsonrpc":"2.0","id":3,"method":"call","params":[6,"get_buying_by_consumer_URI",["1.2.34","http:\/\/alax.io\/?scheme=alax%3A%2F%2F1%2F2&version=bbc8a9c3-1bcd-48a6-820d-e5a60c29cf56"]]}'; })]
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(3)->toJson() === '{"jsonrpc":"2.0","id":3,"method":"call","params":[6,"get_buying_by_consumer_URI",["1.2.27","ipfs:QmWBoRBYuxzH5a8d3gssRbMS5scs6fqLKgapBfqVNUFUtZ"]]}'; })]
                 )
                 ->will($this->onConsecutiveCalls(
                     Login::responseToModel(new BaseResponse('{"id":1,"result":true}')),
                     Database::responseToModel(new BaseResponse('{"id":2,"result":6}')),
-                    GetBuyingByUri::responseToModel(new BaseResponse('{"id":3,"result":{"id":"2.12.3","consumer":"1.2.34","URI":"http://alax.io/?scheme=alax%3A%2F%2F1%2F2&version=bbc8a9c3-1bcd-48a6-820d-e5a60c29cf56","synopsis":"{\"content_type_id\":\"1.5.5.0\",\"title\":\"Product 2\",\"description\":\"{\\\\\"productId\\\\\":2,\\\\\"applicationId\\\\\":1}\"}","price":{"amount":0,"asset_id":"1.3.0"},"paid_price_before_exchange":{"amount":100000000,"asset_id":"1.3.0"},"paid_price_after_exchange":{"amount":100000000,"asset_id":"1.3.0"},"seeders_answered":[],"size":1,"rating":"18446744073709551615","comment":"","expiration_time":"2018-05-16T08:59:10","pubKey":{"s":"5182545488318095000498180568539728214545472470974958338942426759510121851708530625921436777555517288139787965253547588340803542762268721656138876002028437."},"key_particles":[],"expired":false,"delivered":true,"expiration_or_delivery_time":"2018-05-15T08:59:10","rated_or_commented":false,"created":"2018-04-26T15:34:50","region_code_from":1}}'))
+                    GetBuyingByUri::responseToModel(new BaseResponse('{"id":3,"result":{"id":"2.12.56","consumer":"1.2.27","URI":"ipfs:QmWBoRBYuxzH5a8d3gssRbMS5scs6fqLKgapBfqVNUFUtZ","synopsis":"{\"content_type_id\":\"7\",\"title\":\"Jessica\",\"description\":\"Jessica\"}","price":{"amount":0,"asset_id":"1.3.0"},"paid_price_before_exchange":{"amount":100000000,"asset_id":"1.3.0"},"paid_price_after_exchange":{"amount":100000000,"asset_id":"1.3.0"},"seeders_answered":["1.2.17","1.2.18"],"size":1,"rating":4,"comment":"hello comment","expiration_time":"2019-04-11T12:48:40","pubKey":{"s":"7207926897681710373605117452736110547874762674690538310951791205451363920749388117814244907786517865135638223584692338001010176270872455939805189981892960."},"key_particles":[{"C1":{"s":"2997773239778781216042444430953085830058882492298137543290430961843713020172036416097605182431297771542372005473459903538614161575472737062867958635090377."},"D1":{"s":"5659068117312611990560671495533092660803050686831557771233100656571452070545676664130483605629385581802035186038374902511296521265846105527763002919898435."}},{"C1":{"s":"8896259975896922113044013630465196897139925964843137297013720652823726919989422069854264868775653567254741922458698240625455160104464065771546912512591641."},"D1":{"s":"2472521172094973590150764809556482813438094384124233993550356830244391834805721489558107223749798833855946641623982108249536668321873989872953945437141144."}}],"expired":false,"delivered":true,"expiration_or_delivery_time":"2019-04-10T12:48:45","rated_or_commented":true,"created":"2019-03-25T13:10:45","region_code_from":204}}'))
                 ));
         }
 
-        $purchase = $this->sdk->getPurchaseApi()->get(new ChainObject('1.2.34'), 'http://alax.io/?scheme=alax%3A%2F%2F1%2F2&version=bbc8a9c3-1bcd-48a6-820d-e5a60c29cf56');
+        $purchase = $this->sdk->getPurchaseApi()->get(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), 'ipfs:QmWBoRBYuxzH5a8d3gssRbMS5scs6fqLKgapBfqVNUFUtZ');
 
-        $this->assertInstanceOf(Purchase::class, $purchase);
+        $this->assertEquals(DCoreSDKTest::ACCOUNT_ID_1, $purchase->getConsumer()->getId());
+        $this->assertEquals('ipfs:QmWBoRBYuxzH5a8d3gssRbMS5scs6fqLKgapBfqVNUFUtZ', $purchase->getUri());
     }
 
     public function testFindAll(): void {
@@ -156,7 +160,7 @@ class PurchaseApiTest extends DCoreSDKTest
                 ->withConsecutive(
                     [$this->callback(function(BaseRequest $req) { return $req->setId(1)->toJson() === '{"jsonrpc":"2.0","id":1,"method":"call","params":[1,"login",["",""]]}'; })],
                     [$this->callback(function(BaseRequest $req) { return $req->setId(2)->toJson() === '{"jsonrpc":"2.0","id":2,"method":"call","params":[1,"database",[]]}'; })],
-                    [$this->callback(function(BaseRequest $req) { return $req->setId(3)->toJson() === '{"jsonrpc":"2.0","id":3,"method":"call","params":[6,"get_buying_objects_by_consumer",["1.2.34","-purchased","1.0.0","new",100]]}'; })]
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(3)->toJson() === '{"jsonrpc":"2.0","id":3,"method":"call","params":[6,"get_buying_objects_by_consumer",["1.2.27","-purchased","1.0.0","new",100]]}'; })]
                 )
                 ->will($this->onConsecutiveCalls(
                     Login::responseToModel(new BaseResponse('{"id":1,"result":true}')),
@@ -165,7 +169,7 @@ class PurchaseApiTest extends DCoreSDKTest
                 ));
         }
 
-        $purchases = $this->sdk->getPurchaseApi()->findAll(new ChainObject('1.2.34'), 'new');
+        $purchases = $this->sdk->getPurchaseApi()->findAll(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), 'new');
 
         foreach ($purchases as $purchase) {
             $this->assertInstanceOf(Purchase::class, $purchase);

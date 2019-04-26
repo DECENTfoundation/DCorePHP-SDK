@@ -147,13 +147,12 @@ class Transfer2 extends BaseOperation
             self::OPERATION_TYPE,
             array_merge(
                 [
-                    'extensions' => [],
                     'from' => $this->getFrom()->getId(),
                     'to' => $this->getTo()->getId(),
                     'amount' => $this->getAmount()->toArray(),
                     'fee' => $this->getFee()->toArray(),
                 ],
-                !$this->getMemo()->isEmpty() ? ['memo' => $this->getMemo()->toArray()] : []
+                ['memo' => $this->getMemo()->toArray()]
             ),
         ];
     }
@@ -170,7 +169,7 @@ class Transfer2 extends BaseOperation
             $this->getFrom()->toBytes(),
             $this->getTo()->toObjectTypeIdBytes(),
             $this->getAmount()->toBytes(),
-            $this->getMemo()->isEmpty() ? str_pad('', 33, '00') : $this->getMemo()->toBytes(),
+            $this->getMemo()->toBytes(),
             '00',
         ]);
     }

@@ -18,7 +18,11 @@ class ListSeedersByPrice extends GetSeederAbstract
 
     public static function responseToModel(BaseResponse $response)
     {
-        // TODO: Implement responseToModel() method.
-        dump($response->getResult());
+        $seeders = [];
+        foreach ($response->getResult() as $rawSeeder) {
+            $seeders[] = self::resultToModel($rawSeeder);
+        }
+
+        return $seeders;
     }
 }

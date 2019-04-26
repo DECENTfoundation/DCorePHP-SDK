@@ -152,20 +152,20 @@ class AssetApiTest extends DCoreSDKTest
                 ->withConsecutive(
                     [$this->callback(function(BaseRequest $req) { return $req->setId(1)->toJson() === '{"jsonrpc":"2.0","id":1,"method":"call","params":[1,"login",["",""]]}'; })],
                     [$this->callback(function(BaseRequest $req) { return $req->setId(2)->toJson() === '{"jsonrpc":"2.0","id":2,"method":"call","params":[1,"database",[]]}'; })],
-                    [$this->callback(function(BaseRequest $req) { return $req->setId(3)->toJson() === '{"jsonrpc":"2.0","id":3,"method":"call","params":[6,"get_assets",[["1.3.54"]]]}'; })]
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(3)->toJson() === '{"jsonrpc":"2.0","id":3,"method":"call","params":[6,"get_assets",[["1.3.0"]]]}'; })]
                 )
                 ->will($this->onConsecutiveCalls(
                     Login::responseToModel(new BaseResponse('{"id":1,"result":true}')),
                     Database::responseToModel(new BaseResponse('{"id":2,"result":6}')),
-                    GetAsset::responseToModel(new BaseResponse('{"id":3,"result":[{"id":"1.3.54","symbol":"ALXT","precision":8,"issuer":"1.2.15","description":"","options":{"max_supply":"100000000000000","core_exchange_rate":{"base":{"amount":1,"asset_id":"1.3.0"},"quote":{"amount":4,"asset_id":"1.3.54"}},"is_exchangeable":true,"extensions":[[1,{"is_fixed_max_supply":false}]]},"dynamic_asset_data_id":"2.3.54"}]}'))
+                    GetAsset::responseToModel(new BaseResponse('{"id":3,"result":[{"id":"1.3.0","symbol":"DCT","precision":8,"issuer":"1.2.1","description":"","options":{"max_supply":"7319777577456900","core_exchange_rate":{"base":{"amount":1,"asset_id":"1.3.0"},"quote":{"amount":1,"asset_id":"1.3.0"}},"is_exchangeable":true,"extensions":[]},"dynamic_asset_data_id":"2.3.0"}]}'))
                 ));
         }
 
-        $assetAmount = $this->sdk->getAssetApi()->convertFromDct(5, new ChainObject('1.3.54'));
+        $assetAmount = $this->sdk->getAssetApi()->convertFromDct(5, new ChainObject('1.3.0'));
 
         if ($this->websocketMock) {
-            $this->assertEquals(20, $assetAmount->getAmount());
-            $this->assertEquals('1.3.54', $assetAmount->getAssetId());
+            $this->assertEquals(5, $assetAmount->getAmount());
+            $this->assertEquals('1.3.0', $assetAmount->getAssetId());
         } else {
             $this->expectNotToPerformAssertions();
         }
@@ -180,19 +180,19 @@ class AssetApiTest extends DCoreSDKTest
                 ->withConsecutive(
                     [$this->callback(function(BaseRequest $req) { return $req->setId(1)->toJson() === '{"jsonrpc":"2.0","id":1,"method":"call","params":[1,"login",["",""]]}'; })],
                     [$this->callback(function(BaseRequest $req) { return $req->setId(2)->toJson() === '{"jsonrpc":"2.0","id":2,"method":"call","params":[1,"database",[]]}'; })],
-                    [$this->callback(function(BaseRequest $req) { return $req->setId(3)->toJson() === '{"jsonrpc":"2.0","id":3,"method":"call","params":[6,"get_assets",[["1.3.54"]]]}'; })]
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(3)->toJson() === '{"jsonrpc":"2.0","id":3,"method":"call","params":[6,"get_assets",[["1.3.35"]]]}'; })]
                 )
                 ->will($this->onConsecutiveCalls(
                     Login::responseToModel(new BaseResponse('{"id":1,"result":true}')),
                     Database::responseToModel(new BaseResponse('{"id":2,"result":6}')),
-                    GetAsset::responseToModel(new BaseResponse('{"id":3,"result":[{"id":"1.3.54","symbol":"ALXT","precision":8,"issuer":"1.2.15","description":"","options":{"max_supply":"100000000000000","core_exchange_rate":{"base":{"amount":1,"asset_id":"1.3.0"},"quote":{"amount":4,"asset_id":"1.3.54"}},"is_exchangeable":true,"extensions":[[1,{"is_fixed_max_supply":false}]]},"dynamic_asset_data_id":"2.3.54"}]}'))
+                    GetAsset::responseToModel(new BaseResponse('{"id":3,"result":[{"id":"1.3.35","symbol":"SDK","precision":1,"issuer":"1.2.27","description":"hello api","options":{"max_supply":"7319777577456890","core_exchange_rate":{"base":{"amount":1,"asset_id":"1.3.0"},"quote":{"amount":1,"asset_id":"1.3.35"}},"is_exchangeable":true,"extensions":[[1,{"is_fixed_max_supply":false}]]},"dynamic_asset_data_id":"2.3.35"}]}'))
                 ));
         }
 
-        $assetAmount = $this->sdk->getAssetApi()->convertToDct(5, new ChainObject('1.3.54'));
+        $assetAmount = $this->sdk->getAssetApi()->convertToDct(5, new ChainObject('1.3.35'));
 
         if ($this->websocketMock) {
-            $this->assertEquals(2, $assetAmount->getAmount());
+            $this->assertEquals(5, $assetAmount->getAmount());
             $this->assertEquals('1.3.0', $assetAmount->getAssetId());
         } else {
             $this->expectNotToPerformAssertions();

@@ -10,12 +10,14 @@ use PHPUnit\Framework\TestCase;
 
 abstract class DCoreSDKTest extends TestCase
 {
-    public const ACCOUNT_ID_1 = '1.2.34';
-    public const ACCOUNT_ID_2 = '1.2.35';
-    public const PRIVATE_KEY_1 = '5Jd7zdvxXYNdUfnEXt5XokrE3zwJSs734yQ36a1YaqioRTGGLtn';
-    public const PRIVATE_KEY_2 = '5JVHeRffGsKGyDf7T9i9dBbzVHQrYprYeaBQo2VCSytj7BxpMCq';
-    public const PUBLIC_KEY_1 = 'DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz';
-    public const PUBLIC_KEY_2 = 'DCT6bVmimtYSvWQtwdrkVVQGHkVsTJZVKtBiUqf4YmJnrJPnk89QP';
+    public const ACCOUNT_ID_1 = '1.2.27';
+    public const ACCOUNT_ID_2 = '1.2.28';
+    public const ACCOUNT_NAME_1 = 'public-account-9';
+    public const ACCOUNT_NAME_2 = 'public-account-10';
+    public const PRIVATE_KEY_1 = '5Hxwqx6JJUBYWjQNt8DomTNJ6r6YK8wDJym4CMAH1zGctFyQtzt';
+    public const PRIVATE_KEY_2 = '5JMpT5C75rcAmuUB81mqVBXbmL1BKea4MYwVK6voMQLvigLKfrE';
+    public const PUBLIC_KEY_1 = 'DCT6TjLhr8uESvgtxrbWuXNAN3vcqzBMw5eyEup3PMiD2gnVxeuTb';
+    public const PUBLIC_KEY_2 = 'DCT5PwcSiigfTPTwubadt85enxMFC18TtVoti3gnTbG7TN9f9R3Fp';
 
     /** @var DCoreApi */
     protected $sdk;
@@ -37,8 +39,8 @@ abstract class DCoreSDKTest extends TestCase
     protected function setUp()
     {
         $this->sdk = new DCoreApi(
-            'https://stagesocket.decentgo.com:8090/',
-            'wss://stagesocket.decentgo.com:8090',
+            'https://testnet-api.dcore.io/',
+            'wss://testnet-api.dcore.io',
             true
         );
 

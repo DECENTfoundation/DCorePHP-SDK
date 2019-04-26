@@ -3,17 +3,13 @@
 namespace DCorePHP\Sdk;
 
 use DCorePHP\Crypto\Credentials;
-use DCorePHP\Model\Asset\AssetAmount;
 use DCorePHP\Model\ChainObject;
-use DCorePHP\Model\Content\ContentObject;
 use DCorePHP\Model\Messaging\Message;
 use DCorePHP\Model\Messaging\MessagePayload;
 use DCorePHP\Model\Messaging\MessageResponse;
 use DCorePHP\Model\Operation\SendMessageOperation;
 use DCorePHP\Model\TransactionConfirmation;
-use DCorePHP\Net\Model\Request\Database;
 use DCorePHP\Net\Model\Request\GetMessageObjects;
-use DCorePHP\Net\Model\Request\GetRequiredFees;
 use DCorePHP\Net\Model\Request\Messaging;
 
 class MessagingApi extends BaseApi implements MessagingApiInterface
