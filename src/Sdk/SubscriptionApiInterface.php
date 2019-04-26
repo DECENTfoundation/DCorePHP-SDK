@@ -1,11 +1,10 @@
 <?php
 
-
 namespace DCorePHP\Sdk;
-
 
 use DCorePHP\Model\BaseOperation;
 use DCorePHP\Model\ChainObject;
+use DCorePHP\Model\Subscription\Subscription;
 
 interface SubscriptionApiInterface
 {

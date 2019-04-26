@@ -1,21 +1,44 @@
 <?php
 
-
-namespace DCorePHP\Sdk;
-
+namespace DCorePHP\Model\Subscription;
 
 use DCorePHP\Model\ChainObject;
 
 class Subscription
 {
     /** @var ChainObject */
+    private $id;
+    /** @var ChainObject */
     private $from;
     /** @var ChainObject */
     private $to;
-    /** @var int */
+    /** @var \DateTime */
     private $expiration;
     /** @var bool */
     private $renewal;
+
+    /**
+     * @return ChainObject
+     */
+    public function getId(): ChainObject
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param ChainObject|string $id
+     * @return Subscription
+     * @throws \DCorePHP\Exception\ValidationException
+     */
+    public function setId($id): Subscription
+    {
+        if (is_string($id)) {
+            $id = new ChainObject($id);
+        }
+        $this->id = $id;
+
+        return $this;
+    }
 
     /**
      * @return ChainObject
@@ -64,20 +87,21 @@ class Subscription
     }
 
     /**
-     * @return int
+     * @return \DateTime
      */
-    public function getExpiration(): int
+    public function getExpiration(): \DateTime
     {
         return $this->expiration;
     }
 
     /**
-     * @param int $expiration
+     * @param \DateTime|string $expiration
      * @return Subscription
+     * @throws \Exception
      */
-    public function setExpiration(int $expiration): Subscription
+    public function setExpiration($expiration): Subscription
     {
-        $this->expiration = $expiration;
+        $this->expiration = $expiration instanceof \DateTime ? $expiration : new \DateTime($expiration);
 
         return $this;
     }
@@ -85,7 +109,7 @@ class Subscription
     /**
      * @return bool
      */
-    public function isAutomaticRenewal(): bool
+    public function isRenewal(): bool
     {
         return $this->renewal;
     }
@@ -94,11 +118,10 @@ class Subscription
      * @param bool $renewal
      * @return Subscription
      */
-    public function setAutomaticRenewal(bool $renewal): Subscription
+    public function setRenewal(bool $renewal): Subscription
     {
         $this->renewal = $renewal;
 
         return $this;
     }
-
 }
