@@ -36,14 +36,12 @@ class SeederApiTest extends DCoreSDKTest
                 ->will($this->onConsecutiveCalls(
                     Login::responseToModel(new BaseResponse('{"id":1,"result":true}')),
                     Database::responseToModel(new BaseResponse('{"id":2,"result":6}')),
-                    GetSeederAbstract::responseToModel(new BaseResponse('{"id":3,"result":{"id":"2.14.0","seeder":"1.2.17","free_space":9949,"price":{"amount":10000000,"asset_id":"1.3.0"},"expiration":"2019-04-24T07:41:30","pubKey":{"s":"388623995520027680257080274907334470292881241518810412591176467398195525710484619373465376826137058931903619934039623141738312819768319215775577353874580."},"ipfs_ID":"QmaSFf3Vjzb2u13RihTJ2UPcufp4htmZS1YNzMECNBnYGJ","stats":"2.16.0","rating":0,"region_code":""}}'))
+                    GetSeederAbstract::responseToModel(new BaseResponse('{"id":6,"result":{"id":"2.14.0","seeder":"1.2.17","free_space":9947,"price":{"amount":10000000,"asset_id":"1.3.0"},"expiration":"2019-05-14T07:41:30","pubKey":{"s":"388623995520027680257080274907334470292881241518810412591176467398195525710484619373465376826137058931903619934039623141738312819768319215775577353874580."},"ipfs_ID":"QmaSFf3Vjzb2u13RihTJ2UPcufp4htmZS1YNzMECNBnYGJ","stats":"2.16.0","rating":0,"region_code":""}}'))
                 ));
         }
 
         $seeder = $this->sdk->getSeederApi()->get(new ChainObject('1.2.17'));
-
-        $this->assertEquals(9949, $seeder->getFreeSpace());
-        $this->assertEquals('QmaSFf3Vjzb2u13RihTJ2UPcufp4htmZS1YNzMECNBnYGJ', $seeder->getIpfsId());
+        $this->assertEquals('1.2.17', $seeder->getSeeder()->getId());
     }
 
     public function testListSeedersByPrice(): void
