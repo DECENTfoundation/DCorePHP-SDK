@@ -55,8 +55,8 @@ class TransactionTest extends TestCase
 
         $operation = new Transfer2();
         $operation
-            ->setFrom('1.2.34')
-            ->setTo('1.2.35')
+            ->setFrom(DCoreSDKTest::ACCOUNT_ID_1)
+            ->setTo(DCoreSDKTest::ACCOUNT_ID_2)
             ->setAmount(
                 (new AssetAmount())
                     ->setAssetId(new ChainObject('1.3.0'))
@@ -86,7 +86,7 @@ class TransactionTest extends TestCase
             ->sign($senderPrivateKeyWif);
 
         $this->assertEquals(
-            '1f17b43e3880bac9def96110a654a9caa960a485c46e3820492cd0829d2cbb6d5f635d375091f5bc464a4f1cac9e4ee9be307a1974610fcbe8e90537d47c627676',
+            '1f30d821087c1622ab1a4bf8d89ff38c4e68aeb3f2b554ac53b4158a8c7595e724784748b9d757bb6b057a054e1c8bbe8acacdaad4089f22080dd72cacfe1d15a9',
             $transaction->getSignature()
         );
     }
