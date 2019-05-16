@@ -12,6 +12,10 @@ class BaseResponse
     private $error;
     /** @var mixed */
     private $result;
+    /** @var mixed */
+    private $method;
+    /** @var mixed */
+    private $params;
 
     public function __construct(string $rawResponse)
     {
@@ -31,6 +35,8 @@ class BaseResponse
                 '[error][message]' => 'error.message',
                 '[error][data]' => 'error.data',
                 '[result]' => 'result',
+                '[method]' => 'method',
+                '[params]' => 'params'
             ] as $path => $modelPath
         ) {
             $value = $propertyAccessor->getValue($decodedResponse, $path);
@@ -74,6 +80,44 @@ class BaseResponse
     public function setResult($result): BaseResponse
     {
         $this->result = $result;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMethod()
+    {
+        return $this->method;
+    }
+
+    /**
+     * @param mixed $method
+     * @return BaseResponse
+     */
+    public function setMethod($method): BaseResponse
+    {
+        $this->method = $method;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getParams()
+    {
+        return $this->params;
+    }
+
+    /**
+     * @param mixed $params
+     * @return BaseResponse
+     */
+    public function setParams($params): BaseResponse
+    {
+        $this->params = $params;
 
         return $this;
     }
