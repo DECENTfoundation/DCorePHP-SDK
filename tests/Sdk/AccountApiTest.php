@@ -6,12 +6,16 @@ use DCorePHP\Crypto\Credentials;
 use DCorePHP\Crypto\ECKeyPair;
 use DCorePHP\Crypto\PrivateKey;
 use DCorePHP\DCoreApi;
+use DCorePHP\Exception\InvalidApiCallException;
+use DCorePHP\Exception\ObjectNotFoundException;
+use DCorePHP\Exception\ValidationException;
 use DCorePHP\Model\Account;
 use DCorePHP\Model\Asset\AssetAmount;
 use DCorePHP\Model\BrainKeyInfo;
 use DCorePHP\Model\ChainObject;
 use DCorePHP\Model\ElGamalKeys;
 use DCorePHP\Model\FullAccount;
+use DCorePHP\Model\InvalidOperationTypeException;
 use DCorePHP\Model\Options;
 use DCorePHP\Model\TransactionDetail;
 use DCorePHP\Net\Model\Request\BaseRequest;
@@ -37,11 +41,12 @@ use DCorePHP\Net\Model\Request\SearchAccounts;
 use DCorePHP\Net\Model\Response\BaseResponse;
 use DCorePHP\Sdk\AccountApi;
 use DCorePHPTests\DCoreSDKTest;
+use WebSocket\BadOpcodeException;
 
 class AccountApiTest extends DCoreSDKTest
 {
     /**
-     * @throws \DCorePHP\Exception\ValidationException
+     * @throws ValidationException
      */
     public function testExist(): void
     {
@@ -183,7 +188,7 @@ class AccountApiTest extends DCoreSDKTest
     }
 
     /**
-     * @throws \DCorePHP\Exception\ValidationException
+     * @throws ValidationException
      */
     public function testFindAllReferencesByKeys(): void
     {
@@ -209,7 +214,7 @@ class AccountApiTest extends DCoreSDKTest
     }
 
     /**
-     * @throws \DCorePHP\Exception\ValidationException
+     * @throws ValidationException
      */
     public function testFindAllReferencesByAccount(): void
     {
@@ -235,7 +240,7 @@ class AccountApiTest extends DCoreSDKTest
     }
 
     /**
-     * @throws \DCorePHP\Exception\ValidationException
+     * @throws ValidationException
      */
     public function testGetAll(): void
     {
@@ -262,7 +267,7 @@ class AccountApiTest extends DCoreSDKTest
     }
 
     /**
-     * @throws \DCorePHP\Exception\ValidationException
+     * @throws ValidationException
      */
     public function testGetFullAccounts(): void
     {
@@ -411,9 +416,9 @@ class AccountApiTest extends DCoreSDKTest
     }
 
     /**
-     * @throws \DCorePHP\Exception\InvalidApiCallException
-     * @throws \DCorePHP\Exception\ValidationException
-     * @throws \WebSocket\BadOpcodeException
+     * @throws InvalidApiCallException
+     * @throws ValidationException
+     * @throws BadOpcodeException
      * @throws \Exception
      */
     public function testTransfer(): void
@@ -431,20 +436,20 @@ class AccountApiTest extends DCoreSDKTest
                     [$this->callback(function(BaseRequest $req) { return $req->setId(6)->toJson() === '{"jsonrpc":"2.0","id":6,"method":"call","params":[1,"database",[]]}'; })],
                     [$this->callback(function(BaseRequest $req) { return $req->setId(7)->toJson() === '{"jsonrpc":"2.0","id":7,"method":"call","params":[6,"get_required_fees",[[[39,{"from":"1.2.27","to":"1.2.28","amount":{"amount":1500000,"asset_id":"1.3.0"},"fee":{"amount":0,"asset_id":"1.3.0"},"memo":{"message":"0000000068656c6c6f206d656d6f2068657265206920616d","nonce":"0"}}]],"1.3.0"]]}'; })],
                     [$this->callback(function(BaseRequest $req) { return $req->setId(8)->toJson() === '{"jsonrpc":"2.0","id":8,"method":"call","params":[1,"network_broadcast",[]]}'; })],
-                    [$this->callback(function(BaseRequest $req) { return $req->setId(9)->toJson() === '{"jsonrpc":"2.0","id":9,"method":"call","params":[7,"broadcast_transaction_with_callback",[6,{"extensions":[],"operations":[[39,{"from":"1.2.27","to":"1.2.28","amount":{"amount":1500000,"asset_id":"1.3.0"},"fee":{"amount":100000,"asset_id":"1.3.0"},"memo":{"message":"0000000068656c6c6f206d656d6f2068657265206920616d","nonce":"0"}}]],"ref_block_num":62894,"ref_block_prefix":"688203992","expiration":"2019-04-18T12:22:51","signatures":["207183eb88c555c4ad173cb532dd55570ed3b0c908bf11134f1c92d9bd20f566344558932260c855c217fcb970165fa0b61998cb8d01b3cb6853362258f69f7169"]}]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(9)->toJson() === '{"jsonrpc":"2.0","id":9,"method":"call","params":[7,"broadcast_transaction_with_callback",[6,{"extensions":[],"operations":[[39,{"from":"1.2.27","to":"1.2.28","amount":{"amount":1500000,"asset_id":"1.3.0"},"fee":{"amount":100000,"asset_id":"1.3.0"},"memo":{"message":"0000000068656c6c6f206d656d6f2068657265206920616d","nonce":"0"}}]],"ref_block_num":7333,"ref_block_prefix":"684177972","expiration":"2019-05-16T14:28:40","signatures":["1f171476c73164792d246bb0233a416dc049b14d44a2cc6c11342d1005598080564da2973465a458b79f66e174686eb9418c96bbeb5e4cedbda81d724f7c49b49a"]}]]}'; })],
                     [$this->callback(function(BaseRequest $req) { return $req->setId(10)->toJson() === '{"jsonrpc":"2.0","id":10,"method":"call","params":[1,"database",[]]}'; })],
                     [$this->callback(function(BaseRequest $req) { return $req->setId(11)->toJson() === '{"jsonrpc":"2.0","id":11,"method":"call","params":[6,"search_account_history",["1.2.27","-time","0.0.0",1]]}'; })]
                 )
                 ->will($this->onConsecutiveCalls(
                     Login::responseToModel(new BaseResponse('{"id":1,"result":true}')),
                     Database::responseToModel(new BaseResponse('{"id":2,"result":6}')),
-                    GetDynamicGlobalProperties::responseToModel(new BaseResponse('{"id":3,"result":{"id":"2.1.0","head_block_number":587182,"head_block_id":"0008f5aed8280529f5e39a4b15cd862d5420d83a","time":"2019-04-18T12:22:10","current_miner":"1.4.6","next_maintenance_time":"2019-04-19T00:00:00","last_budget_time":"2019-04-18T00:00:00","unspent_fee_budget":1755461,"mined_rewards":"329411000000","miner_budget_from_fees":3616188,"miner_budget_from_rewards":"639249000000","accounts_registered_this_interval":55,"recently_missed_count":0,"current_aslot":984401,"recent_slots_filled":"340282366920938463463374607431768211455","dynamic_flags":0,"last_irreversible_block_num":587182}}')),
+                    GetDynamicGlobalProperties::responseToModel(new BaseResponse('{"id":3,"result":{"id":"2.1.0","head_block_number":1055909,"head_block_id":"00101ca534bac72851a0cb1fa5b4fcc419914425","time":"2019-05-16T14:28:10","current_miner":"1.4.9","next_maintenance_time":"2019-05-17T00:00:00","last_budget_time":"2019-05-16T00:00:00","unspent_fee_budget":20035147,"mined_rewards":"350501000000","miner_budget_from_fees":44333392,"miner_budget_from_rewards":"639249000000","accounts_registered_this_interval":19,"recently_missed_count":2,"current_aslot":1469669,"recent_slots_filled":"334965409302299819321300764794325825531","dynamic_flags":0,"last_irreversible_block_num":1055909}}')),
                     Database::responseToModel(new BaseResponse('{"id":4,"result":6}')),
                     GetChainId::responseToModel(new BaseResponse('{"id":5,"result":"a76a2db75f7a8018d41f2d648c766fdb0ddc79ac77104d243074ebdd5186bfbe"}')),
                     Database::responseToModel(new BaseResponse('{"id":6,"result":6}')),
                     GetRequiredFees::responseToModel(new BaseResponse('{"id":7,"result":[{"amount":100000,"asset_id":"1.3.0"}]}')),
                     NetworkBroadcast::responseToModel(new BaseResponse('{"id":8,"result":7}')),
-                    BroadcastTransactionWithCallback::responseToModel(new BaseResponse('{"id":9,"result":null}')),
+                    BroadcastTransactionWithCallback::responseToModel(new BaseResponse('{"method":"notice","params":[6,[{"id":"bc75d8bbe3bde3cb2c1530e7306d9058ada017df","block_num":1055911,"trx_num":0,"trx":{"ref_block_num":7333,"ref_block_prefix":684177972,"expiration":"2019-05-16T14:28:40","operations":[[39,{"fee":{"amount":100000,"asset_id":"1.3.0"},"from":"1.2.27","to":"1.2.28","amount":{"amount":1500000,"asset_id":"1.3.0"},"memo":{"from":"DCT1111111111111111111111111111111114T1Anm","to":"DCT1111111111111111111111111111111114T1Anm","nonce":0,"message":"0000000068656c6c6f206d656d6f2068657265206920616d"},"extensions":[]}]],"extensions":[],"signatures":["1f171476c73164792d246bb0233a416dc049b14d44a2cc6c11342d1005598080564da2973465a458b79f66e174686eb9418c96bbeb5e4cedbda81d724f7c49b49a"],"operation_results":[[0,{}]]}}]]}')),
                     Database::responseToModel(new BaseResponse('{"id":10,"result":6}')),
                     SearchAccountHistory::responseToModel(new BaseResponse('{"id":11,"result":[{"id":"2.17.916335","m_from_account":"1.2.27","m_to_account":"1.2.28","m_operation_type":0,"m_transaction_amount":{"amount":1500000,"asset_id":"1.3.0"},"m_transaction_fee":{"amount":100000,"asset_id":"1.3.0"},"m_str_description":"transfer","m_transaction_encrypted_memo":{"from":"DCT1111111111111111111111111111111114T1Anm","to":"DCT1111111111111111111111111111111114T1Anm","nonce":0,"message":"0000000068656c6c6f206d656d6f2068657265206920616d"},"m_timestamp":"2019-04-18T12:22:15"}]}'))
                 ));
@@ -533,20 +538,20 @@ class AccountApiTest extends DCoreSDKTest
                     [$this->callback(function(BaseRequest $req) { return $req->setId(6)->toJson() === '{"jsonrpc":"2.0","id":6,"method":"call","params":[1,"database",[]]}'; })],
                     [$this->callback(function(BaseRequest $req) { return $req->setId(7)->toJson() === '{"jsonrpc":"2.0","id":7,"method":"call","params":[6,"get_required_fees",[[[1,{"fee":{"amount":0,"asset_id":"1.3.0"},"registrar":"1.2.27","name":"'.$req->getParams()[0][0][1]['name'].'","owner":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6TjLhr8uESvgtxrbWuXNAN3vcqzBMw5eyEup3PMiD2gnVxeuTb",1]]},"active":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6TjLhr8uESvgtxrbWuXNAN3vcqzBMw5eyEup3PMiD2gnVxeuTb",1]]},"options":{"memo_key":"DCT6TjLhr8uESvgtxrbWuXNAN3vcqzBMw5eyEup3PMiD2gnVxeuTb","voting_account":"1.2.3","num_miner":0,"votes":[],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":0,"asset_id":"1.3.0"},"subscription_period":0},"extensions":[]}]],"1.3.0"]]}'; })],
                     [$this->callback(function(BaseRequest $req) { return $req->setId(8)->toJson() === '{"jsonrpc":"2.0","id":8,"method":"call","params":[1,"network_broadcast",[]]}'; })],
-                    [$this->callback(function(BaseRequest $req) { return $req->setId(9)->toJson() === '{"jsonrpc":"2.0","id":9,"method":"call","params":[7,"broadcast_transaction_with_callback",[6,{"extensions":[],"operations":[[1,{"fee":{"amount":100000,"asset_id":"1.3.0"},"registrar":"1.2.27","name":"'.$req->getParams()[1]['operations'][0][1]['name'].'","owner":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6TjLhr8uESvgtxrbWuXNAN3vcqzBMw5eyEup3PMiD2gnVxeuTb",1]]},"active":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6TjLhr8uESvgtxrbWuXNAN3vcqzBMw5eyEup3PMiD2gnVxeuTb",1]]},"options":{"memo_key":"DCT6TjLhr8uESvgtxrbWuXNAN3vcqzBMw5eyEup3PMiD2gnVxeuTb","voting_account":"1.2.3","num_miner":0,"votes":[],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":0,"asset_id":"1.3.0"},"subscription_period":0},"extensions":[]}]],"ref_block_num":62918,"ref_block_prefix":"2411247732","expiration":"'.$req->getParams()[1]['expiration'].'","signatures":["'.$req->getParams()[1]['signatures'][0].'"]}]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(9)->toJson() === '{"jsonrpc":"2.0","id":9,"method":"call","params":[7,"broadcast_transaction_with_callback",[6,{"extensions":[],"operations":[[1,{"fee":{"amount":100000,"asset_id":"1.3.0"},"registrar":"1.2.27","name":"'.$req->getParams()[1]['operations'][0][1]['name'].'","owner":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6TjLhr8uESvgtxrbWuXNAN3vcqzBMw5eyEup3PMiD2gnVxeuTb",1]]},"active":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6TjLhr8uESvgtxrbWuXNAN3vcqzBMw5eyEup3PMiD2gnVxeuTb",1]]},"options":{"memo_key":"DCT6TjLhr8uESvgtxrbWuXNAN3vcqzBMw5eyEup3PMiD2gnVxeuTb","voting_account":"1.2.3","num_miner":0,"votes":[],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":0,"asset_id":"1.3.0"},"subscription_period":0},"extensions":[]}]],"ref_block_num":7807,"ref_block_prefix":"147619929","expiration":"'.$req->getParams()[1]['expiration'].'","signatures":["'.$req->getParams()[1]['signatures'][0].'"]}]]}'; })],
                     [$this->callback(function(BaseRequest $req) { return $req->setId(10)->toJson() === '{"jsonrpc":"2.0","id":10,"method":"call","params":[1,"database",[]]}'; })],
                     [$this->callback(function(BaseRequest $req) { return $req->setId(11)->toJson() === '{"jsonrpc":"2.0","id":11,"method":"call","params":[6,"get_account_by_name",["'.$req->getParams()[0].'"]]}'; })]
                 )
                 ->will($this->onConsecutiveCalls(
                     Login::responseToModel(new BaseResponse('{"id":1,"result":true}')),
                     Database::responseToModel(new BaseResponse('{"id":2,"result":6}')),
-                    GetDynamicGlobalProperties::responseToModel(new BaseResponse('{"id":3,"result":{"id":"2.1.0","head_block_number":587206,"head_block_id":"0008f5c674b8b88f42ccddb6eea226e55b489e6a","time":"2019-04-18T12:24:10","current_miner":"1.4.9","next_maintenance_time":"2019-04-19T00:00:00","last_budget_time":"2019-04-18T00:00:00","unspent_fee_budget":1750445,"mined_rewards":"330299000000","miner_budget_from_fees":3616188,"miner_budget_from_rewards":"639249000000","accounts_registered_this_interval":55,"recently_missed_count":0,"current_aslot":984425,"recent_slots_filled":"340282366920938463463374607431768211455","dynamic_flags":0,"last_irreversible_block_num":587206}}')),
+                    GetDynamicGlobalProperties::responseToModel(new BaseResponse('{"id":3,"result":{"id":"2.1.0","head_block_number":1056383,"head_block_id":"00101e7f5980cc08f0cc1cc46a0329d34d88dff7","time":"2019-05-16T15:11:45","current_miner":"1.4.6","next_maintenance_time":"2019-05-17T00:00:00","last_budget_time":"2019-05-16T00:00:00","unspent_fee_budget":18819337,"mined_rewards":"368039000000","miner_budget_from_fees":44333392,"miner_budget_from_rewards":"639249000000","accounts_registered_this_interval":20,"recently_missed_count":3,"current_aslot":1470192,"recent_slots_filled":"337603140471808002650903553372279668733","dynamic_flags":0,"last_irreversible_block_num":1056383}}')),
                     Database::responseToModel(new BaseResponse('{"id":4,"result":6}')),
                     GetChainId::responseToModel(new BaseResponse('{"id":5,"result":"a76a2db75f7a8018d41f2d648c766fdb0ddc79ac77104d243074ebdd5186bfbe"}')),
                     Database::responseToModel(new BaseResponse('{"id":6,"result":6}')),
                     GetRequiredFees::responseToModel(new BaseResponse('{"id":7,"result":[{"amount":100000,"asset_id":"1.3.0"}]}')),
                     NetworkBroadcast::responseToModel(new BaseResponse('{"id":8,"result":7}')),
-                    BroadcastTransactionWithCallback::responseToModel(new BaseResponse('{"id":9,"result":null}')),
+                    BroadcastTransactionWithCallback::responseToModel(new BaseResponse('{"method":"notice","params":[6,[{"id":"ee4bf12f11648c58acca98a9d279d2917d906464","block_num":1056384,"trx_num":0,"trx":{"ref_block_num":7807,"ref_block_prefix":147619929,"expiration":"2019-05-16T15:12:18","operations":[[1,{"fee":{"amount":100000,"asset_id":"1.3.0"},"registrar":"1.2.27","name":"ttibensky11558019492","owner":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6TjLhr8uESvgtxrbWuXNAN3vcqzBMw5eyEup3PMiD2gnVxeuTb",1]]},"active":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6TjLhr8uESvgtxrbWuXNAN3vcqzBMw5eyEup3PMiD2gnVxeuTb",1]]},"options":{"memo_key":"DCT6TjLhr8uESvgtxrbWuXNAN3vcqzBMw5eyEup3PMiD2gnVxeuTb","voting_account":"1.2.3","num_miner":0,"votes":[],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":0,"asset_id":"1.3.0"},"subscription_period":0},"extensions":{}}]],"extensions":[],"signatures":["202ffdb680159dfc83e8f51451c3067e14db72ad3717a346875e6014548f98cc051862ff401f1a8514f28500b8cf30344e127291402577ca2b8ab69df31bb88ada"],"operation_results":[[1,"1.2.502"]]}}]]}')),
                     Database::responseToModel(new BaseResponse('{"id":10,"result":6}')),
                     GetAccountByName::responseToModel(new BaseResponse('{"id":11,"result":{"id":"1.2.157","registrar":"1.2.27","name":"'.$accountName.'","owner":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6TjLhr8uESvgtxrbWuXNAN3vcqzBMw5eyEup3PMiD2gnVxeuTb",1]]},"active":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6TjLhr8uESvgtxrbWuXNAN3vcqzBMw5eyEup3PMiD2gnVxeuTb",1]]},"options":{"memo_key":"DCT6TjLhr8uESvgtxrbWuXNAN3vcqzBMw5eyEup3PMiD2gnVxeuTb","voting_account":"1.2.3","num_miner":0,"votes":[],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":0,"asset_id":"1.3.0"},"subscription_period":0},"rights_to_publish":{"is_publishing_manager":false,"publishing_rights_received":[],"publishing_rights_forwarded":[]},"statistics":"2.5.157","top_n_control_flags":0}}'))
                 ));
@@ -583,20 +588,20 @@ class AccountApiTest extends DCoreSDKTest
                     [$this->callback(function(BaseRequest $req) { return $req->setId(6)->toJson() === '{"jsonrpc":"2.0","id":6,"method":"call","params":[1,"database",[]]}'; })],
                     [$this->callback(function(BaseRequest $req) { return $req->setId(7)->toJson() === '{"jsonrpc":"2.0","id":7,"method":"call","params":[6,"get_required_fees",[[[1,{"fee":{"amount":0,"asset_id":"1.3.0"},"registrar":"1.2.27","name":"'.$req->getParams()[0][0][1]['name'].'","owner":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6BU82XJnfLLtBYsweEVSSsEy3fNNNuZoWxV2mcESjvrH5cLLtw",1]]},"active":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6BU82XJnfLLtBYsweEVSSsEy3fNNNuZoWxV2mcESjvrH5cLLtw",1]]},"options":{"memo_key":"DCT6BU82XJnfLLtBYsweEVSSsEy3fNNNuZoWxV2mcESjvrH5cLLtw","voting_account":"1.2.3","num_miner":0,"votes":[],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":0,"asset_id":"1.3.0"},"subscription_period":0},"extensions":[]}]],"1.3.0"]]}'; })],
                     [$this->callback(function(BaseRequest $req) { return $req->setId(8)->toJson() === '{"jsonrpc":"2.0","id":8,"method":"call","params":[1,"network_broadcast",[]]}'; })],
-                    [$this->callback(function(BaseRequest $req) { return $req->setId(9)->toJson() === '{"jsonrpc":"2.0","id":9,"method":"call","params":[7,"broadcast_transaction_with_callback",[6,{"extensions":[],"operations":[[1,{"fee":{"amount":100000,"asset_id":"1.3.0"},"registrar":"1.2.27","name":"'.$req->getParams()[1]['operations'][0][1]['name'].'","owner":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6BU82XJnfLLtBYsweEVSSsEy3fNNNuZoWxV2mcESjvrH5cLLtw",1]]},"active":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6BU82XJnfLLtBYsweEVSSsEy3fNNNuZoWxV2mcESjvrH5cLLtw",1]]},"options":{"memo_key":"DCT6BU82XJnfLLtBYsweEVSSsEy3fNNNuZoWxV2mcESjvrH5cLLtw","voting_account":"1.2.3","num_miner":0,"votes":[],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":0,"asset_id":"1.3.0"},"subscription_period":0},"extensions":[]}]],"ref_block_num":62968,"ref_block_prefix":"3271140771","expiration":"'.$req->getParams()[1]['expiration'].'","signatures":["'.$req->getParams()[1]['signatures'][0].'"]}]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(9)->toJson() === '{"jsonrpc":"2.0","id":9,"method":"call","params":[7,"broadcast_transaction_with_callback",[6,{"extensions":[],"operations":[[1,{"fee":{"amount":100000,"asset_id":"1.3.0"},"registrar":"1.2.27","name":"'.$req->getParams()[1]['operations'][0][1]['name'].'","owner":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6BU82XJnfLLtBYsweEVSSsEy3fNNNuZoWxV2mcESjvrH5cLLtw",1]]},"active":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6BU82XJnfLLtBYsweEVSSsEy3fNNNuZoWxV2mcESjvrH5cLLtw",1]]},"options":{"memo_key":"DCT6BU82XJnfLLtBYsweEVSSsEy3fNNNuZoWxV2mcESjvrH5cLLtw","voting_account":"1.2.3","num_miner":0,"votes":[],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":0,"asset_id":"1.3.0"},"subscription_period":0},"extensions":[]}]],"ref_block_num":7935,"ref_block_prefix":"1757609034","expiration":"'.$req->getParams()[1]['expiration'].'","signatures":["'.$req->getParams()[1]['signatures'][0].'"]}]]}'; })],
                     [$this->callback(function(BaseRequest $req) { return $req->setId(10)->toJson() === '{"jsonrpc":"2.0","id":10,"method":"call","params":[1,"database",[]]}'; })],
                     [$this->callback(function(BaseRequest $req) { return $req->setId(11)->toJson() === '{"jsonrpc":"2.0","id":11,"method":"call","params":[6,"get_account_by_name",["'.$req->getParams()[0].'"]]}'; })]
                 )
                 ->will($this->onConsecutiveCalls(
                     Login::responseToModel(new BaseResponse('{"id":1,"result":true}')),
                     Database::responseToModel(new BaseResponse('{"id":2,"result":6}')),
-                    GetDynamicGlobalProperties::responseToModel(new BaseResponse('{"id":3,"result":{"id":"2.1.0","head_block_number":587256,"head_block_id":"0008f5f8a3a5f9c23929882be9218a5747560c78","time":"2019-04-18T12:28:20","current_miner":"1.4.4","next_maintenance_time":"2019-04-19T00:00:00","last_budget_time":"2019-04-18T00:00:00","unspent_fee_budget":1739995,"mined_rewards":"332149000000","miner_budget_from_fees":3616188,"miner_budget_from_rewards":"639249000000","accounts_registered_this_interval":56,"recently_missed_count":0,"current_aslot":984475,"recent_slots_filled":"340282366920938463463374607431768211455","dynamic_flags":0,"last_irreversible_block_num":587256}}')),
+                    GetDynamicGlobalProperties::responseToModel(new BaseResponse('{"id":3,"result":{"id":"2.1.0","head_block_number":1056511,"head_block_id":"00101eff4afcc268bc8d60d8f07298dcb2d4ddfe","time":"2019-05-16T15:23:20","current_miner":"1.4.1","next_maintenance_time":"2019-05-17T00:00:00","last_budget_time":"2019-05-16T00:00:00","unspent_fee_budget":18491017,"mined_rewards":"372775000000","miner_budget_from_fees":44333392,"miner_budget_from_rewards":"639249000000","accounts_registered_this_interval":21,"recently_missed_count":0,"current_aslot":1470331,"recent_slots_filled":"338953133849580042525553292597144321791","dynamic_flags":0,"last_irreversible_block_num":1056511}}')),
                     Database::responseToModel(new BaseResponse('{"id":4,"result":6}')),
                     GetChainId::responseToModel(new BaseResponse('{"id":5,"result":"a76a2db75f7a8018d41f2d648c766fdb0ddc79ac77104d243074ebdd5186bfbe"}')),
                     Database::responseToModel(new BaseResponse('{"id":6,"result":6}')),
                     GetRequiredFees::responseToModel(new BaseResponse('{"id":7,"result":[{"amount":100000,"asset_id":"1.3.0"}]}')),
                     NetworkBroadcast::responseToModel(new BaseResponse('{"id":8,"result":7}')),
-                    BroadcastTransactionWithCallback::responseToModel(new BaseResponse('{"id":9,"result":null}')),
+                    BroadcastTransactionWithCallback::responseToModel(new BaseResponse('{"method":"notice","params":[6,[{"id":"332868612b737e8d64110d008f97d829f49278c6","block_num":1056512,"trx_num":0,"trx":{"ref_block_num":7935,"ref_block_prefix":1757609034,"expiration":"2019-05-16T15:23:51","operations":[[1,{"fee":{"amount":100000,"asset_id":"1.3.0"},"registrar":"1.2.27","name":"ttibensky21558020192","owner":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6BU82XJnfLLtBYsweEVSSsEy3fNNNuZoWxV2mcESjvrH5cLLtw",1]]},"active":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6BU82XJnfLLtBYsweEVSSsEy3fNNNuZoWxV2mcESjvrH5cLLtw",1]]},"options":{"memo_key":"DCT6BU82XJnfLLtBYsweEVSSsEy3fNNNuZoWxV2mcESjvrH5cLLtw","voting_account":"1.2.3","num_miner":0,"votes":[],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":0,"asset_id":"1.3.0"},"subscription_period":0},"extensions":{}}]],"extensions":[],"signatures":["1f45abe99809dcc0d3baf8d0f5c67003ae644051cb039911a1db3aa9ad03299e7f0181ff9d63ae0475d52a20ecd7886def39b3c53458ee460fc02b541fd790abff"],"operation_results":[[1,"1.2.503"]]}}]]}')),
                     Database::responseToModel(new BaseResponse('{"id":10,"result":6}')),
                     GetAccountByName::responseToModel(new BaseResponse('{"id":11,"result":{"id":"1.2.158","registrar":"1.2.27","name":"'.$accountName.'","owner":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6BU82XJnfLLtBYsweEVSSsEy3fNNNuZoWxV2mcESjvrH5cLLtw",1]]},"active":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6BU82XJnfLLtBYsweEVSSsEy3fNNNuZoWxV2mcESjvrH5cLLtw",1]]},"options":{"memo_key":"DCT6BU82XJnfLLtBYsweEVSSsEy3fNNNuZoWxV2mcESjvrH5cLLtw","voting_account":"1.2.3","num_miner":0,"votes":[],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":0,"asset_id":"1.3.0"},"subscription_period":0},"rights_to_publish":{"is_publishing_manager":false,"publishing_rights_received":[],"publishing_rights_forwarded":[]},"statistics":"2.5.158","top_n_control_flags":0}}'))
                 ));
@@ -615,10 +620,11 @@ class AccountApiTest extends DCoreSDKTest
     }
 
     /**
-     * @throws \DCorePHP\Exception\InvalidApiCallException
-     * @throws \DCorePHP\Exception\ObjectNotFoundException
-     * @throws \DCorePHP\Exception\ValidationException
-     * @throws \WebSocket\BadOpcodeException
+     * @throws InvalidApiCallException
+     * @throws ObjectNotFoundException
+     * @throws ValidationException
+     * @throws BadOpcodeException
+     * @throws InvalidOperationTypeException
      */
     public function testUpdateAccount(): void
     {
@@ -637,24 +643,24 @@ class AccountApiTest extends DCoreSDKTest
                     [$this->callback(static function(BaseRequest $req) { return $req->setId(8)->toJson() === '{"jsonrpc":"2.0","id":8,"method":"call","params":[1,"database",[]]}'; })],
                     [$this->callback(static function(BaseRequest $req) { return $req->setId(9)->toJson() === '{"jsonrpc":"2.0","id":9,"method":"call","params":[6,"get_chain_id",[]]}'; })],
                     [$this->callback(static function(BaseRequest $req) { return $req->setId(10)->toJson() === '{"jsonrpc":"2.0","id":10,"method":"call","params":[1,"database",[]]}'; })],
-                    [$this->callback(static function(BaseRequest $req) { return $req->setId(11)->toJson() === '{"jsonrpc":"2.0","id":11,"method":"call","params":[6,"get_required_fees",[[[2,{"fee":{"amount":0,"asset_id":"1.3.0"},"account":"1.2.27","new_options":{"memo_key":"DCT6TjLhr8uESvgtxrbWuXNAN3vcqzBMw5eyEup3PMiD2gnVxeuTb","voting_account":"1.2.3","num_miner":0,"votes":["0:3"],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":0,"asset_id":"1.3.0"},"subscription_period":0}}]],"1.3.0"]]}'; })],
+                    [$this->callback(static function(BaseRequest $req) { return $req->setId(11)->toJson() === '{"jsonrpc":"2.0","id":11,"method":"call","params":[6,"get_required_fees",[[[2,{"fee":{"amount":0,"asset_id":"1.3.0"},"account":"1.2.27","new_options":{"memo_key":"DCT6TjLhr8uESvgtxrbWuXNAN3vcqzBMw5eyEup3PMiD2gnVxeuTb","voting_account":"1.2.3","num_miner":0,"votes":["0:3"],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":1,"asset_id":"1.3.0"},"subscription_period":1}}]],"1.3.0"]]}'; })],
                     [$this->callback(static function(BaseRequest $req) { return $req->setId(12)->toJson() === '{"jsonrpc":"2.0","id":12,"method":"call","params":[1,"network_broadcast",[]]}'; })],
-                    [$this->callback(static function(BaseRequest $req) { return $req->setId(13)->toJson() === '{"jsonrpc":"2.0","id":13,"method":"call","params":[7,"broadcast_transaction_with_callback",[6,{"extensions":[],"operations":[[2,{"fee":{"amount":100000,"asset_id":"1.3.0"},"account":"1.2.27","new_options":{"memo_key":"DCT6TjLhr8uESvgtxrbWuXNAN3vcqzBMw5eyEup3PMiD2gnVxeuTb","voting_account":"1.2.3","num_miner":0,"votes":["0:3"],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":0,"asset_id":"1.3.0"},"subscription_period":0}}]],"ref_block_num":63003,"ref_block_prefix":"206020986","expiration":"2019-04-18T12:31:48","signatures":["2017cfff5e4e4e85ee3d4262c17cbaccbd4d4dbfffa8e03f752e10d9ac807ac635460c6b8f0c6ebb02121397c5844c6010d5561f06e957651f7c9cb30cf40fad6a"]}]]}'; })]
+                    [$this->callback(static function(BaseRequest $req) { return $req->setId(13)->toJson() === '{"jsonrpc":"2.0","id":13,"method":"call","params":[7,"broadcast_transaction_with_callback",[6,{"extensions":[],"operations":[[2,{"fee":{"amount":100000,"asset_id":"1.3.0"},"account":"1.2.27","new_options":{"memo_key":"DCT6TjLhr8uESvgtxrbWuXNAN3vcqzBMw5eyEup3PMiD2gnVxeuTb","voting_account":"1.2.3","num_miner":0,"votes":["0:3"],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":1,"asset_id":"1.3.0"},"subscription_period":1}}]],"ref_block_num":8015,"ref_block_prefix":"3308055236","expiration":"2019-05-16T15:31:14","signatures":["1f6ca6b70597b9e05053c9cafbd35924a8a4ba0568489c5400671793b82f0394017fb1f0c6fc89187023621795a93ddc5ba7e5faeac5d849992842ee6b71d10709"]}]]}'; })]
                 )
                 ->will($this->onConsecutiveCalls(
                     Login::responseToModel(new BaseResponse('{"id":1,"result":true}')),
                     Database::responseToModel(new BaseResponse('{"id":2,"result":6}')),
-                    GetAccountById::responseToModel(new BaseResponse('{"id":3,"result":[{"id":"1.2.27","registrar":"1.2.2","name":"public-account-9","owner":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT51ojM7TUGVpFNUJWX8wi5dYp4iA4brRG16zWfcteVZRZHnkWCF",1]]},"active":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6TjLhr8uESvgtxrbWuXNAN3vcqzBMw5eyEup3PMiD2gnVxeuTb",1]]},"options":{"memo_key":"DCT6TjLhr8uESvgtxrbWuXNAN3vcqzBMw5eyEup3PMiD2gnVxeuTb","voting_account":"1.2.3","num_miner":0,"votes":["0:3"],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":0,"asset_id":"1.3.0"},"subscription_period":0},"rights_to_publish":{"is_publishing_manager":false,"publishing_rights_received":[],"publishing_rights_forwarded":[]},"statistics":"2.5.27","top_n_control_flags":0}]}')),
+                    GetAccountById::responseToModel(new BaseResponse('{"id":3,"result":[{"id":"1.2.27","registrar":"1.2.2","name":"public-account-9","owner":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT51ojM7TUGVpFNUJWX8wi5dYp4iA4brRG16zWfcteVZRZHnkWCF",1]]},"active":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6TjLhr8uESvgtxrbWuXNAN3vcqzBMw5eyEup3PMiD2gnVxeuTb",1]]},"options":{"memo_key":"DCT6TjLhr8uESvgtxrbWuXNAN3vcqzBMw5eyEup3PMiD2gnVxeuTb","voting_account":"1.2.3","num_miner":0,"votes":["0:3"],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":1,"asset_id":"1.3.0"},"subscription_period":1},"rights_to_publish":{"is_publishing_manager":false,"publishing_rights_received":[],"publishing_rights_forwarded":[]},"statistics":"2.5.27","top_n_control_flags":0}]}')),
                     Database::responseToModel(new BaseResponse('{"id":4,"result":6}')),
-                    GetAccountById::responseToModel(new BaseResponse('{"id":5,"result":[{"id":"1.2.27","registrar":"1.2.2","name":"public-account-9","owner":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT51ojM7TUGVpFNUJWX8wi5dYp4iA4brRG16zWfcteVZRZHnkWCF",1]]},"active":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6TjLhr8uESvgtxrbWuXNAN3vcqzBMw5eyEup3PMiD2gnVxeuTb",1]]},"options":{"memo_key":"DCT6TjLhr8uESvgtxrbWuXNAN3vcqzBMw5eyEup3PMiD2gnVxeuTb","voting_account":"1.2.3","num_miner":0,"votes":["0:3"],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":0,"asset_id":"1.3.0"},"subscription_period":0},"rights_to_publish":{"is_publishing_manager":false,"publishing_rights_received":[],"publishing_rights_forwarded":[]},"statistics":"2.5.27","top_n_control_flags":0}]}')),
+                    GetAccountById::responseToModel(new BaseResponse('{"id":5,"result":[{"id":"1.2.27","registrar":"1.2.2","name":"public-account-9","owner":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT51ojM7TUGVpFNUJWX8wi5dYp4iA4brRG16zWfcteVZRZHnkWCF",1]]},"active":{"weight_threshold":1,"account_auths":[],"key_auths":[["DCT6TjLhr8uESvgtxrbWuXNAN3vcqzBMw5eyEup3PMiD2gnVxeuTb",1]]},"options":{"memo_key":"DCT6TjLhr8uESvgtxrbWuXNAN3vcqzBMw5eyEup3PMiD2gnVxeuTb","voting_account":"1.2.3","num_miner":0,"votes":["0:3"],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":1,"asset_id":"1.3.0"},"subscription_period":1},"rights_to_publish":{"is_publishing_manager":false,"publishing_rights_received":[],"publishing_rights_forwarded":[]},"statistics":"2.5.27","top_n_control_flags":0}]}')),
                     Database::responseToModel(new BaseResponse('{"id":6,"result":6}')),
-                    GetDynamicGlobalProperties::responseToModel(new BaseResponse('{"id":7,"result":{"id":"2.1.0","head_block_number":587291,"head_block_id":"0008f61b7aa1470c9d9e11b9ec05404f2c8a147e","time":"2019-04-18T12:31:15","current_miner":"1.4.7","next_maintenance_time":"2019-04-19T00:00:00","last_budget_time":"2019-04-18T00:00:00","unspent_fee_budget":1732680,"mined_rewards":"333444000000","miner_budget_from_fees":3616188,"miner_budget_from_rewards":"639249000000","accounts_registered_this_interval":57,"recently_missed_count":0,"current_aslot":984510,"recent_slots_filled":"340282366920938463463374607431768211455","dynamic_flags":0,"last_irreversible_block_num":587291}}')),
+                    GetDynamicGlobalProperties::responseToModel(new BaseResponse('{"id":7,"result":{"id":"2.1.0","head_block_number":1056591,"head_block_id":"00101f4fc4ea2cc57c3072169597604c572f0155","time":"2019-05-16T15:30:40","current_miner":"1.4.2","next_maintenance_time":"2019-05-17T00:00:00","last_budget_time":"2019-05-16T00:00:00","unspent_fee_budget":18285817,"mined_rewards":"375735000000","miner_budget_from_fees":44333392,"miner_budget_from_rewards":"639249000000","accounts_registered_this_interval":22,"recently_missed_count":0,"current_aslot":1470419,"recent_slots_filled":"339949897583409833735953563494228426239","dynamic_flags":0,"last_irreversible_block_num":1056591}}')),
                     Database::responseToModel(new BaseResponse('{"id":8,"result":6}')),
                     GetChainId::responseToModel(new BaseResponse('{"id":9,"result":"a76a2db75f7a8018d41f2d648c766fdb0ddc79ac77104d243074ebdd5186bfbe"}')),
                     Database::responseToModel(new BaseResponse('{"id":10,"result":6}')),
                     GetRequiredFees::responseToModel(new BaseResponse('{"id":11,"result":[{"amount":100000,"asset_id":"1.3.0"}]}')),
                     NetworkBroadcast::responseToModel(new BaseResponse('{"id":12,"result":7}')),
-                    BroadcastTransactionWithCallback::responseToModel(new BaseResponse('{"id":13,"result":null}'))
+                    BroadcastTransactionWithCallback::responseToModel(new BaseResponse('{"method":"notice","params":[6,[{"id":"00ec93118167ef4ce35a49b707e3cdd35751d047","block_num":1056592,"trx_num":0,"trx":{"ref_block_num":8015,"ref_block_prefix":3308055236,"expiration":"2019-05-16T15:31:14","operations":[[2,{"fee":{"amount":100000,"asset_id":"1.3.0"},"account":"1.2.27","new_options":{"memo_key":"DCT6TjLhr8uESvgtxrbWuXNAN3vcqzBMw5eyEup3PMiD2gnVxeuTb","voting_account":"1.2.3","num_miner":0,"votes":["0:3"],"extensions":[],"allow_subscription":false,"price_per_subscribe":{"amount":1,"asset_id":"1.3.0"},"subscription_period":1},"extensions":{}}]],"extensions":[],"signatures":["1f6ca6b70597b9e05053c9cafbd35924a8a4ba0568489c5400671793b82f0394017fb1f0c6fc89187023621795a93ddc5ba7e5faeac5d849992842ee6b71d10709"],"operation_results":[[0,{}]]}}]]}'))
                 ));
         }
 
