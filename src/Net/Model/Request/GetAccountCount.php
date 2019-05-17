@@ -9,7 +9,7 @@ class GetAccountCount extends BaseRequest
     public function __construct()
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_DATABASE,
             'get_account_count',
             []
         );

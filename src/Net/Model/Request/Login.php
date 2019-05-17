@@ -9,7 +9,7 @@ class Login extends BaseRequest
     public function __construct()
     {
         parent::__construct(
-            'login',
+            self::API_GROUP_LOGIN,
             'login',
             ['', '']
         );

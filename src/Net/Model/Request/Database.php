@@ -9,8 +9,8 @@ class Database extends BaseRequest
     public function __construct()
     {
         parent::__construct(
-            'database',
-            'database'
+            self::API_GROUP_DATABASE,
+            self::API_GROUP_DATABASE
         );
     }
 

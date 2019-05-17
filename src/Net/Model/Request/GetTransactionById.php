@@ -11,7 +11,7 @@ class GetTransactionById extends BaseRequest
     public function __construct(string $trxId)
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_DATABASE,
             'get_transaction_by_id',
             [$trxId]
         );

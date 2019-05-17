@@ -9,7 +9,7 @@ class ListAssets extends GetAssetAbstract
     public function __construct(string $lowerBound, int $limit)
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_DATABASE,
             'list_assets',
             [$lowerBound, $limit]
         );

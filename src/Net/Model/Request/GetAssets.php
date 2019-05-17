@@ -10,7 +10,7 @@ class GetAssets extends GetAssetAbstract
     public function __construct(array $assetIds)
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_DATABASE,
             'get_assets',
             [array_map(function(ChainObject $assetId) {return $assetId->getId(); }, $assetIds)]
         );

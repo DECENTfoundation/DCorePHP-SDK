@@ -10,7 +10,7 @@ class ListSubscriptionsByAuthor extends GetSubscriptionAbstract
     public function __construct(ChainObject $author, int $count)
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_DATABASE,
             'list_subscriptions_by_author',
             [$author->getId(), $count]
         );

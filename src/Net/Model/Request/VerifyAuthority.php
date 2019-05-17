@@ -10,7 +10,7 @@ class VerifyAuthority extends BaseRequest
     public function __construct(Transaction $transaction)
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_DATABASE,
             'verify_authority',
             [$transaction->toArray()]
         );

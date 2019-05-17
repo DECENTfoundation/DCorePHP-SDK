@@ -2,6 +2,7 @@
 
 namespace DCorePHP;
 
+use DCorePHP\Exception\InvalidApiCallException;
 use DCorePHP\Model\BaseOperation;
 use DCorePHP\Model\BlockData;
 use DCorePHP\Model\DynamicGlobalProps;
@@ -27,6 +28,7 @@ use DCorePHP\Sdk\SeederApi;
 use DCorePHP\Sdk\SubscriptionApi;
 use DCorePHP\Sdk\TransactionApi;
 use DCorePHP\Sdk\ValidationApi;
+use WebSocket\BadOpcodeException;
 
 class DCoreApi extends DCoreSdk
 {
@@ -131,24 +133,15 @@ class DCoreApi extends DCoreSdk
      * @param string $apiType request class which gives us permissions to perform specific requests
      * @param BaseRequest $request
      * @return mixed
-     * @throws \DCorePHP\Exception\InvalidApiCallException
-     * @throws \WebSocket\BadOpcodeException
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
      */
     public function requestWebsocket(string $apiType, BaseRequest $request)
     {
-        /** @var BaseRequest $accessRequest */
-        $accessRequest = new $apiType();
-
-        if (!array_key_exists(Login::class, $this->permissions)) {
-            $this->getWebsocket()->send(new Login());
-            $this->permissions[Login::class] = 1;
-            $accessRequest->setId(2);
-        }
-
-        $resultNumber = $this->getWebsocket()->send($accessRequest);
-        if ($resultNumber) {
-            $request->setResultNumber($resultNumber);
-        }
+//        if (!array_key_exists(Login::class, $this->permissions)) {
+//            $this->getWebsocket()->send(new Login());
+//            $this->permissions[Login::class] = 1;
+//        }
 
         return $this->getWebsocket()->send($request);
     }

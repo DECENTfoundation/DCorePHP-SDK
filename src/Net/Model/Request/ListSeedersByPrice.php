@@ -10,7 +10,7 @@ class ListSeedersByPrice extends GetSeederAbstract
     public function __construct(int $count)
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_DATABASE,
             'list_seeders_by_price',
             [$count]
         );

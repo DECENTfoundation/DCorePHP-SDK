@@ -9,7 +9,7 @@ class LookupAssets extends GetAssetAbstract
     public function __construct(array $assetSymbols)
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_DATABASE,
             'lookup_asset_symbols',
             [$assetSymbols]
         );

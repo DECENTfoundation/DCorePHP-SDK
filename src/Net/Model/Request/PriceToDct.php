@@ -10,7 +10,7 @@ class PriceToDct extends BaseRequest
     public function __construct(AssetAmount $amount)
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_DATABASE,
             'price_to_dct',
             [$amount->toArray()]
         );

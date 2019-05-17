@@ -16,7 +16,7 @@ class GetRequiredFees extends BaseRequest
     public function __construct(array $operations, ChainObject $assetId = null)
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_DATABASE,
             'get_required_fees',
             [
                 array_map(function (BaseOperation $operation) {

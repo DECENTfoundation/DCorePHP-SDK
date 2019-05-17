@@ -24,7 +24,7 @@ class SearchBuyings extends GetPurchase
         int $limit
     ) {
         parent::__construct(
-            'database',
+            self::API_GROUP_DATABASE,
             'get_buying_objects_by_consumer',
             [$consumer->getId(), $order, $from, $term, $limit]
         );

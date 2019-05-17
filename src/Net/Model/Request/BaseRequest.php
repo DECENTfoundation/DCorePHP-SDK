@@ -8,7 +8,14 @@ use Symfony\Component\PropertyAccess\PropertyAccessor;
 
 abstract class BaseRequest
 {
-    /** @var string */
+    public const API_GROUP_DATABASE = 0;
+    public const API_GROUP_LOGIN = 1;
+    public const API_GROUP_BROADCAST = 2;
+    public const API_GROUP_HISTORY = 3;
+    public const API_GROUP_CRYPTO = 4;
+    public const API_GROUP_MESSAGING = 5;
+
+    /** @var int */
     protected $apiGroup;
     /** @var string */
     protected $method;
@@ -18,12 +25,11 @@ abstract class BaseRequest
     protected $jsonrpc;
     /** @var int */
     protected $id;
-    /** @var int */
-    private $resultNumber = 1;
-    private $withCallback = false;
+    /** @var bool */
+    private $withCallback;
 
     /**
-     * @param string $apiGroup
+     * @param int $apiGroup
      * @param string $method
      * @param array $params tuple, needs to resolve to json array after json_encode() call
      * @param bool $withCallback
@@ -31,7 +37,7 @@ abstract class BaseRequest
      * @param integer $id
      */
     public function __construct(
-        string $apiGroup,
+        int $apiGroup,
         string $method,
         array $params = [],
         $withCallback = false,
@@ -47,7 +53,7 @@ abstract class BaseRequest
         $this->withCallback = $withCallback;
     }
 
-    public function getApiGroup(): string
+    public function getApiGroup(): int
     {
         return $this->apiGroup;
     }
@@ -80,16 +86,6 @@ abstract class BaseRequest
     }
 
     /**
-     * @param int $resultNumber
-     * @return BaseRequest
-     */
-    public function setResultNumber(int $resultNumber): BaseRequest
-    {
-        $this->resultNumber = $resultNumber;
-        return $this;
-    }
-
-    /**
      * @return bool
      */
     public function isWithCallback(): bool
@@ -115,8 +111,7 @@ abstract class BaseRequest
             'id' => $this->id,
             'method' => 'call',
             'params' => [
-                // TODO: result Number is ApiGroup ID
-                $this->resultNumber,
+                $this->apiGroup,
                 $this->method,
                 $this->params
             ],

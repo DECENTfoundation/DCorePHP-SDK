@@ -10,7 +10,7 @@ class GetProposedTransactions extends BaseRequest
     public function __construct(ChainObject $accountId)
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_DATABASE,
             'get_proposed_transactions',
             [$accountId->getId()]
         );

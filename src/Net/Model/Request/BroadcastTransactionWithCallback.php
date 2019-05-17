@@ -12,7 +12,7 @@ class BroadcastTransactionWithCallback extends BaseRequest
     public function __construct(Transaction $transaction)
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_BROADCAST,
             'broadcast_transaction_with_callback',
             [6, $transaction->toArray()],
             true

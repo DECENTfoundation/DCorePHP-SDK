@@ -12,7 +12,7 @@ class GetRelativeAccountHistory extends BaseRequest
     public function __construct(ChainObject $accountId, int $stop, int $start, int $limit)
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_HISTORY,
             'get_relative_account_history',
             [$accountId->getId(), $stop, max(0, min(100, $limit)), $start]
         );

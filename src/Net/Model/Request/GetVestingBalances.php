@@ -13,7 +13,7 @@ class GetVestingBalances extends BaseRequest
     public function __construct(ChainObject $accountId)
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_DATABASE,
             'get_vesting_balances',
             [$accountId->getId()]
         );

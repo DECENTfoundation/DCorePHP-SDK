@@ -17,7 +17,6 @@ class Websocket
     private $requestId = 1;
     /** @var bool */
     private $debug;
-    private $MAX_RETRIES = 5;
 
     /**
      * @param string $url

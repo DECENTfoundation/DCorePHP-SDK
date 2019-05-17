@@ -25,7 +25,7 @@ class SearchContent extends BaseRequest
     public function __construct($term, $order, $user, $regionCode, $id, $type, $count)
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_DATABASE,
             'search_content',
             [$term, $order, $user, $regionCode, $id, $type, $count]
         );

@@ -10,7 +10,7 @@ class ListActiveSubscriptionsByConsumer extends GetSubscriptionAbstract
     public function __construct(ChainObject $consumer, int $count)
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_DATABASE,
             'list_active_subscriptions_by_consumer',
             [$consumer->getId(), $count]
         );

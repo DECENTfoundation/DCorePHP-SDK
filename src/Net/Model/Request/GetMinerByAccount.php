@@ -11,7 +11,7 @@ class GetMinerByAccount extends GetMinerAbstract
     public function __construct(ChainObject $account)
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_DATABASE,
             'get_miner_by_account',
             [$account->getId()]
         );
