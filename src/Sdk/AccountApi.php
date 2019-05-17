@@ -53,7 +53,7 @@ class AccountApi extends BaseApi implements AccountApiInterface
      */
     public function get(ChainObject $id): Account
     {
-        $account = $this->dcoreApi->requestWebsocket(Database::class, new GetAccountById($id));
+        $account = $this->dcoreApi->requestWebsocket(new GetAccountById($id));
         if ($account instanceof Account) {
             return $account;
         }
@@ -66,7 +66,7 @@ class AccountApi extends BaseApi implements AccountApiInterface
      */
     public function getByName(string $name): Account
     {
-        $account = $this->dcoreApi->requestWebsocket(Database::class, new GetAccountByName($name));
+        $account = $this->dcoreApi->requestWebsocket(new GetAccountByName($name));
         if ($account instanceof Account) {
             return $account;
         }
@@ -95,7 +95,7 @@ class AccountApi extends BaseApi implements AccountApiInterface
      */
     public function countAll(): int
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new GetAccountCount());
+        return $this->dcoreApi->requestWebsocket(new GetAccountCount());
     }
 
     /**
@@ -103,7 +103,7 @@ class AccountApi extends BaseApi implements AccountApiInterface
      */
     public function findAllReferencesByKeys(array $keys): array
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new GetKeyReferences($keys)) ?: [];
+        return $this->dcoreApi->requestWebsocket(new GetKeyReferences($keys)) ?: [];
     }
 
     /**
@@ -111,7 +111,7 @@ class AccountApi extends BaseApi implements AccountApiInterface
      */
     public function findAllReferencesByAccount(ChainObject $accountId): array
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new GetAccountReferences($accountId));
+        return $this->dcoreApi->requestWebsocket(new GetAccountReferences($accountId));
     }
 
     /**
@@ -119,7 +119,7 @@ class AccountApi extends BaseApi implements AccountApiInterface
      */
     public function getAll(array $accountIds): array
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new GetAccountsById($accountIds));
+        return $this->dcoreApi->requestWebsocket(new GetAccountsById($accountIds));
     }
 
     /**
@@ -134,7 +134,7 @@ class AccountApi extends BaseApi implements AccountApiInterface
 
             return $nameOrId;
         }, $namesOrIds);
-        return $this->dcoreApi->requestWebsocket(Database::class, new GetFullAccounts($inputArray, $subscribe));
+        return $this->dcoreApi->requestWebsocket(new GetFullAccounts($inputArray, $subscribe));
     }
 
     /**
@@ -142,7 +142,7 @@ class AccountApi extends BaseApi implements AccountApiInterface
      */
     public function getAllByNames(array $names): array
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new LookupAccountNames($names));
+        return $this->dcoreApi->requestWebsocket(new LookupAccountNames($names));
     }
 
     /**
@@ -150,7 +150,7 @@ class AccountApi extends BaseApi implements AccountApiInterface
      */
     public function listAllRelative(string $lowerbound = '', int $limit = 100): array
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new ListAccounts($lowerbound, $limit)) ?: [];
+        return $this->dcoreApi->requestWebsocket(new ListAccounts($lowerbound, $limit)) ?: [];
     }
 
     /**
@@ -163,7 +163,7 @@ class AccountApi extends BaseApi implements AccountApiInterface
         int $limit = 100
     ): array
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new SearchAccounts($term, $order, $startObjectId, $limit)) ?: [];
+        return $this->dcoreApi->requestWebsocket(new SearchAccounts($term, $order, $startObjectId, $limit)) ?: [];
     }
 
     /**
@@ -176,7 +176,7 @@ class AccountApi extends BaseApi implements AccountApiInterface
         string $order = SearchAccountHistory::ORDER_TIME_DESC,
         int $limit = 100
     ): array {
-        return $this->dcoreApi->requestWebsocket(Database::class, new SearchAccountHistory($accountId, $order, $from, $limit)) ?: [];
+        return $this->dcoreApi->requestWebsocket(new SearchAccountHistory($accountId, $order, $from, $limit)) ?: [];
     }
 
     /**

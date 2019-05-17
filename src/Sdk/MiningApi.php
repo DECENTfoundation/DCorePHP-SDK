@@ -28,7 +28,7 @@ class MiningApi extends BaseApi implements MiningApiInterface
      */
     public function getActualVotes(): array
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new GetActualVotes());
+        return $this->dcoreApi->requestWebsocket(new GetActualVotes());
     }
 
     /**
@@ -36,7 +36,7 @@ class MiningApi extends BaseApi implements MiningApiInterface
      */
     public function getAssetPerBlock(string $blockNum): string
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new GetAssetPerBlock($blockNum));
+        return $this->dcoreApi->requestWebsocket(new GetAssetPerBlock($blockNum));
     }
 
     /**
@@ -44,7 +44,7 @@ class MiningApi extends BaseApi implements MiningApiInterface
      */
     public function getFeedsByMiner(ChainObject $account, int $count = 100)
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new GetFeedsByMiner($account, $count));
+        return $this->dcoreApi->requestWebsocket(new GetFeedsByMiner($account, $count));
     }
 
     /**
@@ -52,7 +52,7 @@ class MiningApi extends BaseApi implements MiningApiInterface
      */
     public function getMinerByAccount(ChainObject $account): Miner
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new GetMinerByAccount($account));
+        return $this->dcoreApi->requestWebsocket(new GetMinerByAccount($account));
     }
 
     /**
@@ -60,7 +60,7 @@ class MiningApi extends BaseApi implements MiningApiInterface
      */
     public function getMinerCount(): string
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new GetMinerCount());
+        return $this->dcoreApi->requestWebsocket(new GetMinerCount());
     }
 
     /**
@@ -68,7 +68,7 @@ class MiningApi extends BaseApi implements MiningApiInterface
      */
     public function getMiners(array $minerIds): array
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new GetMiners($minerIds));
+        return $this->dcoreApi->requestWebsocket(new GetMiners($minerIds));
     }
 
     /**
@@ -93,7 +93,7 @@ class MiningApi extends BaseApi implements MiningApiInterface
      */
     public function getNewAssetPerBlock(): string
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new GetNewAssetPerBlock());
+        return $this->dcoreApi->requestWebsocket(new GetNewAssetPerBlock());
     }
 
     /**
@@ -101,7 +101,7 @@ class MiningApi extends BaseApi implements MiningApiInterface
      */
     public function listMinersRelative(string $lowerBound = '', int $limit = 1000): array
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new LookupMinerAccounts($lowerBound, $limit));
+        return $this->dcoreApi->requestWebsocket(new LookupMinerAccounts($lowerBound, $limit));
     }
 
     /**
@@ -109,7 +109,7 @@ class MiningApi extends BaseApi implements MiningApiInterface
      */
     public function findVotedMiners(array $voteIds): array
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new LookupVoteIds($voteIds));
+        return $this->dcoreApi->requestWebsocket(new LookupVoteIds($voteIds));
     }
 
     /**
@@ -123,7 +123,7 @@ class MiningApi extends BaseApi implements MiningApiInterface
         bool $onlyMyVotes = false,
         int $limit = 1000
     ): array {
-        return $this->dcoreApi->requestWebsocket(Database::class, new SearchMinerVoting($searchTerm, $order, $id, $accountName, $onlyMyVotes, $limit));
+        return $this->dcoreApi->requestWebsocket(new SearchMinerVoting($searchTerm, $order, $id, $accountName, $onlyMyVotes, $limit));
     }
 
     /**

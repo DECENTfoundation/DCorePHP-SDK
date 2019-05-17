@@ -22,7 +22,7 @@ class MessagingApi extends BaseApi implements MessagingApiInterface
         ChainObject $receiver = null,
         int $maxCount = 1000
     ): array {
-        return $this->dcoreApi->requestWebsocket(Messaging::class, new GetMessageObjects($sender, $receiver, $maxCount));
+        return $this->dcoreApi->requestWebsocket(new GetMessageObjects($sender, $receiver, $maxCount));
     }
 
     /**
@@ -30,7 +30,7 @@ class MessagingApi extends BaseApi implements MessagingApiInterface
      */
     public function getAll(ChainObject $sender = null, ChainObject $receiver = null, int $maxCount = 1000): array
     {
-        return $this->flattenMessageResponses($this->dcoreApi->requestWebsocket(Messaging::class, new GetMessageObjects($sender, $receiver, $maxCount)));
+        return $this->flattenMessageResponses($this->dcoreApi->requestWebsocket(new GetMessageObjects($sender, $receiver, $maxCount)));
     }
 
     /**

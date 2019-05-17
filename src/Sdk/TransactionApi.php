@@ -44,7 +44,7 @@ class TransactionApi extends BaseApi implements TransactionApiInterface
      */
     public function getAllProposed(ChainObject $accountId)
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new GetProposedTransactions($accountId));
+        return $this->dcoreApi->requestWebsocket(new GetProposedTransactions($accountId));
     }
 
     /**
@@ -52,7 +52,7 @@ class TransactionApi extends BaseApi implements TransactionApiInterface
      */
     public function getRecent(string $trxId): ProcessedTransaction
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new GetRecentTransactionById($trxId));
+        return $this->dcoreApi->requestWebsocket(new GetRecentTransactionById($trxId));
     }
 
     /**
@@ -60,7 +60,7 @@ class TransactionApi extends BaseApi implements TransactionApiInterface
      */
     public function getById(string $trxId): ProcessedTransaction
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new GetTransactionById($trxId));
+        return $this->dcoreApi->requestWebsocket(new GetTransactionById($trxId));
     }
 
     /**
@@ -68,7 +68,7 @@ class TransactionApi extends BaseApi implements TransactionApiInterface
      */
     public function getByBlockNum(string $blockNum, string $trxInBlock): ProcessedTransaction
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new GetTransaction($blockNum, $trxInBlock));
+        return $this->dcoreApi->requestWebsocket(new GetTransaction($blockNum, $trxInBlock));
     }
 
     /**
@@ -84,7 +84,7 @@ class TransactionApi extends BaseApi implements TransactionApiInterface
      */
     public function getHexDump(Transaction $transaction): string
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new GetTransactionHex($transaction));
+        return $this->dcoreApi->requestWebsocket(new GetTransactionHex($transaction));
     }
 
     /**

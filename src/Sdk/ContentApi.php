@@ -42,7 +42,7 @@ class ContentApi extends BaseApi implements ContentApiInterface
      */
     public function generateKeys(array $seeders): ContentKeys
     {
-        $contentKeys = $this->dcoreApi->requestWebsocket(Database::class, new GenerateContentKeys($seeders));
+        $contentKeys = $this->dcoreApi->requestWebsocket(new GenerateContentKeys($seeders));
         if ($contentKeys instanceof ContentKeys) {
             return $contentKeys;
         }
@@ -52,7 +52,7 @@ class ContentApi extends BaseApi implements ContentApiInterface
 
     public function get(ChainObject $contentId): ContentObject
     {
-        $contents = $this->dcoreApi->requestWebsocket(Database::class, new GetContentById($contentId));
+        $contents = $this->dcoreApi->requestWebsocket(new GetContentById($contentId));
 
         return reset($contents) ?: null;
     }
@@ -62,7 +62,7 @@ class ContentApi extends BaseApi implements ContentApiInterface
      */
     public function getByURI(string $uri): ContentObject
     {
-        $content = $this->dcoreApi->requestWebsocket(Database::class, new GetContentByURI($uri));
+        $content = $this->dcoreApi->requestWebsocket(new GetContentByURI($uri));
         if ($content instanceof ContentObject) {
             return $content;
         }
@@ -88,7 +88,7 @@ class ContentApi extends BaseApi implements ContentApiInterface
      */
     public function listAllPublishersRelative(string $lowerBound, int $limit = 100): array
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new ListPublishingManagers($lowerBound, $limit)) ?: [];
+        return $this->dcoreApi->requestWebsocket(new ListPublishingManagers($lowerBound, $limit)) ?: [];
     }
 
     /**
@@ -96,7 +96,7 @@ class ContentApi extends BaseApi implements ContentApiInterface
      */
     public function restoreEncryptionKey(PubKey $privateElGamal, ChainObject $purchaseId): string
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new RestoreEncryptionKey($privateElGamal, $purchaseId));
+        return $this->dcoreApi->requestWebsocket(new RestoreEncryptionKey($privateElGamal, $purchaseId));
     }
 
     /**
@@ -112,7 +112,7 @@ class ContentApi extends BaseApi implements ContentApiInterface
         int $count = 100
     ): array
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new SearchContent($term, $order, $user, $regionCode, $id, $type, $count)) ?: [];
+        return $this->dcoreApi->requestWebsocket(new SearchContent($term, $order, $user, $regionCode, $id, $type, $count)) ?: [];
     }
 
     public function create(SubmitContent $content, Credentials $author, AssetAmount $publishingFee, AssetAmount $fee): ?TransactionConfirmation {
@@ -217,7 +217,7 @@ class ContentApi extends BaseApi implements ContentApiInterface
             ->setUri($uri);
 
 //        /** @var AssetAmount[] $fees */
-//        $fees = $this->dcoreApi->requestWebsocket(Database::class, new GetRequiredFees([$operation], $assetId));
+//        $fees = $this->dcoreApi->requestWebsocket(new GetRequiredFees([$operation], $assetId));
 //        $operation->setFee(clone reset($fees));
 
         $transaction = new Transaction();
@@ -227,7 +227,7 @@ class ContentApi extends BaseApi implements ContentApiInterface
             ->setExtensions([])
             ->sign($authorPrivateKeyWif);
 
-        $this->dcoreApi->requestWebsocket(NetworkBroadcast::class, new BroadcastTransactionWithCallback($transaction));
+        $this->dcoreApi->requestWebsocket(new BroadcastTransactionWithCallback($transaction));
     }
 
     /**
@@ -283,7 +283,7 @@ class ContentApi extends BaseApi implements ContentApiInterface
             ->setExtensions([])
             ->sign($authorPrivateKeyWif);
 
-        $this->dcoreApi->requestWebsocket(NetworkBroadcast::class, new BroadcastTransactionWithCallback($transaction));
+        $this->dcoreApi->requestWebsocket(new BroadcastTransactionWithCallback($transaction));
     }
 
     /**

@@ -130,13 +130,12 @@ class DCoreApi extends DCoreSdk
     }
 
     /**
-     * @param string $apiType request class which gives us permissions to perform specific requests
      * @param BaseRequest $request
      * @return mixed
      * @throws InvalidApiCallException
      * @throws BadOpcodeException
      */
-    public function requestWebsocket(string $apiType, BaseRequest $request)
+    public function requestWebsocket(BaseRequest $request)
     {
 //        if (!array_key_exists(Login::class, $this->permissions)) {
 //            $this->getWebsocket()->send(new Login());

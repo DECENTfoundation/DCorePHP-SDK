@@ -17,7 +17,7 @@ class HistoryApi extends BaseApi implements HistoryApiInterface
      */
     public function getOperation(ChainObject $accountId, ChainObject $operationId): BalanceChange
     {
-        return $this->dcoreApi->requestWebsocket(History::class, new GetAccountBalanceForTransaction($accountId, $operationId));
+        return $this->dcoreApi->requestWebsocket(new GetAccountBalanceForTransaction($accountId, $operationId));
     }
 
     /**
@@ -29,7 +29,7 @@ class HistoryApi extends BaseApi implements HistoryApiInterface
         string $endId = '0.0.0',
         int $limit = 100
     ): array {
-        return $this->dcoreApi->requestWebsocket(History::class, new GetAccountHistory($accountId, $startId, $endId, $limit)) ?: [];
+        return $this->dcoreApi->requestWebsocket(new GetAccountHistory($accountId, $startId, $endId, $limit)) ?: [];
     }
 
     /**
@@ -37,7 +37,7 @@ class HistoryApi extends BaseApi implements HistoryApiInterface
      */
     public function listOperationsRelative(ChainObject $accountId, int $start = 0, int $limit = 100): array
     {
-        return $this->dcoreApi->requestWebsocket(History::class, new GetRelativeAccountHistory($accountId, 0, $start, $limit));
+        return $this->dcoreApi->requestWebsocket(new GetRelativeAccountHistory($accountId, 0, $start, $limit));
     }
 
     /**
@@ -52,7 +52,7 @@ class HistoryApi extends BaseApi implements HistoryApiInterface
         string $startOffset = '0',
         int $limit = 100
     ): array {
-        return $this->dcoreApi->requestWebsocket(History::class, new SearchAccountBalanceHistory($accountId, $assets, $recipientAccount, $fromBlock, $toBlock, $startOffset, $limit));
+        return $this->dcoreApi->requestWebsocket(new SearchAccountBalanceHistory($accountId, $assets, $recipientAccount, $fromBlock, $toBlock, $startOffset, $limit));
     }
 
 }

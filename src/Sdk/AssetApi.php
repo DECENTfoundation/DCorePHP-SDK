@@ -25,7 +25,7 @@ class AssetApi extends BaseApi implements AssetApiInterface
      */
     public function get(ChainObject $assetId): Asset
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new GetAsset($assetId));
+        return $this->dcoreApi->requestWebsocket(new GetAsset($assetId));
     }
 
     /**
@@ -33,7 +33,7 @@ class AssetApi extends BaseApi implements AssetApiInterface
      */
     public function getAll(array $assetIds): array
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new GetAssets($assetIds)) ?: [];
+        return $this->dcoreApi->requestWebsocket(new GetAssets($assetIds)) ?: [];
     }
 
     /**
@@ -41,7 +41,7 @@ class AssetApi extends BaseApi implements AssetApiInterface
      */
     public function getRealSupply(): RealSupply
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new GetRealSupply());
+        return $this->dcoreApi->requestWebsocket(new GetRealSupply());
     }
 
     /**
@@ -49,7 +49,7 @@ class AssetApi extends BaseApi implements AssetApiInterface
      */
     public function listAllRelative(string $lowerBound, int $limit = 100): array
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new ListAssets($lowerBound, $limit));
+        return $this->dcoreApi->requestWebsocket(new ListAssets($lowerBound, $limit));
     }
 
     /**
@@ -68,7 +68,7 @@ class AssetApi extends BaseApi implements AssetApiInterface
      */
     public function getAllByName(array $assetSymbols): array
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new LookupAssets($assetSymbols)) ?: [];
+        return $this->dcoreApi->requestWebsocket(new LookupAssets($assetSymbols)) ?: [];
     }
 
     /**
