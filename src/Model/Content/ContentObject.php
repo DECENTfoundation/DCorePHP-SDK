@@ -457,4 +457,8 @@ class ContentObject
         return $this->getPrice()->getPrices()[self::REGIONS_ALL_ID];
     }
 
+    public static function hasValid($reference): bool
+    {
+        return preg_match ( '/^(https?|ipfs|magnet):/', $reference);
+    }
 }

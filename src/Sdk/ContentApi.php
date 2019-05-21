@@ -13,7 +13,7 @@ use DCorePHP\Model\ChainObject;
 use DCorePHP\Model\Content\ContentKeys;
 use DCorePHP\Model\Content\ContentObject;
 use DCorePHP\Model\Content\SubmitContent;
-use DCorePHP\Model\Operation\ContentCancellation;
+use DCorePHP\Model\Operation\ContentCancellationOperation;
 use DCorePHP\Model\Operation\ContentSubmitOperation;
 use DCorePHP\Model\Operation\PurchaseContentOperation;
 use DCorePHP\Model\Operation\RequestToBuy;
@@ -170,6 +170,44 @@ class ContentApi extends BaseApi implements ContentApiInterface
     /**
      * @inheritDoc
      */
+    public function deleteById(ChainObject $contentId, Credentials $author, AssetAmount $fee): ?TransactionConfirmation
+    {
+        return $this->deleteByUrl($this->get($contentId)->getURI(), $author, $fee);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function deleteByUrl(string $url, Credentials $author, AssetAmount $fee): ?TransactionConfirmation
+    {
+        $operation = new ContentCancellationOperation();
+        $operation
+            ->setAuthor($author->getAccount())
+            ->setUri($url)
+            ->setFee($fee);
+
+        return $this->dcoreApi->getBroadcastApi()->broadcastOperationWithECKeyPairWithCallback(
+            $author->getKeyPair(),
+            $operation
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function deleteByRef($reference, Credentials $author, AssetAmount $fee): ?TransactionConfirmation
+    {
+        if ($reference instanceof ChainObject) {
+            return $this->deleteById($reference, $author, $fee);
+        }
+        if (ContentObject::hasValid($reference)) {
+            return $this->deleteByUrl($reference, $author, $fee);
+        }
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function update(SubmitContent $content, Credentials $author, AssetAmount $publishingFee, AssetAmount $fee): ?TransactionConfirmation
     {
         $foundContent = $this->getByURI($content->getUri()); // Also checks if exists and throws exception
@@ -211,7 +249,7 @@ class ContentApi extends BaseApi implements ContentApiInterface
         /** @var $dynamicGlobalProperties $dynamicGlobalProps */
         $dynamicGlobalProperties = $this->dcoreApi->getGeneralApi()->getDynamicGlobalProperties();
 
-        $operation = new ContentCancellation();
+        $operation = new ContentCancellationOperation();
         $operation
             ->setId($authorId)
             ->setUri($uri);

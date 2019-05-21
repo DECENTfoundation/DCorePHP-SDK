@@ -42,7 +42,7 @@ class OperationFactory
             29 => 'report_stats',
             30 => 'set_publishing_manager',
             31 => 'set_publishing_right',
-            Operation\ContentCancellation::OPERATION_TYPE => Operation\ContentCancellation::class,
+            Operation\ContentCancellationOperation::OPERATION_TYPE => Operation\ContentCancellationOperation::class,
             Operation\AssetFundPools::OPERATION_TYPE => Operation\AssetFundPools::class,
             Operation\AssetReserve::OPERATION_TYPE => Operation\AssetReserve::class,
             Operation\AssetClaimFeesOperation::OPERATION_TYPE => Operation\AssetClaimFeesOperation::class,
