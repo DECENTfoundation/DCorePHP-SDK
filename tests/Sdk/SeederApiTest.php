@@ -102,9 +102,27 @@ class SeederApiTest extends DCoreSDKTest
 
     public function testListSeedersByRating(): void
     {
-        // TODO: No data
-        $seeders = $this->sdk->getSeederApi()->listByRegion();
-        $this->markTestIncomplete('This test has not been implemented yet.');
+        if ($this->websocketMock) {
+            $this->websocketMock
+                ->expects($this->exactly(3))
+                ->method('send')
+                ->withConsecutive(
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(1)->toJson() === '{"jsonrpc":"2.0","id":1,"method":"call","params":[1,"login",["",""]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(2)->toJson() === '{"jsonrpc":"2.0","id":2,"method":"call","params":[1,"database",[]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(3)->toJson() === '{"jsonrpc":"2.0","id":3,"method":"call","params":[6,"list_seeders_by_rating",[100]]}'; })]
+                )
+                ->will($this->onConsecutiveCalls(
+                    Login::responseToModel(new BaseResponse('{"id":1,"result":true}')),
+                    Database::responseToModel(new BaseResponse('{"id":2,"result":6}')),
+                    ListSeedersByUpload::responseToModel(new BaseResponse('{"id":3,"result":[{"id":"2.14.0","seeder":"1.2.17","free_space":9947,"price":{"amount":10000000,"asset_id":"1.3.0"},"expiration":"2019-05-16T12:41:25","pubKey":{"s":"388623995520027680257080274907334470292881241518810412591176467398195525710484619373465376826137058931903619934039623141738312819768319215775577353874580."},"ipfs_ID":"QmaSFf3Vjzb2u13RihTJ2UPcufp4htmZS1YNzMECNBnYGJ","stats":"2.16.0","rating":0,"region_code":""}]}'))
+                ));
+        }
+
+        $seeders = $this->sdk->getSeederApi()->listByRating();
+
+        foreach ($seeders as $seeder) {
+            $this->assertInstanceOf(Seeder::class, $seeder);
+        }
     }
 
 }

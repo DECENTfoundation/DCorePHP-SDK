@@ -110,7 +110,6 @@ class TransactionApiTest extends DCoreSDKTest
      */
     public function testGetAllProposed(): void
     {
-        // TODO: No data
 //        $this->sdk->getTransactionApi()->getAllProposed(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1));
         $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
     }
