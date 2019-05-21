@@ -2,8 +2,12 @@
 
 namespace DCorePHP\Sdk;
 
+use DCorePHP\Crypto\Credentials;
+use DCorePHP\Model\Asset\AssetAmount;
 use DCorePHP\Model\ChainObject;
 use DCorePHP\Model\Content\Purchase;
+use DCorePHP\Model\Operation\LeaveRatingAndComment;
+use DCorePHP\Model\TransactionConfirmation;
 use DCorePHP\Net\Model\Request\Database;
 use DCorePHP\Net\Model\Request\GetBuyingByUri;
 use DCorePHP\Net\Model\Request\GetHistoryBuyingsByConsumer;
@@ -76,5 +80,32 @@ class PurchaseApi extends BaseApi implements PurchaseApiInterface
     public function findAllForFeedback(string $uri, string $user = '', string $startId = ChainObject::NULL_OBJECT, int $count = 100): array
     {
         return $this->dcoreApi->requestWebsocket(Database::class, new SearchFeedback($uri, $user, $startId, $count)) ?: [];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function createRateAndCommentOperation(string $uri, ChainObject $consumer, int $rating, string $comment, AssetAmount $fee = null): LeaveRatingAndComment
+    {
+        $fee = $fee ?: new AssetAmount();
+        $operation = new LeaveRatingAndComment();
+        $operation
+            ->setUri($uri)
+            ->setConsumer($consumer)
+            ->setRating($rating)
+            ->setComment($comment)
+            ->setFee($fee);
+        return $operation;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function rateAndComment(Credentials $credentials, string $uri, int $rating, string $comment, AssetAmount $fee = null): ?TransactionConfirmation
+    {
+        return $this->dcoreApi->getBroadcastApi()->broadcastOperationWithECKeyPairWithCallback(
+            $credentials->getKeyPair(),
+            $this->createRateAndCommentOperation($uri, $credentials->getAccount(), $rating, $comment, $fee)
+        );
     }
 }

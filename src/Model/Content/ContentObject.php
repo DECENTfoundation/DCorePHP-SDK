@@ -4,6 +4,7 @@ namespace DCorePHP\Model\Content;
 
 use DCorePHP\Model\Asset\AssetAmount;
 use DCorePHP\Model\ChainObject;
+use DCorePHP\Model\RegionalPrice;
 
 class ContentObject
 {
@@ -452,9 +453,17 @@ class ContentObject
         return $this;
     }
 
-    public function getPriceNone(): AssetAmount
+    public function regionalPrice(int $forRegion = null): RegionalPrice
     {
-        return $this->getPrice()->getPrices()[self::REGIONS_ALL_ID];
+        $rp = new RegionalPrice();
+        if ($forRegion) {
+            return $rp->setRegion($forRegion)->setPrice($this->getPrice()->getPrices()[$forRegion]);
+        } else {
+            $prices = $this->getPrice()->getPrices();
+            $price = reset($prices);
+            $region = array_keys($prices)[0];
+            return $rp->setRegion($region)->setPrice($price);
+        }
     }
 
     public static function hasValid($reference): bool

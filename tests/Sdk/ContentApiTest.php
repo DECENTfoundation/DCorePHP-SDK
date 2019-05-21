@@ -21,6 +21,7 @@ use DCorePHP\Net\Model\Request\GetChainId;
 use DCorePHP\Net\Model\Request\GetContentById;
 use DCorePHP\Net\Model\Request\GetContentByURI;
 use DCorePHP\Net\Model\Request\GetDynamicGlobalProperties;
+use DCorePHP\Net\Model\Request\GetRequiredFees;
 use DCorePHP\Net\Model\Request\Login;
 use DCorePHP\Net\Model\Request\NetworkBroadcast;
 use DCorePHP\Net\Model\Request\RestoreEncryptionKey;
@@ -219,9 +220,91 @@ class ContentApiTest extends DCoreSDKTest
      */
     public function testPurchase(): void
     {
-//        $credentials = new Credentials(new ChainObject('1.2.34'), DCoreSDKTest::PRIVATE_KEY_1);
-//        $transConf = $this->sdk->getContentApi()->purchase($credentials, new ChainObject('2.13.974'));
-        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
+        if ($this->websocketMock) {
+            $this->websocketMock
+                ->expects($this->exactly(23))
+                ->method('send')
+                ->withConsecutive(
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(1)->toJson() === '{"jsonrpc":"2.0","id":1,"method":"call","params":[1,"login",["",""]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(2)->toJson() === '{"jsonrpc":"2.0","id":2,"method":"call","params":[1,"database",[]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(3)->toJson() === '{"jsonrpc":"2.0","id":3,"method":"call","params":[6,"get_content",' . json_encode([$req->getParams()[0]]) . ']}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(4)->toJson() === '{"jsonrpc":"2.0","id":4,"method":"call","params":[1,"database",[]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(5)->toJson() === '{"jsonrpc":"2.0","id":5,"method":"call","params":[6,"get_dynamic_global_properties",[]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(6)->toJson() === '{"jsonrpc":"2.0","id":6,"method":"call","params":[1,"database",[]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(7)->toJson() === '{"jsonrpc":"2.0","id":7,"method":"call","params":[6,"get_chain_id",[]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(8)->toJson() === '{"jsonrpc":"2.0","id":8,"method":"call","params":[1,"network_broadcast",[]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(9)->toJson() === '{"jsonrpc":"2.0","id":9,"method":"call","params":[7,"broadcast_transaction_with_callback",[6,{"extensions":[],"operations":[[20,{"size":10000,"author":"1.2.27","co_authors":[],"URI":' . trim(json_encode([$req->getParams()[1]['operations'][0][1]['URI']]), '[]') . ',"quorum":"0","price":[{"price":{"amount":1000,"asset_id":"1.3.0"},"region":"1"}],"hash":"2222222222222222222222222222222222222222","seeders":[],"key_parts":[],"expiration":"' . $req->getParams()[1]['operations'][0][1]['expiration'] . '","publishing_fee":{"amount":1000000,"asset_id":"1.3.0"},"synopsis":"{\"title\":\"Game Title\",\"description\":\"Description\",\"content_type_id\":\"1.2.3\"}","fee":{"amount":1000000,"asset_id":"1.3.0"}}]],"ref_block_num":41202,"ref_block_prefix":"1086751626","expiration":"' . $req->getParams()[1]['expiration'] . '","signatures":["' . $req->getParams()[1]['signatures'][0] . '"]}]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(10)->toJson() === '{"jsonrpc":"2.0","id":10,"method":"call","params":[1,"database",[]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(11)->toJson() === '{"jsonrpc":"2.0","id":11,"method":"call","params":[6,"get_content",' . json_encode([$req->getParams()[0]]) . ']}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(12)->toJson() === '{"jsonrpc":"2.0","id":12,"method":"call","params":[1,"database",[]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(13)->toJson() === '{"jsonrpc":"2.0","id":13,"method":"call","params":[6,"get_objects",[["'.$req->getParams()[0][0].'"]]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(14)->toJson() === '{"jsonrpc":"2.0","id":14,"method":"call","params":[1,"database",[]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(15)->toJson() === '{"jsonrpc":"2.0","id":15,"method":"call","params":[6,"get_dynamic_global_properties",[]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(16)->toJson() === '{"jsonrpc":"2.0","id":16,"method":"call","params":[1,"database",[]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(17)->toJson() === '{"jsonrpc":"2.0","id":17,"method":"call","params":[6,"get_chain_id",[]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(18)->toJson() === '{"jsonrpc":"2.0","id":18,"method":"call","params":[1,"database",[]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(19)->toJson() === '{"jsonrpc":"2.0","id":19,"method":"call","params":[6,"get_required_fees",[[[21,{"URI":'.json_encode($req->getParams()[0][0][1]['URI']).',"consumer":"1.2.27","price":{"amount":1000,"asset_id":"1.3.0"},"pubKey":{"s":"0."},"region_code_from":1,"fee":{"amount":0,"asset_id":"1.3.0"}}]],"1.3.0"]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(20)->toJson() === '{"jsonrpc":"2.0","id":20,"method":"call","params":[1,"network_broadcast",[]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(21)->toJson() === '{"jsonrpc":"2.0","id":21,"method":"call","params":[7,"broadcast_transaction_with_callback",[6,{"extensions":[],"operations":[[21,{"URI":'.json_encode($req->getParams()[1]['operations'][0][1]['URI']).',"consumer":"1.2.27","price":{"amount":1000,"asset_id":"1.3.0"},"pubKey":{"s":"0."},"region_code_from":1,"fee":{"amount":0,"asset_id":"1.3.0"}}]],"ref_block_num":41202,"ref_block_prefix":"1086751626","expiration":"'.$req->getParams()[1]['expiration'].'","signatures":["'.$req->getParams()[1]['signatures'][0].'"]}]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(22)->toJson() === '{"jsonrpc":"2.0","id":22,"method":"call","params":[1,"database",[]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(23)->toJson() === '{"jsonrpc":"2.0","id":23,"method":"call","params":[6,"get_content",' . json_encode([$req->getParams()[0]]) . ']}'; })]
+                )
+                ->will($this->onConsecutiveCalls(
+                    Login::responseToModel(new BaseResponse('{"id":1,"result":true}')),
+                    Database::responseToModel(new BaseResponse('{"id":2,"result":6}')),
+                    GetContentByURI::responseToModel(new BaseResponse('{"id":3,"result":null}')),
+                    Database::responseToModel(new BaseResponse('{"id":4,"result":6}')),
+                    GetDynamicGlobalProperties::responseToModel(new BaseResponse('{"id":5,"result":{"id":"2.1.0","head_block_number":1024242,"head_block_id":"000fa0f28a83c640b7bee3af5e18651c2e46f197","time":"2019-05-14T14:04:50","current_miner":"1.4.8","next_maintenance_time":"2019-05-15T00:00:00","last_budget_time":"2019-05-14T00:00:00","unspent_fee_budget":29121209,"mined_rewards":"341103000000","miner_budget_from_fees":62411018,"miner_budget_from_rewards":"639249000000","accounts_registered_this_interval":18,"recently_missed_count":4,"current_aslot":1434835,"recent_slots_filled":"337623583873037873792539722238882480126","dynamic_flags":0,"last_irreversible_block_num":1024242}}')),
+                    Database::responseToModel(new BaseResponse('{"id":6,"result":6}')),
+                    GetChainId::responseToModel(new BaseResponse('{"id":7,"result":"a76a2db75f7a8018d41f2d648c766fdb0ddc79ac77104d243074ebdd5186bfbe"}')),
+                    NetworkBroadcast::responseToModel(new BaseResponse('{"id":8,"result":7}')),
+                    BroadcastTransactionWithCallback::responseToModel(new BaseResponse('{"id":9,"result":null}')),
+                    Database::responseToModel(new BaseResponse('{"id":10,"result":6}')),
+                    GetContentByURI::responseToModel(new BaseResponse('{"id":11,"result":{"id":"2.13.312","author":"1.2.27","co_authors":[],"expiration":"2019-05-28T13:32:34","created":"2019-05-14T14:04:50","price":{"map_price":[[1,{"amount":1000,"asset_id":"1.3.0"}]]},"size":10000,"synopsis":"{\"title\":\"Game Title\",\"description\":\"Description\",\"content_type_id\":\"1.2.3\"}","URI":"http://decent.ch?PHP&testtime=1557842688","quorum":0,"key_parts":[],"_hash":"2222222222222222222222222222222222222222","last_proof":[],"is_blocked":false,"AVG_rating":0,"num_of_ratings":0,"times_bought":0,"publishing_fee_escrow":{"amount":1000000,"asset_id":"1.3.0"},"seeder_price":[]}}')),
+                    Database::responseToModel(new BaseResponse('{"id":12,"result":6}')),
+                    GetContentById::responseToModel(new BaseResponse('{"id":13,"result":[{"id":"2.13.312","author":"1.2.27","co_authors":[],"expiration":"2019-05-28T13:32:34","created":"2019-05-14T14:04:50","price":{"map_price":[[1,{"amount":1000,"asset_id":"1.3.0"}]]},"size":10000,"synopsis":"{\"title\":\"Game Title\",\"description\":\"Description\",\"content_type_id\":\"1.2.3\"}","URI":"http://decent.ch?PHP&testtime=1557842688","quorum":0,"key_parts":[],"_hash":"2222222222222222222222222222222222222222","last_proof":[],"is_blocked":false,"AVG_rating":0,"num_of_ratings":0,"times_bought":0,"publishing_fee_escrow":{"amount":1000000,"asset_id":"1.3.0"},"seeder_price":[]}]}')),
+                    Database::responseToModel(new BaseResponse('{"id":14,"result":6}')),
+                    GetDynamicGlobalProperties::responseToModel(new BaseResponse('{"id":15,"result":{"id":"2.1.0","head_block_number":1024242,"head_block_id":"000fa0f28a83c640b7bee3af5e18651c2e46f197","time":"2019-05-14T14:04:50","current_miner":"1.4.8","next_maintenance_time":"2019-05-15T00:00:00","last_budget_time":"2019-05-14T00:00:00","unspent_fee_budget":29121209,"mined_rewards":"341103000000","miner_budget_from_fees":62411018,"miner_budget_from_rewards":"639249000000","accounts_registered_this_interval":18,"recently_missed_count":4,"current_aslot":1434835,"recent_slots_filled":"337623583873037873792539722238882480126","dynamic_flags":0,"last_irreversible_block_num":1024242}}')),
+                    Database::responseToModel(new BaseResponse('{"id":16,"result":6}')),
+                    GetChainId::responseToModel(new BaseResponse('{"id":17,"result":"a76a2db75f7a8018d41f2d648c766fdb0ddc79ac77104d243074ebdd5186bfbe"}')),
+                    Database::responseToModel(new BaseResponse('{"id":18,"result":6}')),
+                    GetRequiredFees::responseToModel(new BaseResponse('{"id":19,"result":[{"amount":0,"asset_id":"1.3.0"}]}')),
+                    NetworkBroadcast::responseToModel(new BaseResponse('{"id":20,"result":7}')),
+                    BroadcastTransactionWithCallback::responseToModel(new BaseResponse('{"id":21,"result":null}')),
+                    Database::responseToModel(new BaseResponse('{"id":22,"result":6}')),
+                    GetContentByURI::responseToModel(new BaseResponse('{"id":23,"result":{"id":"2.13.312","author":"1.2.27","co_authors":[],"expiration":"2019-05-28T13:32:34","created":"2019-05-14T14:04:50","price":{"map_price":[[1,{"amount":1000,"asset_id":"1.3.0"}]]},"size":10000,"synopsis":"{\"title\":\"Game Title\",\"description\":\"Description\",\"content_type_id\":\"1.2.3\"}","URI":"http://decent.ch?PHP&testtime=1557842688","quorum":0,"key_parts":[],"_hash":"2222222222222222222222222222222222222222","last_proof":[],"is_blocked":false,"AVG_rating":0,"num_of_ratings":0,"times_bought":1,"publishing_fee_escrow":{"amount":1000000,"asset_id":"1.3.0"},"seeder_price":[]}}'))
+                ));
+        }
+
+        $randomUri = 'http://decent.ch?PHP&testtime=' . time();
+        $content = new SubmitContent();
+        $content
+            ->setUri($randomUri)
+            ->setCoauthors([])
+            ->setCustodyData(null)
+            ->setHash('2222222222222222222222222222222222222222')
+            ->setKeyParts([])
+            ->setSeeders([])
+            ->setQuorum(0)
+            ->setSize(10000)
+            ->setSynopsis(json_encode(['title' => 'Game Title', 'description' => 'Description', 'content_type_id' => '1.2.3']))
+            ->setExpiration('2019-05-28T13:32:34+00:00')
+            ->setPrice([(new RegionalPrice)->setPrice((new AssetAmount())->setAmount(1000))->setRegion(1)]);
+
+        $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
+
+        $this->sdk->getContentApi()->create(
+            $content,
+            $credentials,
+            (new AssetAmount())->setAmount(1000000)->setAssetId('1.3.0'),
+            (new AssetAmount())->setAmount(1000000)->setAssetId('1.3.0'));
+
+        $contentBefore = $this->sdk->getContentApi()->getByURI($randomUri);
+
+            $this->sdk->getContentApi()->purchase($credentials, $contentBefore->getId());
+
+        $contentAfter = $this->sdk->getContentApi()->getByURI($randomUri);
+        $this->assertEquals(1, $contentAfter->getTimesBought());
     }
 
     public function testPurchaseWithUri(): void
