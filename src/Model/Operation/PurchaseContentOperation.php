@@ -38,9 +38,9 @@ class PurchaseContentOperation extends BaseOperation
         $this
             ->setUri($content->getURI())
             ->setConsumer($credentials->getAccount())
-            ->setPrice($content->getPriceNone())
+            ->setPrice($content->regionalPrice()->getPrice())
             ->setPublicElGamal(parse_url($content->getURI(), PHP_URL_SCHEME) !== 'ipfs' ? new PubKey() : (new PubKey())->setPubKey($credentials->getKeyPair()->getPrivate()->toElGamalPublicKey()))
-            ->setRegionCode(ContentObject::REGIONS_ALL_ID);
+            ->setRegionCode($content->regionalPrice()->getRegion());
     }
 
     /**
@@ -144,8 +144,17 @@ class PurchaseContentOperation extends BaseOperation
 
     public function toArray(): array
     {
-        // TODO: Missing test in kotlin
-        return parent::toArray();
+        return [
+            self::OPERATION_TYPE,
+            [
+                'URI' => $this->getUri(),
+                'consumer' => $this->getConsumer()->getId(),
+                'price' => $this->getPrice()->toArray(),
+                'pubKey' => $this->getPublicElGamal()->toArray(),
+                'region_code_from' => $this->getRegionCode(),
+                'fee' => $this->getFee()->toArray()
+            ]
+        ];
     }
 
     public function toBytes(): string

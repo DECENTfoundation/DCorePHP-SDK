@@ -2,8 +2,12 @@
 
 namespace DCorePHP\Sdk;
 
+use DCorePHP\Crypto\Credentials;
+use DCorePHP\Model\Asset\AssetAmount;
 use DCorePHP\Model\ChainObject;
 use DCorePHP\Model\Content\Purchase;
+use DCorePHP\Model\Operation\LeaveRatingAndComment;
+use DCorePHP\Model\TransactionConfirmation;
 use DCorePHP\Net\Model\Request\SearchBuyings;
 
 interface PurchaseApiInterface
@@ -64,5 +68,29 @@ interface PurchaseApiInterface
      * @return Purchase[] the feedback found
      */
     public function findAllForFeedback(string $uri, string $user = '', string $startId = ChainObject::NULL_OBJECT, int $count = 100): array;
+
+    /**
+     * Create a rate and comment content operation
+     *
+     * @param string $uri
+     * @param ChainObject $consumer
+     * @param int $rating
+     * @param string $comment
+     * @param AssetAmount|null $fee
+     * @return LeaveRatingAndComment
+     */
+    public function createRateAndCommentOperation(string $uri, ChainObject $consumer, int $rating, string $comment, AssetAmount $fee = null): LeaveRatingAndComment;
+
+    /**
+     * Rate and comment content operation
+     *
+     * @param Credentials $credentials
+     * @param string $uri
+     * @param int $rating
+     * @param string $comment
+     * @param AssetAmount|null $fee
+     * @return TransactionConfirmation|null
+     */
+    public function rateAndComment(Credentials $credentials, string $uri, int $rating, string $comment, AssetAmount $fee = null): ?TransactionConfirmation;
 
 }
