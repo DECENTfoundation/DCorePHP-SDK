@@ -376,6 +376,42 @@ class ContentApiTest extends DCoreSDKTest
         $this->assertEquals('Game Title Updated by PHP', $submittedContentObject->getSynopsisDecoded()['title']);
     }
 
+    /**
+     * @throws \DCorePHP\Exception\ObjectNotFoundException
+     * @throws \DCorePHP\Exception\ValidationException
+     * @throws \Exception
+     */
+    public function testDeleteByUrl(): void
+    {
+        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
+//        $randomUri = 'http://decent.ch?testtime=' . time() . '&lang=PHP';
+//        $credentials = new Credentials(new ChainObject('1.2.34'), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
+//
+//        $content = new SubmitContent();
+//        $content
+//            ->setUri($randomUri)
+//            ->setCoauthors([])
+//            ->setCustodyData(null)
+//            ->setHash('2222222222222222222222222222222222222222')
+//            ->setKeyParts([])
+//            ->setSeeders([])
+//            ->setQuorum(0)
+//            ->setSize(10000)
+//            ->setSynopsis(json_encode(['title' => 'Game Title', 'description' => 'Description', 'content_type_id' => '1.2.3']))
+//            ->setExpiration(new \DateTime('+2 day'))
+//            ->setPrice([(new RegionalPrice)->setPrice((new AssetAmount())->setAmount(1000))->setRegion(1)]);
+//
+//        $this->sdk->getContentApi()->create($content, $credentials, (new AssetAmount())->setAmount(0)->setAssetId('1.3.0'), (new AssetAmount())->setAmount(1000)->setAssetId('1.3.0'));
+//
+//        dump('Before:');
+//        dump($this->sdk->getContentApi()->getByURI($randomUri));
+//
+//        $this->sdk->getContentApi()->deleteByUrl($randomUri, $credentials, (new AssetAmount())->setAmount(0)->setAssetId('1.3.0'));
+//
+//        dump('After:');
+//        dump($this->sdk->getContentApi()->getByURI($randomUri));
+    }
+
     public function testSubmitContentAsync(): void
     {
         $this->markTestIncomplete('This test has not been implemented yet.'); // @todo

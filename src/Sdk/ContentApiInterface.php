@@ -156,6 +156,44 @@ interface ContentApiInterface
     public function purchaseWithUri(Credentials $credentials, string $uri): ?TransactionConfirmation;
 
     /**
+     * Delete content by id
+     *
+     * @param ChainObject $contentId
+     * @param Credentials $author Credentials of account which will pay operation fee,
+     * will owner of content.
+     * @param AssetAmount $fee for the operation
+     * @return TransactionConfirmation|null
+     * @throws \DCorePHP\Exception\ValidationException
+     * @throws \Exception
+     */
+    public function deleteById(ChainObject $contentId, Credentials $author, AssetAmount $fee): ?TransactionConfirmation;
+
+    /**
+     * Delete content by uri
+     *
+     * @param string $url
+     * @param Credentials $author Credentials of account which will pay operation fee,
+     * will owner of content.
+     * @param AssetAmount $fee for the operation
+     * @return TransactionConfirmation|null
+     * @throws \DCorePHP\Exception\ValidationException
+     * @throws \Exception
+     */
+    public function deleteByUrl(string $url, Credentials $author, AssetAmount $fee): ?TransactionConfirmation;
+
+    /**
+     * Delete content by reference (id or uri)
+     *
+     * @param $reference
+     * @param Credentials $author Credentials of account which will pay operation fee,
+     * will owner of content.
+     * @param AssetAmount $fee for the operation
+     * @return TransactionConfirmation|null
+     * @throws \DCorePHP\Exception\ValidationException
+     */
+    public function deleteByRef($reference, Credentials $author, AssetAmount $fee): ?TransactionConfirmation;
+
+    /**
      * Update Content
      *
      * @param SubmitContent $content
