@@ -18,6 +18,8 @@ RUN docker-php-ext-install bcmath gmp mcrypt
 RUN docker-php-ext-configure bcmath --enable-bcmath
 RUN docker-php-ext-enable mcrypt
 
+RUN echo "memory_limit = -1" > /usr/local/etc/php/conf.d/memory.ini
+
 COPY . /var/www/html
 WORKDIR /var/www/html
 

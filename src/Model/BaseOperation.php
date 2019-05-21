@@ -18,6 +18,8 @@ abstract class BaseOperation
     private $type;
     /** @var AssetAmount */
     private $fee;
+    /** @var array $extensions */
+    private $extensions = [];
 
     public function __construct()
     {
@@ -65,6 +67,25 @@ abstract class BaseOperation
     public function setFee(AssetAmount $fee): self
     {
         $this->fee = $fee;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getExtensions(): array
+    {
+        return $this->extensions;
+    }
+
+    /**
+     * @param array $extensions
+     * @return BaseOperation
+     */
+    public function setExtensions(array $extensions): BaseOperation
+    {
+        $this->extensions = $extensions;
 
         return $this;
     }

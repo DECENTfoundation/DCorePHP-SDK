@@ -1,9 +1,9 @@
 <?php
 
+use DCorePHP\Exception\ValidationException;
 use DCorePHP\Model\Asset\AssetAmount;
 use DCorePHP\Model\Authority;
 use DCorePHP\Model\ChainObject;
-use DCorePHP\Model\Operation\CreateAccountParameters;
 use DCorePHP\Model\Operation\UpdateAccount;
 use DCorePHP\Model\Options;
 use DCorePHP\Model\Subscription\AuthMap;
@@ -13,7 +13,7 @@ use PHPUnit\Framework\TestCase;
 class UpdateAccountTest extends TestCase
 {
     /**
-     * @throws \DCorePHP\Exception\ValidationException
+     * @throws ValidationException
      * @throws Exception
      */
     public function testToBytes(): void
