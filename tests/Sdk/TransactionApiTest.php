@@ -276,39 +276,4 @@ class TransactionApiTest extends DCoreSDKTest
 
         $this->assertEquals('00000000000000000000000000', $res);
     }
-
-    /**
-     * @throws \DCorePHP\Exception\InvalidApiCallException
-     * @throws \DCorePHP\Exception\ValidationException
-     * @throws \DCorePHP\Model\InvalidOperationTypeException
-     * @throws \DCorePHP\Net\Model\Request\CouldNotParseOperationTypeException
-     * @throws \WebSocket\BadOpcodeException
-     */
-    public function testIsConfirmed(): void
-    {
-        if ($this->websocketMock) {
-            $this->websocketMock
-                ->expects($this->exactly(5))
-                ->method('send')
-                ->withConsecutive(
-                    [$this->callback(function(BaseRequest $req) { return $req->setId(1)->toJson() === '{"jsonrpc":"2.0","id":1,"method":"call","params":[1,"login",["",""]]}'; })],
-                    [$this->callback(function(BaseRequest $req) { return $req->setId(2)->toJson() === '{"jsonrpc":"2.0","id":2,"method":"call","params":[1,"history",["",""]]}'; })],
-                    [$this->callback(function(BaseRequest $req) { return $req->setId(3)->toJson() === '{"jsonrpc":"2.0","id":3,"method":"call","params":[6,"get_account_history",["1.2.27","1.7.919361",100,"1.7.919362"]]}'; })],
-                    [$this->callback(function(BaseRequest $req) { return $req->setId(4)->toJson() === '{"jsonrpc":"2.0","id":4,"method":"call","params":[1,"database",[]]}'; })],
-                    [$this->callback(function(BaseRequest $req) { return $req->setId(5)->toJson() === '{"jsonrpc":"2.0","id":5,"method":"call","params":[7,"get_dynamic_global_properties",[]]}'; })]
-                )
-                ->will($this->onConsecutiveCalls(
-                    Login::responseToModel(new BaseResponse('{"id":1,"result":true}')),
-                    History::responseToModel(new BaseResponse('{"id":2,"result":6}')),
-                    GetAccountHistory::responseToModel(new BaseResponse('{"id":3,"result":[{"id":"1.7.919362","op":[42,{"fee":{"amount":0,"asset_id":"1.3.0"},"author":"1.2.27","escrow":{"amount":1000000,"asset_id":"1.3.0"},"content":"2.13.167"}],"result":[0,{}],"block_num":630110,"trx_in_block":0,"op_in_trx":1,"virtual_op":6009}]}')),
-                    Database::responseToModel(new BaseResponse('{"id":4,"result":7}')),
-                    GetDynamicGlobalProperties::responseToModel(new BaseResponse('{"id":5,"result":{"id":"2.1.0","head_block_number":671012,"head_block_id":"000a3d240367fe3be570da2c7366c93e2fd81bbd","time":"2019-04-23T08:49:15","current_miner":"1.4.9","next_maintenance_time":"2019-04-24T00:00:00","last_budget_time":"2019-04-23T00:00:00","unspent_fee_budget":2604707,"mined_rewards":"234876000000","miner_budget_from_fees":4115531,"miner_budget_from_rewards":"639249000000","accounts_registered_this_interval":0,"recently_missed_count":0,"current_aslot":1068231,"recent_slots_filled":"340282366920938463463374607431768211455","dynamic_flags":0,"last_irreversible_block_num":671012}}'))
-                ));
-        }
-
-        $this->assertTrue($this->sdk->getTransactionApi()->isConfirmed(
-            new ChainObject(DCoreSDKTest::ACCOUNT_ID_1),
-            new ChainObject('1.7.919362')
-        ));
-    }
 }

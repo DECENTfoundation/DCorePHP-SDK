@@ -15,6 +15,7 @@ use DCorePHP\Net\Model\Request\GetRecentTransactionById;
 use DCorePHP\Net\Model\Request\GetTransaction;
 use DCorePHP\Net\Model\Request\GetTransactionById;
 use DCorePHP\Net\Model\Request\GetTransactionHex;
+use DCorePHP\Net\Model\Request\GetTransactionsById;
 
 class TransactionApi extends BaseApi implements TransactionApiInterface
 {
@@ -90,31 +91,8 @@ class TransactionApi extends BaseApi implements TransactionApiInterface
     /**
      * @inheritdoc
      */
-    public function isConfirmed(ChainObject $accountId, ChainObject $transactionId): bool
+    public function getAll(array $trxIds): array
     {
-        $start = $transactionId->getId();
-        if ($start !== '1.7.0') {
-            $parts = explode('.', $start);
-            --$parts[2];
-            $start = implode('.', $parts);
-        }
-
-        /** @var OperationHistory[] $operationHistories */
-        $operationHistories = $this->dcoreApi->getHistoryApi()->listOperations(
-            $accountId,
-            $start,
-            $transactionId
-        );
-
-        if (empty($operationHistories)) {
-            return false;
-        }
-
-        $operationHistory = reset($operationHistories);
-
-        /** @var $dynamicGlobalProperties $dynamicGlobalProps */
-        $dynamicGlobalProperties = $this->dcoreApi->getGeneralApi()->getDynamicGlobalProperties();
-
-        return $operationHistory->getBlockNum() <= $dynamicGlobalProperties->getLastIrreversibleBlockNum();
+        return $this->dcoreApi->requestWebsocket(Database::class, new GetTransactionsById($trxIds));
     }
 }
