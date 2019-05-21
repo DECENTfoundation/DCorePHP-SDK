@@ -26,6 +26,7 @@ use DCorePHP\Net\Model\Request\Database;
 use DCorePHP\Net\Model\Request\GenerateContentKeys;
 use DCorePHP\Net\Model\Request\GetContentById;
 use DCorePHP\Net\Model\Request\GetContentByURI;
+use DCorePHP\Net\Model\Request\GetContentsById;
 use DCorePHP\Net\Model\Request\ListPublishingManagers;
 use DCorePHP\Net\Model\Request\NetworkBroadcast;
 use DCorePHP\Net\Model\Request\RestoreEncryptionKey;
@@ -68,6 +69,14 @@ class ContentApi extends BaseApi implements ContentApiInterface
         }
 
         throw new ObjectNotFoundException("Content with uri '{$uri}' doesn't exist.");
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getAll(array $contentIds): array
+    {
+        return $this->dcoreApi->requestWebsocket(Database::class, new GetContentsById($contentIds));
     }
 
     /**

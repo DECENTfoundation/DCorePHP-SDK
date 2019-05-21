@@ -2,10 +2,13 @@
 
 namespace DCorePHP\Sdk;
 
+use DCorePHP\Exception\InvalidApiCallException;
+use DCorePHP\Exception\ObjectNotFoundException;
 use DCorePHP\Model\Asset\Asset;
 use DCorePHP\Model\BalanceChange;
 use DCorePHP\Model\ChainObject;
 use DCorePHP\Model\OperationHistory;
+use WebSocket\BadOpcodeException;
 
 interface HistoryApiInterface
 {
@@ -16,8 +19,8 @@ interface HistoryApiInterface
      * @param ChainObject $accountId of the account whose history should be queried, 1.2.*
      * @param ChainObject $operationId of the history object, 1.7.*
      * @return BalanceChange
-     * @throws \DCorePHP\Exception\InvalidApiCallException
-     * @throws \WebSocket\BadOpcodeException
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
      */
     public function getOperation(ChainObject $accountId, ChainObject $operationId): BalanceChange;
 
@@ -29,10 +32,22 @@ interface HistoryApiInterface
      * @param string $endId object_id to start searching to
      * @param int $limit the number of entries to return (starting from the most recent)
      * @return OperationHistory[]
-     * @throws \DCorePHP\Exception\InvalidApiCallException
-     * @throws \WebSocket\BadOpcodeException
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
      */
     public function listOperations(ChainObject $accountId, string $startId = '0.0.0', string $endId = '0.0.0', int $limit = 100): array;
+
+    /**
+     * @param ChainObject $accountId
+     * @param string $startId
+     * @param string $endId
+     * @param int $limit
+     * @return array
+     * @throws InvalidApiCallException
+     * @throws ObjectNotFoundException
+     * @throws BadOpcodeException
+     */
+    public function findAllTransfersComposed(ChainObject $accountId, string $startId = '0.0.0', string $endId = '0.0.0', int $limit = 10): array;
 
     /**
      * Get account history of operations.

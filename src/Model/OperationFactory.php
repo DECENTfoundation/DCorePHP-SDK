@@ -32,7 +32,7 @@ class OperationFactory
             19 => 'assert',
             Operation\ContentSubmitOperation::OPERATION_TYPE => Operation\ContentSubmitOperation::class,
             Operation\RequestToBuy::OPERATION_TYPE => Operation\RequestToBuy::class,
-            22 => 'leave_rating_and_comment',
+            Operation\LeaveRatingAndComment::OPERATION_TYPE => Operation\LeaveRatingAndComment::class,
             23 => 'ready_to_publish',
             Operation\ProofOfCustodyOperation::OPERATION_TYPE => Operation\ProofOfCustodyOperation::class,
             25 => 'deliver_keys',
