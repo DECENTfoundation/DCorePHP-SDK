@@ -183,4 +183,9 @@ class Asset
 
         return $this;
     }
+
+    public static function isValidSymbol(string $symbol): bool
+    {
+        return preg_match('/(?=.{3,16}$)^[A-Z][A-Z0-9]+(\.[A-Z0-9]*)?[A-Z]$/', $symbol);
+    }
 }

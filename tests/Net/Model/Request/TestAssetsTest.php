@@ -5,7 +5,7 @@ namespace DCorePHPTests\Net\Model\Request;
 use DCorePHP\Model\Asset\Asset;
 use DCorePHP\Model\Asset\AssetAmount;
 use DCorePHP\Model\Asset\AssetOptions;
-use DCorePHP\Model\Asset\AssetOptionsExchangeRate;
+use DCorePHP\Model\Asset\ExchangeRate;
 use DCorePHP\Model\ChainObject;
 use DCorePHP\Net\Model\Request\GetAssets;
 use DCorePHP\Net\Model\Response\BaseResponse;
@@ -60,11 +60,11 @@ class TestAssetsTest extends TestCase
         $options = $asset->getOptions();
         $this->assertInstanceOf(AssetOptions::class, $options);
         $this->assertEquals('7319777577456900', $options->getMaxSupply());
-        $this->assertTrue($options->getExchangeable());
+        $this->assertTrue($options->isExchangeable());
         $this->assertEquals([['name' => 'test']], $options->getExtensions());
 
         $exchangeRate = $options->getExchangeRate();
-        $this->assertInstanceOf(AssetOptionsExchangeRate::class, $exchangeRate);
+        $this->assertInstanceOf(ExchangeRate::class, $exchangeRate);
 
         $base = $exchangeRate->getBase();
         $this->assertInstanceOf(AssetAmount::class, $base);

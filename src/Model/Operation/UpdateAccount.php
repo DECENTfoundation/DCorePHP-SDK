@@ -147,24 +147,6 @@ class UpdateAccount extends BaseOperation
     /**
      * @return array
      */
-    public function getExtensions(): array
-    {
-        return $this->extensions;
-    }
-
-    /**
-     * @param array $extensions
-     * @return UpdateAccount
-     */
-    public function setExtensions(array $extensions): UpdateAccount
-    {
-        $this->extensions = $extensions;
-        return $this;
-    }
-
-    /**
-     * @return array
-     */
     public function toArray(): array
     {
         return [

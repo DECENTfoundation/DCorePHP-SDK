@@ -2,13 +2,13 @@
 
 namespace DCorePHPTests\Model;
 
+use DCorePHP\Exception\ValidationException;
 use DCorePHP\Model\Asset\AssetAmount;
 use DCorePHP\Model\Authority;
 use DCorePHP\Model\BlockData;
 use DCorePHP\Model\DynamicGlobalProps;
 use DCorePHP\Model\Memo;
 use DCorePHP\Model\ChainObject;
-use DCorePHP\Model\Operation\CreateAccountParameters;
 use DCorePHP\Model\Operation\CreateAccount;
 use DCorePHP\Model\Operation\Transfer2;
 use DCorePHP\Model\Operation\UpdateAccount;
@@ -25,7 +25,7 @@ use PHPUnit\Framework\TestCase;
 class TransactionTest extends TestCase
 {
     /**
-     * @throws \DCorePHP\Exception\ValidationException
+     * @throws ValidationException
      */
     public function testSignTransfer()
     {
@@ -92,7 +92,7 @@ class TransactionTest extends TestCase
     }
 
     /**
-     * @throws \DCorePHP\Exception\ValidationException
+     * @throws ValidationException
      * @throws \Exception
      */
     public function testSignRegisterAccount()
@@ -157,7 +157,7 @@ class TransactionTest extends TestCase
     }
 
     /**
-     * @throws \DCorePHP\Exception\ValidationException
+     * @throws ValidationException
      */
     public function testSignUpdateAccount()
     {

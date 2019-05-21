@@ -2,53 +2,52 @@
 
 namespace DCorePHP\Model\Operation;
 
-use DCorePHP\Exception\ValidationException;
 use DCorePHP\Model\Asset\AssetAmount;
 use DCorePHP\Model\BaseOperation;
 use DCorePHP\Model\ChainObject;
 
-class AssetClaimFeesOperation extends BaseOperation
+class AssetFundPoolsOperation extends BaseOperation
 {
-    public const OPERATION_TYPE = 35;
-    public const OPERATION_NAME = 'asset_claim_fees_operation';
+    public const OPERATION_TYPE = 33;
+    public const OPERATION_NAME = 'asset_fund_pools_operation';
 
     /** @var ChainObject */
-    private $issuer;
-    /** @var AssetAmount*/
+    private $from;
+    /** @var AssetAmount */
     private $uia;
     /** @var AssetAmount */
     private $dct;
 
     /**
-     * AssetClaimFeesOperation constructor.
+     * AssetFundPoolsOperation constructor.
      */
     public function __construct()
     {
         parent::__construct();
         $this->uia = new AssetAmount();
-        $this->dct = new AssetAmount();
+        $this->dct= new AssetAmount();
     }
 
 
     /**
      * @return ChainObject
      */
-    public function getIssuer(): ChainObject
+    public function getFrom(): ChainObject
     {
-        return $this->issuer;
+        return $this->from;
     }
 
     /**
-     * @param ChainObject | string $issuer
-     * @return AssetClaimFeesOperation
-     * @throws ValidationException
+     * @param ChainObject | string $from
+     * @return AssetFundPoolsOperation
+     * @throws \DCorePHP\Exception\ValidationException
      */
-    public function setIssuer($issuer): AssetClaimFeesOperation
+    public function setFrom($from): AssetFundPoolsOperation
     {
-        if (is_string($issuer)) {
-            $issuer = new ChainObject($issuer);
+        if (is_string($from)) {
+            $from = new ChainObject($from);
         }
-        $this->issuer = $issuer;
+        $this->from = $from;
 
         return $this;
     }
@@ -63,9 +62,9 @@ class AssetClaimFeesOperation extends BaseOperation
 
     /**
      * @param AssetAmount $uia
-     * @return AssetClaimFeesOperation
+     * @return AssetFundPoolsOperation
      */
-    public function setUia(AssetAmount $uia): AssetClaimFeesOperation
+    public function setUia(AssetAmount $uia): AssetFundPoolsOperation
     {
         $this->uia = $uia;
 
@@ -82,9 +81,9 @@ class AssetClaimFeesOperation extends BaseOperation
 
     /**
      * @param AssetAmount $dct
-     * @return AssetClaimFeesOperation
+     * @return AssetFundPoolsOperation
      */
-    public function setDct(AssetAmount $dct): AssetClaimFeesOperation
+    public function setDct(AssetAmount $dct): AssetFundPoolsOperation
     {
         $this->dct = $dct;
 
@@ -97,7 +96,7 @@ class AssetClaimFeesOperation extends BaseOperation
             self::OPERATION_TYPE,
             [
                 'fee' => $this->getFee()->toArray(),
-                'issuer' => $this->getIssuer()->getId(),
+                'from_account' => $this->getFrom()->getId(),
                 'uia_asset' => $this->getUia()->toArray(),
                 'dct_asset' => $this->getDct()->toArray()
             ]
@@ -109,7 +108,7 @@ class AssetClaimFeesOperation extends BaseOperation
         return implode('', [
             $this->getTypeBytes(),
             $this->getFee()->toBytes(),
-            $this->getIssuer()->toBytes(),
+            $this->getFrom()->toBytes(),
             $this->getUia()->toBytes(),
             $this->getDct()->toBytes(),
             // TODO: Extensions Array

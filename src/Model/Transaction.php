@@ -4,10 +4,12 @@ namespace DCorePHP\Model;
 
 use DCorePHP\Crypto\ECKeyPair;
 use DCorePHP\Crypto\PrivateKey;
+use DCorePHP\DCorePHPException;
 use DCorePHP\Utils\Math;
 
 class Transaction
 {
+    private const MAX_SIGN_LIMIT = 20;
     /** @var array */
     private $extensions = [];
     /** @var BaseOperation[] */
@@ -161,6 +163,7 @@ class Transaction
         $ecKeyPair = ECKeyPair::fromBase58($privateKeyWif);
 
         $signature = null;
+        $attempt = 0;
         do {
             try {
                 $signature = $ecKeyPair->signature($this->toBytes(), $this->getChainId());
@@ -171,6 +174,10 @@ class Transaction
             if (!$signature) {
                 $this->getBlockData()->increment();
             }
+            if ($attempt === self::MAX_SIGN_LIMIT) {
+                throw new DCorePHPException('Reached MAX signing limit, unable to create a signature, possible problem with input data.');
+            }
+            $attempt++;
         } while (!$signature);
 
         $this->setSignature($signature);

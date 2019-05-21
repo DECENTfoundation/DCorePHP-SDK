@@ -3,18 +3,30 @@
 
 namespace DCorePHP\Model\Asset;
 
+use DCorePHP\Utils\Math;
+
 class MonitoredAssetOptions
 {
     /** @var array */
-    private $feeds;
-    /** @var AssetCurrentFeed */
+    private $feeds = [];
+    /** @var PriceFeed */
     private $currentFeed;
-    /** @var int */
+    /** @var \DateTime */
     private $currentFeedPublicationTime;
     /** @var int */
-    private $feedLifetimeSec;
+    private $feedLifetimeSec = 86400;
     /** @var int */
-    private $minimumFeeds;
+    private $minimumFeeds = 1;
+
+    /**
+     * MonitoredAssetOptions constructor.
+     * @throws \Exception
+     */
+    public function __construct()
+    {
+        $this->currentFeed = new PriceFeed();
+        $this->currentFeedPublicationTime = new \DateTime();
+    }
 
     /**
      * @return array
@@ -36,18 +48,18 @@ class MonitoredAssetOptions
     }
 
     /**
-     * @return AssetCurrentFeed
+     * @return PriceFeed
      */
-    public function getCurrentFeed(): AssetCurrentFeed
+    public function getCurrentFeed(): PriceFeed
     {
         return $this->currentFeed;
     }
 
     /**
-     * @param AssetCurrentFeed $currentFeed
+     * @param PriceFeed $currentFeed
      * @return MonitoredAssetOptions
      */
-    public function setCurrentFeed(AssetCurrentFeed $currentFeed): MonitoredAssetOptions
+    public function setCurrentFeed(PriceFeed $currentFeed): MonitoredAssetOptions
     {
         $this->currentFeed = $currentFeed;
 
@@ -55,20 +67,21 @@ class MonitoredAssetOptions
     }
 
     /**
-     * @return int
+     * @return \DateTime
      */
-    public function getCurrentFeedPublicationTime(): int
+    public function getCurrentFeedPublicationTime(): \DateTime
     {
         return $this->currentFeedPublicationTime;
     }
 
     /**
-     * @param int $currentFeedPublicationTime
+     * @param \DateTime | string $currentFeedPublicationTime
      * @return MonitoredAssetOptions
+     * @throws \Exception
      */
-    public function setCurrentFeedPublicationTime(int $currentFeedPublicationTime): MonitoredAssetOptions
+    public function setCurrentFeedPublicationTime($currentFeedPublicationTime): MonitoredAssetOptions
     {
-        $this->currentFeedPublicationTime = $currentFeedPublicationTime;
+        $this->currentFeedPublicationTime = $currentFeedPublicationTime instanceof \DateTime ? $currentFeedPublicationTime : new \DateTime($currentFeedPublicationTime);
 
         return $this;
     }
@@ -111,4 +124,26 @@ class MonitoredAssetOptions
         return $this;
     }
 
+    public function toArray(): array
+    {
+        return [
+            'feeds' => $this->getFeeds(),
+            'current_feed' => $this->getCurrentFeed()->toArray(),
+            'current_feed_publication_time' => $this->getCurrentFeedPublicationTime()->format('Y-m-d\TH:i:s'),
+            'feed_lifetime_sec' => $this->getFeedLifetimeSec(),
+            'minimum_feeds' => $this->getMinimumFeeds(),
+        ];
+    }
+
+    public function toBytes(): string
+    {
+        return implode('', [
+            // TODO: Feeds Array
+            $this->getFeeds() ? '01' : '00',
+            $this->getCurrentFeed()->getCoreExchangeRate()->toBytes(),
+            str_pad(Math::gmpDecHex(Math::reverseBytesInt($this->getCurrentFeedPublicationTime()->format('U'))), 8, '0', STR_PAD_LEFT),
+            str_pad(Math::gmpDecHex(Math::reverseBytesInt($this->getFeedLifetimeSec())), 8, '0', STR_PAD_LEFT),
+            str_pad(Math::gmpDecHex(Math::reverseBytesShort($this->getMinimumFeeds())), 4, '0', STR_PAD_LEFT),
+        ]);
+    }
 }

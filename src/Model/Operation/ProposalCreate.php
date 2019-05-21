@@ -18,8 +18,6 @@ class ProposalCreate extends BaseOperation
     private $proposedOps; // @todo split into separate model
     /** @var int */
     private $reviewPeriodSeconds;
-    /** @var array */
-    private $extensions = [];
 
     /**
      * @param array $rawOperation
@@ -122,24 +120,6 @@ class ProposalCreate extends BaseOperation
     public function setReviewPeriodSeconds(?int $reviewPeriodSeconds): ProposalCreate
     {
         $this->reviewPeriodSeconds = $reviewPeriodSeconds;
-        return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function getExtensions(): ?array
-    {
-        return $this->extensions;
-    }
-
-    /**
-     * @param array $extensions
-     * @return ProposalCreate
-     */
-    public function setExtensions(array $extensions): ProposalCreate
-    {
-        $this->extensions = $extensions;
         return $this;
     }
 }
