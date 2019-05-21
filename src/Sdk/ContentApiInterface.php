@@ -58,6 +58,14 @@ interface ContentApiInterface
     public function getByURI(string $uri): ContentObject;
 
     /**
+     * Get contents byt Ids
+     *
+     * @param array $contentIds
+     * @return array
+     */
+    public function getAll(array $contentIds): array;
+
+    /**
      * Check if content exist by url
      *
      * @param string $uri

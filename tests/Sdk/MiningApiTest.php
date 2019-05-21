@@ -13,7 +13,6 @@ use DCorePHP\Net\Model\Request\BaseRequest;
 use DCorePHP\Net\Model\Request\BroadcastTransactionWithCallback;
 use DCorePHP\Net\Model\Request\Database;
 use DCorePHP\Net\Model\Request\GetAccountById;
-use DCorePHP\Net\Model\Request\GetAccountsById;
 use DCorePHP\Net\Model\Request\GetActualVotes;
 use DCorePHP\Net\Model\Request\GetAssetPerBlock;
 use DCorePHP\Net\Model\Request\GetChainId;
