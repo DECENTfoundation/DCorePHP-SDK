@@ -24,6 +24,7 @@ abstract class GetContent extends BaseRequest
             [
                 '[id]' => 'id',
                 '[author]' => 'author',
+                // TODO: CoAuthors
                 '[co_authors]' => 'coAuthors',
                 '[expiration]' => 'expiration',
                 '[created]' => 'created',

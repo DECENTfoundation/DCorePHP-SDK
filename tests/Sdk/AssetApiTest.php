@@ -15,6 +15,7 @@ use DCorePHP\Net\Model\Request\GetAssets;
 use DCorePHP\Net\Model\Request\GetRealSupply;
 use DCorePHP\Net\Model\Request\ListAssets;
 use DCorePHP\Net\Model\Request\Login;
+use DCorePHP\Net\Model\Request\LookupAssets;
 use DCorePHP\Net\Model\Request\PriceToDct;
 use DCorePHP\Net\Model\Response\BaseResponse;
 use DCorePHPTests\DCoreSDKTest;
@@ -131,16 +132,50 @@ class AssetApiTest extends DCoreSDKTest
 
     public function testGetByName(): void
     {
-        // No Data
+        if ($this->websocketMock) {
+            $this->websocketMock
+                ->expects($this->exactly(3))
+                ->method('send')
+                ->withConsecutive(
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(1)->toJson() === '{"jsonrpc":"2.0","id":1,"method":"call","params":[1,"login",["",""]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(2)->toJson() === '{"jsonrpc":"2.0","id":2,"method":"call","params":[1,"database",[]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(3)->toJson() === '{"jsonrpc":"2.0","id":3,"method":"call","params":[6,"lookup_asset_symbols",[["DCT"]]]}'; })]
+                )
+                ->will($this->onConsecutiveCalls(
+                    Login::responseToModel(new BaseResponse('{"id":1,"result":true}')),
+                    Database::responseToModel(new BaseResponse('{"id":2,"result":6}')),
+                    LookupAssets::responseToModel(new BaseResponse('{"id":3,"result":[{"id":"1.3.0","symbol":"DCT","precision":8,"issuer":"1.2.1","description":"","options":{"max_supply":"7319777577456900","core_exchange_rate":{"base":{"amount":1,"asset_id":"1.3.0"},"quote":{"amount":1,"asset_id":"1.3.0"}},"is_exchangeable":true,"extensions":[]},"dynamic_asset_data_id":"2.3.0"}]}'))
+                ));
+        }
+
         $asset = $this->sdk->getAssetApi()->getByName('DCT');
-        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
+
+        $this->assertEquals('1.3.0', $asset->getId()->getId());
+        $this->assertEquals('DCT', $asset->getSymbol());
     }
 
     public function testGetAllByName(): void
     {
-        // No data
+        if ($this->websocketMock) {
+            $this->websocketMock
+                ->expects($this->exactly(3))
+                ->method('send')
+                ->withConsecutive(
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(1)->toJson() === '{"jsonrpc":"2.0","id":1,"method":"call","params":[1,"login",["",""]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(2)->toJson() === '{"jsonrpc":"2.0","id":2,"method":"call","params":[1,"database",[]]}'; })],
+                    [$this->callback(function(BaseRequest $req) { return $req->setId(3)->toJson() === '{"jsonrpc":"2.0","id":3,"method":"call","params":[6,"lookup_asset_symbols",[["DCT"]]]}'; })]
+                )
+                ->will($this->onConsecutiveCalls(
+                    Login::responseToModel(new BaseResponse('{"id":1,"result":true}')),
+                    Database::responseToModel(new BaseResponse('{"id":2,"result":6}')),
+                    LookupAssets::responseToModel(new BaseResponse('{"id":3,"result":[{"id":"1.3.0","symbol":"DCT","precision":8,"issuer":"1.2.1","description":"","options":{"max_supply":"7319777577456900","core_exchange_rate":{"base":{"amount":1,"asset_id":"1.3.0"},"quote":{"amount":1,"asset_id":"1.3.0"}},"is_exchangeable":true,"extensions":[]},"dynamic_asset_data_id":"2.3.0"}]}'))
+                ));
+        }
         $assets = $this->sdk->getAssetApi()->getAllByName(['DCT']);
-        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
+        $asset = reset($assets);
+
+        $this->assertEquals('1.3.0', $asset->getId()->getId());
+        $this->assertEquals('DCT', $asset->getSymbol());
     }
 
     public function testConvertFromDct(): void

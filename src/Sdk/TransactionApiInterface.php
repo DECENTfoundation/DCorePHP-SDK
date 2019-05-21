@@ -78,7 +78,6 @@ interface TransactionApiInterface
      *
      * @param Transaction $transaction signed transaction
      * @return string hexadecimal string
-     * TODO: Transaction model
      */
     public function getHexDump(Transaction $transaction): string;
 

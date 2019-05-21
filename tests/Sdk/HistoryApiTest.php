@@ -72,7 +72,7 @@ class HistoryApiTest extends DCoreSDKTest
                 ));
         }
 
-        $operations = $this->sdk->getHistoryApi()->listOperations(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), '1.7.0', '1.7.0');
+        $operations = $this->sdk->getHistoryApi()->listOperations(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1));
 
         foreach ($operations as $operation) {
             $this->assertInstanceOf(OperationHistory::class, $operation);

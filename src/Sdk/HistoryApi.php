@@ -25,8 +25,8 @@ class HistoryApi extends BaseApi implements HistoryApiInterface
      */
     public function listOperations(
         ChainObject $accountId,
-        string $startId = '0.0.0',
-        string $endId = '0.0.0',
+        string $startId = '1.7.0',
+        string $endId = '1.7.0',
         int $limit = 100
     ): array {
         return $this->dcoreApi->requestWebsocket(History::class, new GetAccountHistory($accountId, $startId, $endId, $limit)) ?: [];
