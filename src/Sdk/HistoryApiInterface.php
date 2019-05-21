@@ -74,4 +74,17 @@ interface HistoryApiInterface
      */
     public function findAllOperations(ChainObject $accountId, array $assets = [], ChainObject $recipientAccount = null, string $fromBlock = '0', string $toBlock = '0', string $startOffset = '0', int $limit = 100): array;
 
+    /**
+     * Verifies if block in that transaction was processed to is irreversible.
+     * NOTE: Unverified blocks still can be reversed.
+     *
+     * NOTICE:
+     * History object with id in form '1.7.X' can be fetched from AccountApi->getAccountHistory() method.
+     *
+     * @param ChainObject $operationId
+     * @return bool Returns true if transaction is in irreversible block, false otherwise.
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
+     */
+    public function isConfirmed(ChainObject $operationId): bool;
 }

@@ -5,8 +5,9 @@ namespace DCorePHP\Sdk;
 use DCorePHP\Model\Account;
 use DCorePHP\Model\BalanceChange;
 use DCorePHP\Model\ChainObject;
-use DCorePHP\Model\Operation\Transfer2;
+use DCorePHP\Model\DynamicGlobalProps;
 use DCorePHP\Model\OperationHistory;
+use DCorePHP\Model\Operation\Transfer2;
 use DCorePHP\Model\OperationHistoryComposed;
 use DCorePHP\Net\Model\Request\GetAccountBalanceForTransaction;
 use DCorePHP\Net\Model\Request\GetAccountHistory;
@@ -142,4 +143,22 @@ class HistoryApi extends BaseApi implements HistoryApiInterface
         return $this->dcoreApi->requestWebsocket(History::class, new SearchAccountBalanceHistory($accountId, $assets, $recipientAccount, $fromBlock, $toBlock, $startOffset, $limit));
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function isConfirmed(ChainObject $operationId): bool
+    {
+        $trxs = $this->dcoreApi->getTransactionApi()->getAll([$operationId]);
+        /** @var OperationHistory $trx */
+        $trx = reset($trxs);
+
+        if (!$trx) {
+            return false;
+        }
+
+        /** @var DynamicGlobalProps $dynamicGlobalProps */
+        $dynamicGlobalProperties = $this->dcoreApi->getGeneralApi()->getDynamicGlobalProperties();
+
+        return $trx->getBlockNum() <= $dynamicGlobalProperties->getLastIrreversibleBlockNum();
+    }
 }

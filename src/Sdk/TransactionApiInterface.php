@@ -82,17 +82,8 @@ interface TransactionApiInterface
     public function getHexDump(Transaction $transaction): string;
 
     /**
-     * Verifies if block in that transaction was processed to is irreversible.
-     * NOTE: Unverified blocks still can be reversed.
-     *
-     * NOTICE:
-     * Transaction object with id in form '1.7.X' can be fetched from AccountApi->getAccountHistory() method.
-     *
-     * @param ChainObject $accountId
-     * @param ChainObject $transactionId
-     * @return bool Returns true if transaction is in irreversible block, false otherwise.
-     * @throws \DCorePHP\Exception\InvalidApiCallException
-     * @throws \WebSocket\BadOpcodeException
+     * @param array $trxIds
+     * @return array
      */
-    public function isConfirmed(ChainObject $accountId, ChainObject $transactionId): bool;
+    public function getAll(array $trxIds): array;
 }
