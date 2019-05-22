@@ -6,7 +6,6 @@ use DCorePHP\Model\General\ChainProperty;
 use DCorePHP\Model\General\GlobalProperty;
 use DCorePHP\Model\General\MinerRewardInput;
 use DCorePHP\Net\Model\Request\BaseRequest;
-use DCorePHP\Net\Model\Request\Database;
 use DCorePHP\Net\Model\Request\GetChainId;
 use DCorePHP\Net\Model\Request\GetChainProperties;
 use DCorePHP\Net\Model\Request\GetConfig;
@@ -14,7 +13,6 @@ use DCorePHP\Net\Model\Request\GetDynamicGlobalProperties;
 use DCorePHP\Net\Model\Request\GetGlobalProperties;
 use DCorePHP\Net\Model\Request\GetTimeToMaintenance;
 use DCorePHP\Net\Model\Request\Info;
-use DCorePHP\Net\Model\Request\Login;
 use DCorePHP\Net\Model\Response\BaseResponse;
 use DCorePHPTests\DCoreSDKTest;
 

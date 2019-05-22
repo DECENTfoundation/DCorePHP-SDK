@@ -5,7 +5,6 @@ namespace DCorePHP\Sdk;
 use DCorePHP\Model\BaseOperation;
 use DCorePHP\Model\ChainObject;
 use DCorePHP\Model\Subscription\Subscription;
-use DCorePHP\Net\Model\Request\Database;
 use DCorePHP\Net\Model\Request\GetSubscription;
 use DCorePHP\Net\Model\Request\ListActiveSubscriptionsByAuthor;
 use DCorePHP\Net\Model\Request\ListActiveSubscriptionsByConsumer;

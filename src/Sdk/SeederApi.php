@@ -4,7 +4,6 @@ namespace DCorePHP\Sdk;
 
 use DCorePHP\Model\ChainObject;
 use DCorePHP\Model\Content\Seeder;
-use DCorePHP\Net\Model\Request\Database;
 use DCorePHP\Net\Model\Request\GetSeeder;
 use DCorePHP\Net\Model\Request\ListSeedersByPrice;
 use DCorePHP\Net\Model\Request\ListSeedersByRating;

@@ -9,12 +9,9 @@ use DCorePHP\Model\Asset\AssetAmount;
 use DCorePHP\Model\ChainObject;
 use DCorePHP\Net\Model\Request\BaseRequest;
 use DCorePHP\Net\Model\Request\BroadcastTransaction;
-use DCorePHP\Net\Model\Request\Database;
 use DCorePHP\Net\Model\Request\GetChainId;
 use DCorePHP\Net\Model\Request\GetDynamicGlobalProperties;
 use DCorePHP\Net\Model\Request\GetRequiredFees;
-use DCorePHP\Net\Model\Request\Login;
-use DCorePHP\Net\Model\Request\NetworkBroadcast;
 use DCorePHP\Net\Model\Response\BaseResponse;
 use DCorePHPTests\DCoreSDKTest;
 

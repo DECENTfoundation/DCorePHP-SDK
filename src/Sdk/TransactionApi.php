@@ -9,7 +9,6 @@ use DCorePHP\Model\OperationHistory;
 use DCorePHP\Model\ProcessedTransaction;
 use DCorePHP\Model\Transaction;
 use DCorePHP\Model\TransactionConfirmation;
-use DCorePHP\Net\Model\Request\Database;
 use DCorePHP\Net\Model\Request\GetProposedTransactions;
 use DCorePHP\Net\Model\Request\GetRecentTransactionById;
 use DCorePHP\Net\Model\Request\GetTransaction;

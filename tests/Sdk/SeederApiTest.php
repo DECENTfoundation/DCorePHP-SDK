@@ -1,21 +1,15 @@
 <?php
 
-
 namespace DCorePHPTests\Sdk;
 
-
-use DCorePHP\DCoreApi;
 use DCorePHP\Model\Content\Seeder;
 use DCorePHP\Model\ChainObject;
 use DCorePHP\Net\Model\Request\BaseRequest;
-use DCorePHP\Net\Model\Request\Database;
 use DCorePHP\Net\Model\Request\GetSeederAbstract;
 use DCorePHP\Net\Model\Request\ListSeedersByPrice;
 use DCorePHP\Net\Model\Request\ListSeedersByUpload;
-use DCorePHP\Net\Model\Request\Login;
 use DCorePHP\Net\Model\Response\BaseResponse;
 use DCorePHPTests\DCoreSDKTest;
-use PHPUnit\Framework\TestCase;
 
 class SeederApiTest extends DCoreSDKTest
 {

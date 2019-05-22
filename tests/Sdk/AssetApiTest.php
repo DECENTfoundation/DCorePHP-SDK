@@ -3,22 +3,16 @@
 
 namespace DCorePHPTests\Sdk;
 
-use DCorePHP\DCoreApi;
 use DCorePHP\Model\Asset\Asset;
-use DCorePHP\Model\Asset\AssetAmount;
 use DCorePHP\Model\Asset\RealSupply;
 use DCorePHP\Model\ChainObject;
 use DCorePHP\Net\Model\Request\BaseRequest;
-use DCorePHP\Net\Model\Request\Database;
 use DCorePHP\Net\Model\Request\GetAsset;
 use DCorePHP\Net\Model\Request\GetAssets;
 use DCorePHP\Net\Model\Request\GetRealSupply;
 use DCorePHP\Net\Model\Request\ListAssets;
-use DCorePHP\Net\Model\Request\Login;
-use DCorePHP\Net\Model\Request\PriceToDct;
 use DCorePHP\Net\Model\Response\BaseResponse;
 use DCorePHPTests\DCoreSDKTest;
-use PHPUnit\Framework\TestCase;
 
 class AssetApiTest extends DCoreSDKTest
 {

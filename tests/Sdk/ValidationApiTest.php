@@ -6,25 +6,18 @@ use DCorePHP\Crypto\Address;
 use DCorePHP\Model\Asset\AssetAmount;
 use DCorePHP\Model\BlockData;
 use DCorePHP\Model\ChainObject;
-use DCorePHP\Model\InvalidOperationTypeException;
-use DCorePHP\Model\Operation\ProposalCreate;
 use DCorePHP\Model\Operation\Transfer2;
 use DCorePHP\Model\Transaction;
 use DCorePHP\Net\Model\Request\BaseRequest;
-use DCorePHP\Net\Model\Request\Database;
 use DCorePHP\Net\Model\Request\GetChainId;
 use DCorePHP\Net\Model\Request\GetDynamicGlobalProperties;
-use DCorePHP\Net\Model\Request\GetPotentialSignatures;
 use DCorePHP\Net\Model\Request\GetRequiredFees;
 use DCorePHP\Net\Model\Request\GetRequiredSignatures;
-use DCorePHP\Net\Model\Request\GetTransaction;
-use DCorePHP\Net\Model\Request\Login;
 use DCorePHP\Net\Model\Request\ValidateTransaction;
 use DCorePHP\Net\Model\Request\VerifyAccountAuthority;
 use DCorePHP\Net\Model\Request\VerifyAuthority;
 use DCorePHP\Net\Model\Response\BaseResponse;
 use DCorePHPTests\DCoreSDKTest;
-use InvalidArgumentException;
 
 class ValidationApiTest extends DCoreSDKTest
 {

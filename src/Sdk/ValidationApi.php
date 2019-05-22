@@ -12,7 +12,6 @@ use DCorePHP\Model\Operation\ProposalUpdate;
 use DCorePHP\Model\Operation\WithdrawPermissionClaim;
 use DCorePHP\Model\ProcessedTransaction;
 use DCorePHP\Model\Transaction;
-use DCorePHP\Net\Model\Request\Database;
 use DCorePHP\Net\Model\Request\GetPotentialSignatures;
 use DCorePHP\Net\Model\Request\GetRequiredFees;
 use DCorePHP\Net\Model\Request\GetRequiredSignatures;

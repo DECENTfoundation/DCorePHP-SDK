@@ -22,7 +22,6 @@ use DCorePHP\Model\Operation\UpdateAccount;
 use DCorePHP\Model\Options;
 use DCorePHP\Model\Subscription\AuthMap;
 use DCorePHP\Model\TransactionConfirmation;
-use DCorePHP\Net\Model\Request\Database;
 use DCorePHP\Net\Model\Request\GetAccountById;
 use DCorePHP\Net\Model\Request\GetAccountByName;
 use DCorePHP\Net\Model\Request\GetAccountCount;
@@ -36,7 +35,6 @@ use DCorePHP\Net\Model\Request\SearchAccountHistory;
 use DCorePHP\Net\Model\Request\SearchAccounts;
 use DCorePHP\Resources\BrainKeyDictionary;
 use DCorePHP\Crypto\Address;
-use DCorePHP\Utils\Crypto;
 
 class AccountApi extends BaseApi implements AccountApiInterface
 {

@@ -22,18 +22,14 @@ use DCorePHP\Model\PubKey;
 use DCorePHP\Model\Transaction;
 use DCorePHP\Model\TransactionConfirmation;
 use DCorePHP\Net\Model\Request\BroadcastTransactionWithCallback;
-use DCorePHP\Net\Model\Request\Database;
 use DCorePHP\Net\Model\Request\GenerateContentKeys;
 use DCorePHP\Net\Model\Request\GetContentById;
 use DCorePHP\Net\Model\Request\GetContentByURI;
 use DCorePHP\Net\Model\Request\ListPublishingManagers;
-use DCorePHP\Net\Model\Request\NetworkBroadcast;
 use DCorePHP\Net\Model\Request\RestoreEncryptionKey;
 use DCorePHP\Net\Model\Request\SearchContent;
-use Symfony\Component\Validator\Constraints\EqualTo;
 use Symfony\Component\Validator\Constraints\IdenticalTo;
 use Symfony\Component\Validator\Validation;
-use WebSocket\BadOpcodeException;
 
 class ContentApi extends BaseApi implements ContentApiInterface
 {

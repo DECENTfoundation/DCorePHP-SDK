@@ -8,7 +8,6 @@ use DCorePHP\Model\Operation\Transfer2;
 use DCorePHP\Model\Transaction;
 use DCorePHP\Model\TransactionConfirmation;
 use DCorePHP\Net\Model\Request\BaseRequest;
-use DCorePHP\Net\Model\Request\Database;
 use DCorePHP\Net\Model\Request\GetAccountHistory;
 use DCorePHP\Net\Model\Request\GetChainId;
 use DCorePHP\Net\Model\Request\GetDynamicGlobalProperties;
@@ -17,8 +16,6 @@ use DCorePHP\Net\Model\Request\GetRequiredFees;
 use DCorePHP\Net\Model\Request\GetTransaction;
 use DCorePHP\Net\Model\Request\GetTransactionById;
 use DCorePHP\Net\Model\Request\GetTransactionHex;
-use DCorePHP\Net\Model\Request\History;
-use DCorePHP\Net\Model\Request\Login;
 use DCorePHP\Net\Model\Response\BaseResponse;
 use DCorePHPTests\DCoreSDKTest;
 

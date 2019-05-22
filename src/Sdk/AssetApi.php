@@ -4,19 +4,15 @@ namespace DCorePHP\Sdk;
 
 use DCorePHP\Model\Asset\Asset;
 use DCorePHP\Model\Asset\AssetAmount;
-use DCorePHP\Model\Asset\AssetOptions;
-use DCorePHP\Model\Asset\AssetOptionsExchangeRate;
 use DCorePHP\Model\Asset\MonitoredAssetOptions;
 use DCorePHP\Model\Asset\RealSupply;
 use DCorePHP\Model\BaseOperation;
 use DCorePHP\Model\ChainObject;
-use DCorePHP\Net\Model\Request\Database;
 use DCorePHP\Net\Model\Request\GetAsset;
 use DCorePHP\Net\Model\Request\GetAssets;
 use DCorePHP\Net\Model\Request\GetRealSupply;
 use DCorePHP\Net\Model\Request\ListAssets;
 use DCorePHP\Net\Model\Request\LookupAssets;
-use DCorePHP\Net\Model\Request\PriceToDct;
 
 class AssetApi extends BaseApi implements AssetApiInterface
 {

@@ -4,7 +4,6 @@ namespace DCorePHP\Sdk;
 
 use DCorePHP\Model\ChainObject;
 use DCorePHP\Model\Content\Purchase;
-use DCorePHP\Net\Model\Request\Database;
 use DCorePHP\Net\Model\Request\GetBuyingByUri;
 use DCorePHP\Net\Model\Request\GetHistoryBuyingsByConsumer;
 use DCorePHP\Net\Model\Request\GetOpenBuyings;

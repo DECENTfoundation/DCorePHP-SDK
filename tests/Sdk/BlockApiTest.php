@@ -3,11 +3,9 @@
 namespace DCorePHPTests\Sdk;
 
 use DCorePHP\Net\Model\Request\BaseRequest;
-use DCorePHP\Net\Model\Request\Database;
 use DCorePHP\Net\Model\Request\GetBlock;
 use DCorePHP\Net\Model\Request\GetBlockHeader;
 use DCorePHP\Net\Model\Request\HeadBlockTime;
-use DCorePHP\Net\Model\Request\Login;
 use DCorePHP\Net\Model\Response\BaseResponse;
 use DCorePHPTests\DCoreSDKTest;
 

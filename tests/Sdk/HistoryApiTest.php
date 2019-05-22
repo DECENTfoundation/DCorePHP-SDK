@@ -9,8 +9,6 @@ use DCorePHP\Net\Model\Request\BaseRequest;
 use DCorePHP\Net\Model\Request\GetAccountBalanceForTransaction;
 use DCorePHP\Net\Model\Request\GetAccountHistory;
 use DCorePHP\Net\Model\Request\GetRelativeAccountHistory;
-use DCorePHP\Net\Model\Request\History;
-use DCorePHP\Net\Model\Request\Login;
 use DCorePHP\Net\Model\Request\SearchAccountBalanceHistory;
 use DCorePHP\Net\Model\Response\BaseResponse;
 use DCorePHPTests\DCoreSDKTest;

@@ -5,13 +5,11 @@ namespace DCorePHPTests\Sdk;
 use DCorePHP\Exception\ValidationException;
 use DCorePHP\Model\ChainObject;
 use DCorePHP\Net\Model\Request\BaseRequest;
-use DCorePHP\Net\Model\Request\Database;
 use DCorePHP\Net\Model\Request\GetSubscription;
 use DCorePHP\Net\Model\Request\ListActiveSubscriptionsByAuthor;
 use DCorePHP\Net\Model\Request\ListActiveSubscriptionsByConsumer;
 use DCorePHP\Net\Model\Request\ListSubscriptionsByAuthor;
 use DCorePHP\Net\Model\Request\ListSubscriptionsByConsumer;
-use DCorePHP\Net\Model\Request\Login;
 use DCorePHP\Net\Model\Response\BaseResponse;
 use DCorePHPTests\DCoreSDKTest;
 

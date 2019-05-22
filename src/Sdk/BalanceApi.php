@@ -5,7 +5,6 @@ namespace DCorePHP\Sdk;
 use DCorePHP\Model\Asset\Asset;
 use DCorePHP\Model\Asset\AssetAmount;
 use DCorePHP\Model\ChainObject;
-use DCorePHP\Net\Model\Request\Database;
 use DCorePHP\Net\Model\Request\GetAccountBalances;
 use DCorePHP\Net\Model\Request\GetNamedAccountBalances;
 use DCorePHP\Net\Model\Request\GetVestingBalances;

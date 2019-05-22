@@ -9,7 +9,6 @@ use DCorePHP\Model\Explorer\Miner;
 use DCorePHP\Model\Mining\MinerId;
 use DCorePHP\Model\TransactionConfirmation;
 use DCorePHP\Model\Operation\UpdateAccount;
-use DCorePHP\Net\Model\Request\Database;
 use DCorePHP\Net\Model\Request\GetActualVotes;
 use DCorePHP\Net\Model\Request\GetAssetPerBlock;
 use DCorePHP\Net\Model\Request\GetFeedsByMiner;

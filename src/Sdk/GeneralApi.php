@@ -7,7 +7,6 @@ use DCorePHP\Model\General\ChainProperty;
 use DCorePHP\Model\General\Config;
 use DCorePHP\Model\General\GlobalProperty;
 use DCorePHP\Model\General\MinerRewardInput;
-use DCorePHP\Net\Model\Request\Database;
 use DCorePHP\Net\Model\Request\GetChainId;
 use DCorePHP\Net\Model\Request\GetChainProperties;
 use DCorePHP\Net\Model\Request\GetConfig;
