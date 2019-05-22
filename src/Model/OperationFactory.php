@@ -50,7 +50,7 @@ class OperationFactory
             37 => 'update_monitored_asset_operation',
             Operation\ReadyToPublish2Operation::OPERATION_TYPE => Operation\ReadyToPublish2Operation::class,
             Operation\Transfer2::OPERATION_TYPE => Operation\Transfer2::class,
-            Operation\UpdateAssetIssuedOperation::OPERATION_TYPE => Operation\UpdateAssetIssuedOperation::class, // @todo duplicate operation type
+            Operation\AssetUpdateAdvancedOperation::OPERATION_TYPE => Operation\AssetUpdateAdvancedOperation::class,
             Operation\ReturnEscrowSubmission::OPERATION_TYPE => Operation\ReturnEscrowSubmission::class,
             Operation\ReturnEscrowBuying::OPERATION_TYPE => Operation\ReturnEscrowBuying::class,
             Operation\PaySeederOperation::OPERATION_TYPE => Operation\PaySeederOperation::class,
