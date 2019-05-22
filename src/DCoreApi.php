@@ -9,7 +9,6 @@ use DCorePHP\Model\DynamicGlobalProps;
 use DCorePHP\Model\Transaction;
 use DCorePHP\Net\JsonRpc;
 use DCorePHP\Net\Model\Request\BaseRequest;
-use DCorePHP\Net\Model\Request\Login;
 use DCorePHP\Net\Websocket;
 use DCorePHP\Sdk\AccountApi;
 use DCorePHP\Sdk\AssetApi;
@@ -137,11 +136,6 @@ class DCoreApi extends DCoreSdk
      */
     public function requestWebsocket(BaseRequest $request)
     {
-//        if (!array_key_exists(Login::class, $this->permissions)) {
-//            $this->getWebsocket()->send(new Login());
-//            $this->permissions[Login::class] = 1;
-//        }
-
         return $this->getWebsocket()->send($request);
     }
 
