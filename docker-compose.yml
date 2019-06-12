@@ -5,3 +5,5 @@ services:
     tty: true
     volumes:
       - '.:/var/www/html'
+    environment:
+      - CODACY_PROJECT_TOKEN=${CODACY_PROJECT_TOKEN}
