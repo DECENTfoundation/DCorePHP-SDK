@@ -11,8 +11,8 @@ class OperationFactory
     {
         return [
             Operation\Transfer::OPERATION_TYPE => Operation\Transfer::class,
-            Operation\CreateAccount::OPERATION_TYPE => Operation\CreateAccount::class,
-            Operation\UpdateAccount::OPERATION_TYPE => Operation\UpdateAccount::class,
+            Operation\CreateAccountOperation::OPERATION_TYPE => Operation\CreateAccountOperation::class,
+            Operation\UpdateAccountOperation::OPERATION_TYPE => Operation\UpdateAccountOperation::class,
             Operation\AssetCreateOperation::OPERATION_TYPE => Operation\AssetCreateOperation::class,
             Operation\AssetIssueOperation::OPERATION_TYPE => Operation\AssetIssueOperation::class,
             5 => 'asset_publish_feed',

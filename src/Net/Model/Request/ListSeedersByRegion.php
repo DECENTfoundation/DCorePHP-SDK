@@ -10,7 +10,7 @@ class ListSeedersByRegion extends GetSeederAbstract
     public function __construct(string $region)
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_DATABASE,
             'list_seeders_by_region',
             [$region]
         );

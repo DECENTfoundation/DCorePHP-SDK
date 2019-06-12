@@ -9,7 +9,7 @@ class LookupVoteIds extends GetMinerAbstract
     public function __construct(array $voteIds)
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_DATABASE,
             'lookup_vote_ids',
             [$voteIds]
         );

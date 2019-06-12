@@ -67,7 +67,7 @@ class AuthMap
     {
         return implode('', [
             PublicKey::fromWif($this->getValue())->toCompressedPublicKey(),
-            str_pad(Math::gmpDecHex($this->getWeight()), 2, '0', STR_PAD_LEFT) . '00',
+            Math::getInt8($this->getWeight()) . '00',
         ]);
     }
 }

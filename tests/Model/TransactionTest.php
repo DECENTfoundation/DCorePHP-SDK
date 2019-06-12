@@ -9,9 +9,9 @@ use DCorePHP\Model\BlockData;
 use DCorePHP\Model\DynamicGlobalProps;
 use DCorePHP\Model\Memo;
 use DCorePHP\Model\ChainObject;
-use DCorePHP\Model\Operation\CreateAccount;
+use DCorePHP\Model\Operation\CreateAccountOperation;
 use DCorePHP\Model\Operation\Transfer2;
-use DCorePHP\Model\Operation\UpdateAccount;
+use DCorePHP\Model\Operation\UpdateAccountOperation;
 use DCorePHP\Model\Options;
 use DCorePHP\Model\Subscription\AuthMap;
 use DCorePHP\Model\Transaction;
@@ -128,15 +128,15 @@ class TransactionTest extends TestCase
             ->setExtensions([])
             ->setSubscriptionPeriod(0);
 
-        $operation = new CreateAccount();
+        $operation = new CreateAccountOperation();
         $operation
             ->setAccountName('mikeeee')
             ->setOwner((new Authority())->setKeyAuths([(new AuthMap())->setValue('DCT6718kUCCksnkeYD1YySWkXb1VLpzjkFfHHMirCRPexp5gDPJLU')]))
             ->setActive((new Authority())->setKeyAuths([(new AuthMap())->setValue('DCT6718kUCCksnkeYD1YySWkXb1VLpzjkFfHHMirCRPexp5gDPJLU')]))
             ->setRegistrar(new ChainObject('1.2.34'))
             ->setOptions($options)
-            ->setName(CreateAccount::OPERATION_NAME)
-            ->setType(CreateAccount::OPERATION_TYPE)
+            ->setName(CreateAccountOperation::OPERATION_NAME)
+            ->setType(CreateAccountOperation::OPERATION_TYPE)
             ->setFee((new AssetAmount())->setAmount(500000));
 
         $transaction = new Transaction();
@@ -192,12 +192,12 @@ class TransactionTest extends TestCase
             ->setExtensions([])
             ->setSubscriptionPeriod(0);
 
-        $operation = new UpdateAccount();
+        $operation = new UpdateAccountOperation();
         $operation
             ->setAccountId(new ChainObject('1.2.34'))
             ->setOptions($options)
-            ->setName(CreateAccount::OPERATION_NAME)
-            ->setType(CreateAccount::OPERATION_TYPE)
+            ->setName(CreateAccountOperation::OPERATION_NAME)
+            ->setType(CreateAccountOperation::OPERATION_TYPE)
             ->setFee((new AssetAmount())->setAmount(500000));
 
         $transaction = new Transaction();

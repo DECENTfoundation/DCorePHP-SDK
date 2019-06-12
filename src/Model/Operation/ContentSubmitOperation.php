@@ -8,6 +8,7 @@ use DCorePHP\Model\ChainObject;
 use DCorePHP\Model\Content\SubmitContent;
 use DCorePHP\Model\RegionalPrice;
 use DCorePHP\Utils\Math;
+use DCorePHP\Utils\VarInt;
 
 class ContentSubmitOperation extends BaseOperation
 {
@@ -178,24 +179,24 @@ class ContentSubmitOperation extends BaseOperation
             [
                 $this->getTypeBytes(),
                 $this->getFee()->toBytes(),
-                str_pad(Math::gmpDecHex(Math::reverseBytesLong($this->getContent()->getSize())), 16, '0', STR_PAD_LEFT),
+                Math::getInt64($this->getContent()->getSize()),
                 $this->getAuthor()->toBytes(),
                 '00',
                 Math::gmpDecHex(strlen(unpack('H*', $this->getContent()->getUri())[1]) / 2).unpack('H*', $this->getContent()->getUri())[1],
-                str_pad(Math::gmpDecHex(Math::reverseBytesLong($this->getContent()->getQuorum())), 8, '0', STR_PAD_LEFT),
-                // TODO: Hardcoded string '01' as a part of price bytes()
-                '01',
+                Math::getInt32($this->getContent()->getQuorum()),
+                VarInt::encodeDecToHex(sizeof($this->getContent()->getPrice())),
                 $this->getContent()->getPrice() ? implode('', array_map(function (RegionalPrice $regionalPrice) { // operation bytes
                         return $regionalPrice->toBytes();
                     }, $this->getContent()->getPrice())) : '00',
                 $this->getContent()->getHash(),
+                VarInt::encodeDecToHex(sizeof($this->getContent()->getSeeders())),
                 $this->getContent()->getSeeders() ? implode('', array_map(function (ChainObject $seeder) { // operation bytes
                         return $seeder->toBytes();
-                    }, $this->getContent()->getPrice())) : '00',
-                '00', // TODO: Hardcoded KeyParts
-                implode('', array_reverse(str_split(str_pad(Math::gmpDecHex($this->getContent()->getExpiration()->format('U')), 8, '0', STR_PAD_LEFT), 2))),
+                    }, $this->getContent()->getSeeders())) : '00',
+                Math::getInt32Reversed($this->getContent()->getExpiration()->format('U')),
                 $this->getPublishingFee()->toBytes(),
-                Math::gmpDecHex(strlen(unpack('H*', $this->getContent()->getSynopsis())[1]) / 2).unpack('H*', $this->getContent()->getSynopsis())[1],
+                VarInt::encodeDecToHex(sizeof(Math::stringToByteArray($this->getContent()->getSynopsis()))),
+                Math::byteArrayToHex(Math::stringToByteArray($this->getContent()->getSynopsis())),
                 $this->getContent()->getCustodyData() ? $this->getContent()->getCustodyData()->toBytes() : '00'
             ]
         );

@@ -10,7 +10,7 @@ class GetBlockHeader extends BaseRequest
     public function __construct(string $blockNum)
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_DATABASE,
             'get_block_header',
             [$blockNum]
         );

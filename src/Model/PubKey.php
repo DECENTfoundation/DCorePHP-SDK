@@ -3,6 +3,7 @@
 namespace DCorePHP\Model;
 
 use DCorePHP\Utils\Math;
+use DCorePHP\Utils\VarInt;
 
 class PubKey
 {
@@ -39,7 +40,7 @@ class PubKey
     public function toBytes(): string
     {
         return implode('', [
-            Math::writeUnsignedVarIntHex(strlen($this->getPubKey())),
+            VarInt::encodeDecToHex(sizeof(Math::stringToByteArray($this->getPubKey()))),
             Math::byteArrayToHex(Math::stringToByteArray($this->getPubKey()))
         ]);
     }

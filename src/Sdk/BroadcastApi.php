@@ -18,7 +18,7 @@ class BroadcastApi extends BaseApi implements BroadcastApiInterface
      */
     public function broadcast(Transaction $transaction): void
     {
-        $this->dcoreApi->requestWebsocket(NetworkBroadcast::class, new BroadcastTransaction($transaction));
+        $this->dcoreApi->requestWebsocket(new BroadcastTransaction($transaction));
     }
 
     /**
@@ -76,7 +76,7 @@ class BroadcastApi extends BaseApi implements BroadcastApiInterface
      */
     public function broadcastWithCallback(Transaction $transaction): ?TransactionConfirmation
     {
-        return $this->dcoreApi->requestWebsocket(NetworkBroadcast::class, new BroadcastTransactionWithCallback($transaction));
+        return $this->dcoreApi->requestWebsocket(new BroadcastTransactionWithCallback($transaction));
     }
 
     /**

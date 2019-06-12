@@ -10,7 +10,7 @@ class GetMiners extends GetMinerAbstract
     public function __construct(array $minderIds)
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_DATABASE,
             'get_objects',
             [array_map(function (ChainObject $miner) { return $miner->getId(); }, $minderIds)]
         );

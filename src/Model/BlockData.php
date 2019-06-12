@@ -133,9 +133,9 @@ class BlockData
     public function toBytes(): string
     {
         return implode('', [ // block data bytes
-            implode('', array_reverse(str_split(str_pad(Math::gmpDecHex($this->getRefBlockNum()), 4, '0', STR_PAD_LEFT), 2))),
-            implode('', array_reverse(str_split(str_pad(Math::gmpDecHex($this->getRefBlockPrefix()), 8, '0', STR_PAD_LEFT), 2))),
-            implode('', array_reverse(str_split(str_pad(Math::gmpDecHex($this->getExpiration()->getTimestamp()), 8, '0', STR_PAD_LEFT), 2))),
+            Math::getInt16Reversed($this->getRefBlockNum()),
+            Math::getInt32Reversed($this->getRefBlockPrefix()),
+            Math::getInt32Reversed($this->getExpiration()->getTimestamp()),
         ]);
     }
 }

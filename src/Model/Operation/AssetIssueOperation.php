@@ -6,6 +6,7 @@ use DCorePHP\Model\Asset\AssetAmount;
 use DCorePHP\Model\BaseOperation;
 use DCorePHP\Model\ChainObject;
 use DCorePHP\Model\Memo;
+use DCorePHP\Utils\VarInt;
 
 class AssetIssueOperation extends BaseOperation
 {
@@ -146,8 +147,10 @@ class AssetIssueOperation extends BaseOperation
             $this->getAssetToIssue()->toBytes(),
             $this->getIssueToAccount()->toBytes(),
             $this->getMemo() ? $this->getMemo()->toBytes() : '00',
-            // TODO: Extensions Array
-            $this->getExtensions() ? '01' : '00'
+            $this->getExtensions() ?
+                VarInt::encodeDecToHex(sizeof($this->getExtensions()))
+                . '' // TODO array_map each element toBytes()
+                : '00'
         ]);
     }
 }

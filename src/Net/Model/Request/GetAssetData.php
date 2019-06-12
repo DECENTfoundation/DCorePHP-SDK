@@ -11,7 +11,7 @@ class GetAssetData extends BaseRequest
     public function __construct(array $assetIds)
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_DATABASE,
             'get_objects',
             [array_map(function(ChainObject $asset) {return $asset->getId();}, $assetIds)]
         );

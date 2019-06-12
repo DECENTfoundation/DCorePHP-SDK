@@ -10,7 +10,7 @@ class BroadcastTransaction extends BaseRequest
     public function __construct(Transaction $transaction)
     {
         parent::__construct(
-            'broadcast',
+            self::API_GROUP_BROADCAST,
             'broadcast_transaction',
             [$transaction->toArray()]
         );

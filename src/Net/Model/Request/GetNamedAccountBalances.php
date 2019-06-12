@@ -11,7 +11,7 @@ class GetNamedAccountBalances extends BaseRequest
     public function __construct(string $name, array $assets)
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_DATABASE,
             'get_named_account_balances',
             [$name, array_map(function(ChainObject $asset) {return $asset->getId();}, $assets)]
         );

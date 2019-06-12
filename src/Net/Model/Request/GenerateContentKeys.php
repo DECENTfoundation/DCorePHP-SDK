@@ -11,7 +11,7 @@ class GenerateContentKeys extends BaseRequest
     public function __construct(array $seeders)
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_DATABASE,
             'generate_content_keys',
             [$seeders]
         );

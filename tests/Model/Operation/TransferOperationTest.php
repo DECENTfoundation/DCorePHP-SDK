@@ -11,7 +11,7 @@ use DCorePHP\Crypto\PublicKey;
 use DCorePHPTests\DCoreSDKTest;
 use PHPUnit\Framework\TestCase;
 
-class TransferTest extends TestCase
+class TransferOperationTest extends TestCase
 {
     public function testHydrate(): void
     {

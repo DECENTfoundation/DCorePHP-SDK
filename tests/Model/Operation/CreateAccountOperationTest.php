@@ -2,19 +2,19 @@
 
 namespace DCorePHPTests\Model;
 
+use DCorePHP\Exception\ValidationException;
 use DCorePHP\Model\Asset\AssetAmount;
 use DCorePHP\Model\Authority;
 use DCorePHP\Model\ChainObject;
-use DCorePHP\Model\Operation\CreateAccountParameters;
-use DCorePHP\Model\Operation\CreateAccount;
+use DCorePHP\Model\Operation\CreateAccountOperation;
 use DCorePHP\Model\Options;
 use DCorePHP\Model\Subscription\AuthMap;
 use PHPUnit\Framework\TestCase;
 
-class RegisterAccountTest extends TestCase
+class CreateAccountOperationTest extends TestCase
 {
     /**
-     * @throws \DCorePHP\Exception\ValidationException
+     * @throws ValidationException
      * @throws \Exception
      */
     public function testToBytes(): void
@@ -30,15 +30,15 @@ class RegisterAccountTest extends TestCase
             ->setExtensions([])
             ->setSubscriptionPeriod(0);
 
-        $registerAccount = new CreateAccount();
+        $registerAccount = new CreateAccountOperation();
         $registerAccount
             ->setAccountName('mikeeeee')
             ->setOwner((new Authority())->setKeyAuths([(new AuthMap())->setValue('DCT6718kUCCksnkeYD1YySWkXb1VLpzjkFfHHMirCRPexp5gDPJLU')]))
             ->setActive((new Authority())->setKeyAuths([(new AuthMap())->setValue('DCT6718kUCCksnkeYD1YySWkXb1VLpzjkFfHHMirCRPexp5gDPJLU')]))
             ->setRegistrar(new ChainObject('1.2.34'))
             ->setOptions($options)
-            ->setName(CreateAccount::OPERATION_NAME)
-            ->setType(CreateAccount::OPERATION_TYPE)
+            ->setName(CreateAccountOperation::OPERATION_NAME)
+            ->setType(CreateAccountOperation::OPERATION_TYPE)
             ->setFee((new AssetAmount())->setAmount(0));
 
         $this->assertEquals(

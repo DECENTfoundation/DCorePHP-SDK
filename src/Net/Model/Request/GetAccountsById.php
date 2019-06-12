@@ -10,7 +10,7 @@ class GetAccountsById extends GetAccount
     public function __construct(array $accountIds)
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_DATABASE,
             'get_objects',
             [array_map(function(ChainObject $accountId) { return $accountId->getId(); }, $accountIds)]
         );

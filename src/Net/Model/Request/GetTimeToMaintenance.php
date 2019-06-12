@@ -10,7 +10,7 @@ class GetTimeToMaintenance extends BaseRequest
     public function __construct(string $time)
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_DATABASE,
             'get_time_to_maint_by_block_time',
             [$time]
         );

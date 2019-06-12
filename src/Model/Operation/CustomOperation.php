@@ -5,6 +5,7 @@ namespace DCorePHP\Model\Operation;
 use DCorePHP\Model\BaseOperation;
 use DCorePHP\Model\ChainObject;
 use DCorePHP\Utils\Math;
+use DCorePHP\Utils\VarInt;
 
 class CustomOperation extends BaseOperation
 {
@@ -66,13 +67,13 @@ class CustomOperation extends BaseOperation
             $this->getTypeBytes(),
             $this->getFee()->toBytes(),
             $this->getPayer()->toBytes(),
-            Math::writeUnsignedVarIntHex(sizeof($this->getRequiredAuths())),
+            VarInt::encodeDecToHex(sizeof($this->getRequiredAuths())),
             implode('', array_map(function (ChainObject $auth) {
                 return $auth->toBytes();
             }, $this->getRequiredAuths())),
-            str_pad(Math::gmpDecHex(Math::reverseBytesShort($this->getId())), 4, '0', STR_PAD_LEFT),
+            Math::getInt16($this->getId()),
             // Data size
-            Math::writeUnsignedVarIntHex(sizeof(Math::hexToByteArray($this->getData()))),
+            VarInt::encodeDecToHex(sizeof(Math::hexToByteArray($this->getData()))),
             $this->getData()
         ]);
     }

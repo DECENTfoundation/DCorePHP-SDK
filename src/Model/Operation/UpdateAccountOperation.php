@@ -9,10 +9,11 @@ use DCorePHP\Model\BaseOperation;
 use DCorePHP\Model\ChainObject;
 use DCorePHP\Model\Options;
 use DCorePHP\Utils\Math;
+use DCorePHP\Utils\VarInt;
 use Exception;
 use Symfony\Component\PropertyAccess\Exception\NoSuchPropertyException;
 
-class UpdateAccount extends BaseOperation
+class UpdateAccountOperation extends BaseOperation
 {
     public const OPERATION_TYPE = 2;
     public const OPERATION_NAME = 'account_update';
@@ -77,10 +78,10 @@ class UpdateAccount extends BaseOperation
 
     /**
      * @param ChainObject|string $accountId
-     * @return UpdateAccount
+     * @return UpdateAccountOperation
      * @throws ValidationException
      */
-    public function setAccountId($accountId): UpdateAccount
+    public function setAccountId($accountId): UpdateAccountOperation
     {
         if (is_string($accountId)) {
             $accountId = new ChainObject($accountId);
@@ -100,9 +101,9 @@ class UpdateAccount extends BaseOperation
 
     /**
      * @param Authority $owner
-     * @return UpdateAccount
+     * @return UpdateAccountOperation
      */
-    public function setOwner(Authority $owner): UpdateAccount
+    public function setOwner(Authority $owner): UpdateAccountOperation
     {
         $this->owner = $owner;
         return $this;
@@ -118,9 +119,9 @@ class UpdateAccount extends BaseOperation
 
     /**
      * @param Authority $active
-     * @return UpdateAccount
+     * @return UpdateAccountOperation
      */
-    public function setActive(Authority $active): UpdateAccount
+    public function setActive(Authority $active): UpdateAccountOperation
     {
         $this->active = $active;
         return $this;
@@ -136,9 +137,9 @@ class UpdateAccount extends BaseOperation
 
     /**
      * @param Options $options
-     * @return UpdateAccount
+     * @return UpdateAccountOperation
      */
-    public function setOptions(Options $options): UpdateAccount
+    public function setOptions(Options $options): UpdateAccountOperation
     {
         $this->options = $options;
         return $this;
@@ -172,10 +173,13 @@ class UpdateAccount extends BaseOperation
             $this->getTypeBytes(),
             $this->getFee()->toBytes(),
             $this->getAccountId() ? $this->getAccountId()->toBytes() : '00',
-            $this->getOwner() ? str_pad(Math::gmpDecHex(count($this->getOwner()->getKeyAuths())), 2, '0', STR_PAD_LEFT) . $this->getOwner()->toBytes() : '00',
-            $this->getActive() ? str_pad(Math::gmpDecHex(count($this->getActive()->getKeyAuths())), 2, '0', STR_PAD_LEFT) . $this->getActive()->toBytes() : '00',
+            $this->getOwner() ? VarInt::encodeDecToHex(sizeof($this->getOwner()->getKeyAuths())) . $this->getOwner()->toBytes() : '00',
+            $this->getActive() ? VarInt::encodeDecToHex(sizeof($this->getActive()->getKeyAuths())) . $this->getActive()->toBytes() : '00',
             $this->getOptions() ? '01' . $this->getOptions()->toBytes() : '00',
-            '00',
+            $this->getExtensions() ?
+                VarInt::encodeDecToHex(sizeof($this->getExtensions()))
+                . '' // TODO array_map each element toBytes()
+                : '00'
         ]);
     }
 }

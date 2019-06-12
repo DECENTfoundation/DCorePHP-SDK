@@ -6,6 +6,7 @@ use DCorePHP\Exception\ValidationException;
 use DCorePHP\Model\BaseOperation;
 use DCorePHP\Model\ChainObject;
 use DCorePHP\Utils\Math;
+use DCorePHP\Utils\VarInt;
 
 class LeaveRatingAndComment extends BaseOperation
 {
@@ -120,11 +121,12 @@ class LeaveRatingAndComment extends BaseOperation
         return implode('', [
             $this->getTypeBytes(),
             $this->getFee()->toBytes(),
-            Math::gmpDecHex(strlen(unpack('H*', $this->getUri())[1]) / 2).unpack('H*', $this->getUri())[1],
+            VarInt::encodeDecToHex(sizeof(Math::stringToByteArray($this->getUri()))),
+            Math::byteArrayToHex(Math::stringToByteArray($this->getUri())),
             $this->getConsumer()->toBytes(),
-            str_pad(Math::gmpDecHex(sizeof(Math::stringToByteArray($this->getComment()))), 2, '0', STR_PAD_LEFT),
+            VarInt::encodeDecToHex(sizeof(Math::stringToByteArray($this->getComment()))),
             Math::byteArrayToHex(Math::stringToByteArray($this->getComment())),
-            str_pad(Math::gmpDecHex(Math::reverseBytesLong($this->getRating())), 16, '0', STR_PAD_LEFT)
+            Math::getInt64($this->getRating())
         ]);
     }
 }

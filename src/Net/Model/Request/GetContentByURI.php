@@ -10,7 +10,7 @@ class GetContentByURI extends GetContent
     public function __construct(string $uri)
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_DATABASE,
             'get_content',
             [$uri]
         );

@@ -7,7 +7,6 @@ use DCorePHP\Model\General\ChainProperty;
 use DCorePHP\Model\General\Config;
 use DCorePHP\Model\General\GlobalProperty;
 use DCorePHP\Model\General\MinerRewardInput;
-use DCorePHP\Net\Model\Request\Database;
 use DCorePHP\Net\Model\Request\GetChainId;
 use DCorePHP\Net\Model\Request\GetChainProperties;
 use DCorePHP\Net\Model\Request\GetConfig;
@@ -23,7 +22,7 @@ class GeneralApi extends BaseApi implements GeneralApiInterface
      */
     public function getChainProperties(): ChainProperty
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new GetChainProperties());
+        return $this->dcoreApi->requestWebsocket(new GetChainProperties());
     }
 
     /**
@@ -31,7 +30,7 @@ class GeneralApi extends BaseApi implements GeneralApiInterface
      */
     public function getGlobalProperties(): GlobalProperty
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new GetGlobalProperties());
+        return $this->dcoreApi->requestWebsocket(new GetGlobalProperties());
     }
 
     /**
@@ -39,7 +38,7 @@ class GeneralApi extends BaseApi implements GeneralApiInterface
      */
     public function getConfig(): Config
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new GetConfig());
+        return $this->dcoreApi->requestWebsocket(new GetConfig());
     }
 
     /**
@@ -47,7 +46,7 @@ class GeneralApi extends BaseApi implements GeneralApiInterface
      */
     public function getChainId(): string
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new GetChainId());
+        return $this->dcoreApi->requestWebsocket(new GetChainId());
     }
 
     /**
@@ -55,7 +54,7 @@ class GeneralApi extends BaseApi implements GeneralApiInterface
      */
     public function getDynamicGlobalProperties(): DynamicGlobalProps
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new GetDynamicGlobalProperties());
+        return $this->dcoreApi->requestWebsocket(new GetDynamicGlobalProperties());
     }
 
     /**
@@ -63,7 +62,7 @@ class GeneralApi extends BaseApi implements GeneralApiInterface
      */
     public function getTimeToMaintenance(string $time): MinerRewardInput
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new GetTimeToMaintenance($time));
+        return $this->dcoreApi->requestWebsocket(new GetTimeToMaintenance($time));
     }
 
     /**
@@ -71,6 +70,6 @@ class GeneralApi extends BaseApi implements GeneralApiInterface
      */
     public function info(): string
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new Info());
+        return $this->dcoreApi->requestWebsocket(new Info());
     }
 }

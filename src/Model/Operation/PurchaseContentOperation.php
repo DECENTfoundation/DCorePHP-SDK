@@ -9,6 +9,7 @@ use DCorePHP\Model\ChainObject;
 use DCorePHP\Model\Content\ContentObject;
 use DCorePHP\Model\PubKey;
 use DCorePHP\Utils\Math;
+use DCorePHP\Utils\VarInt;
 
 class PurchaseContentOperation extends BaseOperation
 {
@@ -162,11 +163,11 @@ class PurchaseContentOperation extends BaseOperation
         return implode('', [
             $this->getTypeBytes(),
             $this->getFee()->toBytes(),
-            Math::writeUnsignedVarIntHex(sizeof(Math::stringToByteArray($this->getUri()))),
+            VarInt::encodeDecToHex(sizeof(Math::stringToByteArray($this->getUri()))),
             Math::byteArrayToHex(Math::stringToByteArray($this->getUri())),
             $this->getConsumer()->toBytes(),
             $this->getPrice()->toBytes(),
-            str_pad(Math::gmpDecHex(Math::reverseBytesInt($this->getRegionCode())), 8, '0', STR_PAD_LEFT),
+            Math::getInt32($this->getRegionCode()),
             $this->getPublicElGamal()->toBytes()
         ]);
     }

@@ -10,7 +10,7 @@ use DCorePHP\Model\MinerVotes;
 use DCorePHP\Model\Mining\MinerId;
 use DCorePHP\Model\Mining\MinerVotingInfo;
 use DCorePHP\Model\TransactionConfirmation;
-use DCorePHP\Model\Operation\UpdateAccount;
+use DCorePHP\Model\Operation\UpdateAccountOperation;
 use DCorePHP\Net\Model\Request\SearchMinerVoting;
 
 interface MiningApiInterface
@@ -114,13 +114,13 @@ interface MiningApiInterface
      *
      * @param ChainObject $accountId, 1.2.*
      * @param array $minderIds of miner account ids
-     * @return UpdateAccount a transaction confirmation
+     * @return UpdateAccountOperation a transaction confirmation
      * @throws \DCorePHP\Exception\InvalidApiCallException
      * @throws \DCorePHP\Exception\ObjectNotFoundException
      * @throws \DCorePHP\Exception\ValidationException
      * @throws \WebSocket\BadOpcodeException
      */
-    public function createVoteOperation(ChainObject $accountId, array $minderIds): UpdateAccount;
+    public function createVoteOperation(ChainObject $accountId, array $minderIds): UpdateAccountOperation;
 
     /**
      * Create vote for miner operation

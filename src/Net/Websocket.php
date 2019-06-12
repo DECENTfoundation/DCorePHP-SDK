@@ -17,7 +17,6 @@ class Websocket
     private $requestId = 1;
     /** @var bool */
     private $debug;
-    private $MAX_RETRIES = 5;
 
     /**
      * @param string $url
@@ -57,7 +56,9 @@ class Websocket
                         'verify_peer' => false,
                         'verify_peer_name' => false,
                     ]
-                ])
+                ]),
+                // Extended timeout because of callbacks, 60 seconds based on KT implementation
+                'timeout' => 60
             ]);
         }
 
@@ -83,10 +84,20 @@ class Websocket
         $client = $this->getClient();
         $client->send($request->toJson());
 
-        do {
-            $rawResponse = $client->receive();
-            $response = new BaseResponse($rawResponse);
-        } while ($response->getId() !== $request->getId());
+        if ($request->isWithCallback()) {
+            do {
+                $rawResponse = $client->receive();
+                $response = new BaseResponse($rawResponse);
+                if ($response->getError()) {
+                    throw new InvalidApiCallException($response->getError()->getMessage());
+                }
+            } while ($response->getMethod() !== 'notice');
+        } else {
+            do {
+                $rawResponse = $client->receive();
+                $response = new BaseResponse($rawResponse);
+            } while ($response->getId() !== $request->getId());
+        }
 
         if ($this->debug) {
             var_dump('response: ' . $rawResponse);

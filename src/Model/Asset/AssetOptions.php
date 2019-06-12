@@ -4,6 +4,7 @@ namespace DCorePHP\Model\Asset;
 
 use DCorePHP\Exception\ValidationException;
 use DCorePHP\Utils\Math;
+use DCorePHP\Utils\VarInt;
 use Symfony\Component\Validator\Constraints\LessThanOrEqual;
 use Symfony\Component\Validator\Validation;
 
@@ -92,12 +93,10 @@ class AssetOptions
     public function toBytes(): string
     {
         return implode('', [
-            str_pad(Math::gmpDecHex(Math::reverseBytesLong($this->getMaxSupply())), 16, '0', STR_PAD_LEFT),
+            Math::getInt64($this->getMaxSupply()),
             $this->getExchangeRate()->toBytes(),
             $this->isExchangeable() ? '01' : '00',
-            str_pad(count($this->getExtensions()), 2, '0', STR_PAD_LEFT),
-            // TODO: isFixedMaxSupply
-//            '01'
+            VarInt::encodeDecToHex(count($this->getExtensions())),
             $this->isFixedMaxSupply() !== null ? '01' . ($this->isFixedMaxSupply() ? '01' : '00') : '00'
         ]);
     }

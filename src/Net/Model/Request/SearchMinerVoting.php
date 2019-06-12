@@ -14,7 +14,7 @@ class SearchMinerVoting extends BaseRequest
     public function __construct($searchTerm, $order, ?ChainObject $id, $accountName, $onlyMyVotes, $limit)
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_DATABASE,
             'search_miner_voting',
             [$accountName, $searchTerm, $onlyMyVotes, $order, $id ? $id->getId() : null, $limit]
         );

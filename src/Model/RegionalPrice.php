@@ -71,10 +71,7 @@ class RegionalPrice
     public function toBytes(): string
     {
         return implode('', [
-            implode('', array_reverse(str_split(
-                str_pad(Math::gmpDecHex($this->getRegion()), 8, '0', STR_PAD_LEFT),
-                2
-            ))),
+            Math::getInt32Reversed($this->getRegion()),
             $this->getPrice()->toBytes()
         ]);
     }

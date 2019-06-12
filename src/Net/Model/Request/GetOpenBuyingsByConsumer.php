@@ -11,7 +11,7 @@ class GetOpenBuyingsByConsumer extends BaseRequest
     public function __construct(ChainObject $accountId)
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_DATABASE,
             'get_open_buyings_by_consumer',
             [$accountId->getId()]
         );

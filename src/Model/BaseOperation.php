@@ -113,7 +113,7 @@ abstract class BaseOperation
      */
     protected function getTypeBytes(): string
     {
-        return str_pad(Math::gmpDecHex(static::OPERATION_TYPE), 2, '0', STR_PAD_LEFT);
+        return Math::getInt8(static::OPERATION_TYPE);
     }
 
     /**

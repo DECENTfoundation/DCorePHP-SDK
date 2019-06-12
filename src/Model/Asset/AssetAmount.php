@@ -72,7 +72,7 @@ class AssetAmount
     public function toBytes(): string
     {
         return implode('', [
-            $this->getAmount() ? str_pad(Math::gmpDecHex(Math::reverseBytesLong($this->getAmount())), 16, '0', STR_PAD_LEFT) : '0000000000000000',
+            $this->getAmount() ? Math::getInt64($this->getAmount()) : '0000000000000000',
             $this->getAssetId() ? $this->getAssetId()->toBytes() : '00',
         ]);
     }

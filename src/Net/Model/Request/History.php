@@ -9,7 +9,7 @@ class History extends BaseRequest
     public function __construct()
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_DATABASE,
             'history',
             ['', '']
         );

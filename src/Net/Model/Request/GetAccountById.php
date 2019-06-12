@@ -11,7 +11,7 @@ class GetAccountById extends GetAccount
     public function __construct(ChainObject $id)
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_DATABASE,
             'get_accounts',
             [[$id->getId()]]
         );

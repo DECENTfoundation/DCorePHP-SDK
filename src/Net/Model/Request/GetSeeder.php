@@ -10,7 +10,7 @@ class GetSeeder extends GetSeederAbstract
     public function __construct(ChainObject $accountId)
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_DATABASE,
             'get_seeder',
             [$accountId->getId()]
         );

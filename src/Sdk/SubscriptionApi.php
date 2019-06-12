@@ -5,7 +5,6 @@ namespace DCorePHP\Sdk;
 use DCorePHP\Model\BaseOperation;
 use DCorePHP\Model\ChainObject;
 use DCorePHP\Model\Subscription\Subscription;
-use DCorePHP\Net\Model\Request\Database;
 use DCorePHP\Net\Model\Request\GetSubscription;
 use DCorePHP\Net\Model\Request\ListActiveSubscriptionsByAuthor;
 use DCorePHP\Net\Model\Request\ListActiveSubscriptionsByConsumer;
@@ -19,7 +18,7 @@ class SubscriptionApi extends BaseApi implements SubscriptionApiInterface
      */
     public function get(ChainObject $id): Subscription
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new GetSubscription($id));
+        return $this->dcoreApi->requestWebsocket(new GetSubscription($id));
     }
 
     /**
@@ -27,7 +26,7 @@ class SubscriptionApi extends BaseApi implements SubscriptionApiInterface
      */
     public function getAllActiveByConsumer(ChainObject $consumer, int $count = 100): array
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new ListActiveSubscriptionsByConsumer($consumer, $count));
+        return $this->dcoreApi->requestWebsocket(new ListActiveSubscriptionsByConsumer($consumer, $count));
     }
 
     /**
@@ -35,7 +34,7 @@ class SubscriptionApi extends BaseApi implements SubscriptionApiInterface
      */
     public function getAllActiveByAuthor(ChainObject $author, int $count = 100): array
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new ListActiveSubscriptionsByAuthor($author, $count));
+        return $this->dcoreApi->requestWebsocket(new ListActiveSubscriptionsByAuthor($author, $count));
     }
 
     /**
@@ -43,7 +42,7 @@ class SubscriptionApi extends BaseApi implements SubscriptionApiInterface
      */
     public function getAllByConsumer(ChainObject $consumer, int $count = 100): array
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new ListSubscriptionsByConsumer($consumer, $count));
+        return $this->dcoreApi->requestWebsocket(new ListSubscriptionsByConsumer($consumer, $count));
     }
 
     /**
@@ -51,7 +50,7 @@ class SubscriptionApi extends BaseApi implements SubscriptionApiInterface
      */
     public function getAllByAuthor(ChainObject $author, int $count = 100): array
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new ListSubscriptionsByAuthor($author, $count));
+        return $this->dcoreApi->requestWebsocket(new ListSubscriptionsByAuthor($author, $count));
     }
 
     /**

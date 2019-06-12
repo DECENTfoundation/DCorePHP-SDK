@@ -4,13 +4,13 @@ use DCorePHP\Exception\ValidationException;
 use DCorePHP\Model\Asset\AssetAmount;
 use DCorePHP\Model\Authority;
 use DCorePHP\Model\ChainObject;
-use DCorePHP\Model\Operation\UpdateAccount;
+use DCorePHP\Model\Operation\UpdateAccountOperation;
 use DCorePHP\Model\Options;
 use DCorePHP\Model\Subscription\AuthMap;
 use DCorePHPTests\DCoreSDKTest;
 use PHPUnit\Framework\TestCase;
 
-class UpdateAccountTest extends TestCase
+class UpdateAccountOperationTest extends TestCase
 {
     /**
      * @throws ValidationException
@@ -18,7 +18,7 @@ class UpdateAccountTest extends TestCase
      */
     public function testToBytes(): void
     {
-        $updateAccount = new UpdateAccount();
+        $updateAccount = new UpdateAccountOperation();
         $updateAccount
             ->setAccountId(new ChainObject('1.2.34'))
             ->setOptions(
@@ -46,7 +46,7 @@ class UpdateAccountTest extends TestCase
             $updateAccount->toBytes()
         );
 
-        $updateAccount = new UpdateAccount();
+        $updateAccount = new UpdateAccountOperation();
         $updateAccount
             ->setAccountId(new ChainObject('1.2.34'))
             ->setOwner((new Authority())->setKeyAuths([(new AuthMap())->setValue(DCoreSDKTest::PUBLIC_KEY_1)]))

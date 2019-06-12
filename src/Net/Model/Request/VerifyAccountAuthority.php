@@ -10,7 +10,7 @@ class VerifyAccountAuthority extends BaseRequest
     public function __construct(string $nameOrId, array $keys)
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_DATABASE,
             'verify_account_authority',
             [$nameOrId, array_map(function (Address $key) { return $key->encode(); }, $keys)]
         );

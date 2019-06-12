@@ -7,6 +7,7 @@ use DCorePHP\Model\Asset\ExchangeRate;
 use DCorePHP\Model\BaseOperation;
 use DCorePHP\Model\ChainObject;
 use DCorePHP\Utils\Math;
+use DCorePHP\Utils\VarInt;
 
 class AssetUpdateOperation extends BaseOperation
 {
@@ -198,14 +199,16 @@ class AssetUpdateOperation extends BaseOperation
             $this->getFee()->toBytes(),
             $this->getIssuer()->toBytes(),
             $this->getAssetToUpdate()->toBytes(),
-            Math::writeUnsignedVarIntHex(sizeof(Math::stringToByteArray($this->getNewDescription()))),
+            VarInt::encodeDecToHex(sizeof(Math::stringToByteArray($this->getNewDescription()))),
             Math::byteArrayToHex(Math::stringToByteArray($this->getNewDescription())),
             $this->getNewIssuer() ? $this->getNewIssuer()->toBytes() : '00',
-            str_pad(Math::gmpDecHex(Math::reverseBytesLong($this->getMaxSupply())), 16, '0', STR_PAD_LEFT),
+            Math::getInt64($this->getMaxSupply()),
             $this->getCoreExchangeRate()->toBytes(),
             $this->isExchangeable() ? '01' : '00',
-            // TODO: Extensions
-            $this->getExtensions() ? '' : '00'
+            $this->getExtensions() ?
+                VarInt::encodeDecToHex(sizeof($this->getExtensions()))
+                . '' // TODO array_map each element toBytes()
+                : '00'
         ]);
     }
 }

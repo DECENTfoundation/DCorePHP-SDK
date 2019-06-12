@@ -7,7 +7,7 @@ use DCorePHP\Model\Operation\ContentSubmitOperation;
 use DCorePHP\Model\RegionalPrice;
 use PHPUnit\Framework\TestCase;
 
-class ContentSubmitTest extends TestCase
+class ContentSubmitOperationTest extends TestCase
 {
 
     private $response = [

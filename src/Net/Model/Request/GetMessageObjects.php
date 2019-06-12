@@ -12,7 +12,7 @@ class GetMessageObjects extends BaseRequest
 {
     public function __construct(?ChainObject $sender, ?ChainObject $receiver, int $maxCount) {
         parent::__construct(
-            'messaging',
+            self::API_GROUP_MESSAGING,
             'get_message_objects',
             [$sender ? $sender->getId() : null, $receiver ? $receiver->getId() : null, $maxCount]
         );

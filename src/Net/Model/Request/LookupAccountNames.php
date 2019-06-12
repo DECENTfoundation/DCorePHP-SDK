@@ -9,7 +9,7 @@ class LookupAccountNames extends GetAccount
     public function __construct(array $names)
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_DATABASE,
             'lookup_account_names',
             [$names]
         );
