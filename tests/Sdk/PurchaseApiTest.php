@@ -240,7 +240,7 @@ class PurchaseApiTest extends DCoreSDKTest
             ->setQuorum(0)
             ->setSize(10000)
             ->setSynopsis(json_encode(['title' => 'Game Title', 'description' => 'Description', 'content_type_id' => '1.2.3']))
-            ->setExpiration('2019-05-28T13:32:34+00:00')
+            ->setExpiration((new \DateTime())->modify('+1 month'))
             ->setPrice([(new RegionalPrice)->setPrice((new AssetAmount())->setAmount(1000))->setRegion(1)]);
 
         $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));

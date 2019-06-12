@@ -8,7 +8,7 @@ use DCorePHP\Model\ChainObject;
 
 class PaySeederOperation extends BaseOperation
 {
-    public const OPERATION_TYPE = 43;
+    public const OPERATION_TYPE = 44;
     public const OPERATION_NAME = 'pay_seeder';
 
     /** @var AssetAmount */

@@ -10,40 +10,40 @@ use PHPUnit\Framework\TestCase;
 class ContentSubmitOperationTest extends TestCase
 {
 
-    private $response = [
-        'fee' => [
-            'amount' => 50000,
-            'asset_id' => '1.3.0'
-        ],
-        'size' => 123,
-        'author' => '1.2.34',
-        'co_authors' => [],
-        'URI' => 'https://google.com',
-        'quorum' => 0,
-        'price' => [
-            0 => [
-                'region' => 2,
-                'price' => [
-                    'amount' => 1,
-                    'asset_id' => '1.3.0'
-                ]
-            ]
-        ],
-        'hash' => 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-        'seeders' => [],
-        'key_parts' => [],
-        'expiration' => '2018-12-11T14:00:07',
-        'publishing_fee' => [
-            'amount' => 10,
-            'asset_id' => '1.3.0'
-        ],
-        'synopsis' => '{"title" : "Test Title", "description" : "Test Description", "content_type_id" : "1.1.1"}'
-    ];
-
     public function testHydrate(): void
     {
+        $response = [
+            'fee' => [
+                'amount' => 50000,
+                'asset_id' => '1.3.0',
+            ],
+            'size' => 123,
+            'author' => '1.2.34',
+            'co_authors' => [],
+            'URI' => 'https://google.com',
+            'quorum' => 0,
+            'price' => [
+                0 => [
+                    'region' => 2,
+                    'price' => [
+                        'amount' => 1,
+                        'asset_id' => '1.3.0',
+                    ],
+                ],
+            ],
+            'hash' => 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+            'seeders' => [],
+            'key_parts' => [],
+            'expiration' => '2018-12-11T14:00:07',
+            'publishing_fee' => [
+                'amount' => 10,
+                'asset_id' => '1.3.0',
+            ],
+            'synopsis' => '{"title" : "Test Title", "description" : "Test Description", "content_type_id" : "1.1.1"}',
+        ];
+
         $contentOperation = new ContentSubmitOperation();
-        $contentOperation->hydrate($this->response);
+        $contentOperation->hydrate($response);
 
         $this->assertEquals(50000, $contentOperation->getFee()->getAmount());
         $this->assertEquals('1.3.0', $contentOperation->getFee()->getAssetId()->getId());

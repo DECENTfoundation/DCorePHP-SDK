@@ -8,7 +8,7 @@ use DCorePHP\Model\ChainObject;
 
 class FinishBuyingOperation extends BaseOperation
 {
-    public const OPERATION_TYPE = 44;
+    public const OPERATION_TYPE = 45;
     public const OPERATION_NAME = 'finish_buying';
 
     /** @var AssetAmount */

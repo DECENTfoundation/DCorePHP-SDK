@@ -56,11 +56,6 @@ class GetAccountHistory extends BaseRequest
                 throw new CouldNotParseOperationTypeException($rawOperationHistory);
             }
 
-            // @todo implement missing operations
-            if ($operationType >= 46) {
-                continue;
-            }
-
             $operation = OperationFactory::getOperation($operationType, $rawOperation);
 
             $operationHistory->setOperation($operation);

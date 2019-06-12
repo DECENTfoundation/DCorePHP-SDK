@@ -7,7 +7,7 @@ use DCorePHP\Model\BaseOperation;
 
 class ReturnEscrowBuying extends BaseOperation
 {
-    public const OPERATION_TYPE = 42;
+    public const OPERATION_TYPE = 43;
     public const OPERATION_NAME = 'return_escrow_buying';
 
     /** @var string */
