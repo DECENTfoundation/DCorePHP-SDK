@@ -26,7 +26,7 @@ before_install:
 
 script:
   # run tests
-  - docker-compose exec php ./vendor/bin/phpunit --bootstrap vendor/autoload.php tests --coverage-clover ./build/coverage/xml
+  - docker-compose exec php ./vendor/bin/phpunit --bootstrap vendor/autoload.php tests --coverage-clover ./build/coverage/xml --whitelist ./src
   - docker-compose exec php ./vendor/bin/codacycoverage clover build/coverage/xml
 
 before_deploy:
