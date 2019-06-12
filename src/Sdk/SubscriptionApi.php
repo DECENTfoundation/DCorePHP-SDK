@@ -14,7 +14,7 @@ use DCorePHP\Net\Model\Request\ListSubscriptionsByConsumer;
 class SubscriptionApi extends BaseApi implements SubscriptionApiInterface
 {
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function get(ChainObject $id): Subscription
     {

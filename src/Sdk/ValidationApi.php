@@ -23,7 +23,7 @@ use InvalidArgumentException;
 class ValidationApi extends BaseApi implements ValidationApiInterface
 {
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getRequiredSignatures(Transaction $transaction, array $keys): array
     {
@@ -31,7 +31,7 @@ class ValidationApi extends BaseApi implements ValidationApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getPotentialSignatures(Transaction $transaction): array
     {
@@ -39,7 +39,7 @@ class ValidationApi extends BaseApi implements ValidationApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function verifyAuthority(Transaction $transaction): bool
     {
@@ -47,7 +47,7 @@ class ValidationApi extends BaseApi implements ValidationApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function verifyAccountAuthority(string $nameOrId, array $keys): bool
     {
@@ -55,7 +55,7 @@ class ValidationApi extends BaseApi implements ValidationApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function validateTransaction(Transaction $transaction): ProcessedTransaction
     {
@@ -63,7 +63,7 @@ class ValidationApi extends BaseApi implements ValidationApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getFees(array $op, ChainObject $assetId = null): array
     {
@@ -71,7 +71,7 @@ class ValidationApi extends BaseApi implements ValidationApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getFee(BaseOperation $op, ChainObject $assetId = null): AssetAmount
     {
@@ -80,7 +80,7 @@ class ValidationApi extends BaseApi implements ValidationApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getFeeByType($type, ChainObject $assetId = null): AssetAmount
     {

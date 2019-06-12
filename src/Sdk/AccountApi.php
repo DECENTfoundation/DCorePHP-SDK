@@ -39,7 +39,7 @@ use DCorePHP\Crypto\Address;
 class AccountApi extends BaseApi implements AccountApiInterface
 {
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function exist(string $nameOrId): bool
     {
@@ -97,7 +97,7 @@ class AccountApi extends BaseApi implements AccountApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function findAllReferencesByKeys(array $keys): array
     {
@@ -105,7 +105,7 @@ class AccountApi extends BaseApi implements AccountApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function findAllReferencesByAccount(ChainObject $accountId): array
     {
@@ -113,7 +113,7 @@ class AccountApi extends BaseApi implements AccountApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getAll(array $accountIds): array
     {
@@ -121,7 +121,7 @@ class AccountApi extends BaseApi implements AccountApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getFullAccounts(array $namesOrIds, bool $subscribe = false): array
     {
@@ -136,7 +136,7 @@ class AccountApi extends BaseApi implements AccountApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getAllByNames(array $names): array
     {
@@ -178,7 +178,7 @@ class AccountApi extends BaseApi implements AccountApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function createCredentials(string $account, string $privateKey): Credentials
     {
@@ -186,7 +186,7 @@ class AccountApi extends BaseApi implements AccountApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function createTransfer(
         Credentials $credentials,
@@ -230,7 +230,7 @@ class AccountApi extends BaseApi implements AccountApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function transfer(
         Credentials $credentials,

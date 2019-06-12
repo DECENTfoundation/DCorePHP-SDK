@@ -11,7 +11,7 @@ use DCorePHP\Net\Model\Request\HeadBlockTime;
 class BlockApi extends BaseApi implements BlockApiInterface
 {
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function get(string $blockNum): SignedBlock
     {
@@ -19,7 +19,7 @@ class BlockApi extends BaseApi implements BlockApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getHeader(string $blockNum): BlockHeader
     {
@@ -27,7 +27,7 @@ class BlockApi extends BaseApi implements BlockApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getHeadTime(): \DateTime
     {

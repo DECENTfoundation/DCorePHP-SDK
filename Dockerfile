@@ -13,6 +13,7 @@ RUN apk add --update --no-cache \
     gmp-dev \
     libmcrypt \
     libmcrypt-dev \
+    doxygen \
     git
 RUN pecl install xdebug
 RUN docker-php-ext-configure mcrypt --with-mcrypt

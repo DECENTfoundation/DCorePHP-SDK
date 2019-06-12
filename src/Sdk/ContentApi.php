@@ -76,7 +76,7 @@ class ContentApi extends BaseApi implements ContentApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function exist(string $uri): bool
     {
@@ -135,7 +135,7 @@ class ContentApi extends BaseApi implements ContentApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function createPurchaseOperation(Credentials $credentials, ChainObject $contentId): PurchaseContentOperation
     {
@@ -143,7 +143,7 @@ class ContentApi extends BaseApi implements ContentApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function createPurchaseOperationWithUri(Credentials $credentials, string $uri): PurchaseContentOperation
     {
@@ -151,7 +151,7 @@ class ContentApi extends BaseApi implements ContentApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function purchase(Credentials $credentials, ChainObject $contentId): ?TransactionConfirmation
     {
@@ -162,7 +162,7 @@ class ContentApi extends BaseApi implements ContentApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function purchaseWithUri(Credentials $credentials, string $uri): ?TransactionConfirmation
     {
@@ -173,7 +173,7 @@ class ContentApi extends BaseApi implements ContentApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function deleteById(ChainObject $contentId, Credentials $author, AssetAmount $fee): ?TransactionConfirmation
     {
@@ -181,7 +181,7 @@ class ContentApi extends BaseApi implements ContentApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function deleteByUrl(string $url, Credentials $author, AssetAmount $fee): ?TransactionConfirmation
     {
@@ -198,7 +198,7 @@ class ContentApi extends BaseApi implements ContentApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function deleteByRef($reference, Credentials $author, AssetAmount $fee): ?TransactionConfirmation
     {
@@ -211,7 +211,7 @@ class ContentApi extends BaseApi implements ContentApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function update(SubmitContent $content, Credentials $author, AssetAmount $publishingFee, AssetAmount $fee): ?TransactionConfirmation
     {
@@ -234,7 +234,7 @@ class ContentApi extends BaseApi implements ContentApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function createTransfer(
         Credentials $credentials,

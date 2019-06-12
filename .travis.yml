@@ -28,3 +28,16 @@ script:
   # run tests
   - docker-compose exec php ./vendor/bin/phpunit --bootstrap vendor/autoload.php tests --coverage-clover ./build/coverage/xml --whitelist ./tests
   - docker-compose exec php ./vendor/bin/codacycoverage clover build/coverage/xml
+
+before_deploy:
+  - doxygen
+
+deploy:
+  provider: pages
+  skip_cleanup: true
+  github_token: $GITHUB_TOKEN
+  keep_history: true
+  local_dir: ./docs/html
+  on:
+    tags: true
+    branch: release

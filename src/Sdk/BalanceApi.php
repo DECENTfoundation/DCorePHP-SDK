@@ -12,7 +12,7 @@ use DCorePHP\Net\Model\Request\GetVestingBalances;
 class BalanceApi extends BaseApi implements BalanceApiInterface
 {
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function get(ChainObject $accountId, ChainObject $asset): AssetAmount
     {
@@ -21,7 +21,7 @@ class BalanceApi extends BaseApi implements BalanceApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getAll(ChainObject $accountId, array $assets = []): array
     {
@@ -29,7 +29,7 @@ class BalanceApi extends BaseApi implements BalanceApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getByName(string $name, ChainObject $asset): AssetAmount
     {
@@ -38,7 +38,7 @@ class BalanceApi extends BaseApi implements BalanceApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getAllByName(string $name, array $assets = []): array
     {
@@ -46,7 +46,7 @@ class BalanceApi extends BaseApi implements BalanceApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getWithAsset(ChainObject $accountId, string $assetSymbol = 'DCT')
     {
@@ -55,7 +55,7 @@ class BalanceApi extends BaseApi implements BalanceApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getAllWithAsset(ChainObject $accountId, array $assetSymbols): array
     {
@@ -73,7 +73,7 @@ class BalanceApi extends BaseApi implements BalanceApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getWithAssetByName(string $name, string $assetSymbol = 'DCT')
     {
@@ -82,7 +82,7 @@ class BalanceApi extends BaseApi implements BalanceApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getAllWithAssetByName(string $name, array $assetSymbols): array
     {
@@ -100,7 +100,7 @@ class BalanceApi extends BaseApi implements BalanceApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getAllVesting(ChainObject $accountId): array
     {

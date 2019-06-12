@@ -5,7 +5,7 @@ namespace DCorePHP\Sdk;
 class CallbackApi extends BaseApi implements CallbackApiInterface
 {
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function cancelAll(): void
     {
@@ -13,7 +13,7 @@ class CallbackApi extends BaseApi implements CallbackApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function onBlockApplied(): string
     {
@@ -21,7 +21,7 @@ class CallbackApi extends BaseApi implements CallbackApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function onContentUpdate(string $uri): void
     {
@@ -29,7 +29,7 @@ class CallbackApi extends BaseApi implements CallbackApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function onPendingTransaction(): void
     {
@@ -37,7 +37,7 @@ class CallbackApi extends BaseApi implements CallbackApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function onGlobal(bool $clearFilter): void
     {

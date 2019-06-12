@@ -15,7 +15,7 @@ use DCorePHP\Net\Model\Request\Messaging;
 class MessagingApi extends BaseApi implements MessagingApiInterface
 {
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getAllOperations(
         ChainObject $sender = null,
@@ -26,7 +26,7 @@ class MessagingApi extends BaseApi implements MessagingApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getAll(ChainObject $sender = null, ChainObject $receiver = null, int $maxCount = 1000): array
     {
@@ -34,7 +34,7 @@ class MessagingApi extends BaseApi implements MessagingApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getAllDecrypted(
         Credentials $credentials,
@@ -46,7 +46,7 @@ class MessagingApi extends BaseApi implements MessagingApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getAllDecryptedForSender(Credentials $credentials, int $maxCount = 1000): array
     {
@@ -54,7 +54,7 @@ class MessagingApi extends BaseApi implements MessagingApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getAllDecryptedForReceiver(Credentials $credentials, int $maxCount = 1000): array
     {
@@ -70,7 +70,7 @@ class MessagingApi extends BaseApi implements MessagingApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function createMessageOperationMultiple(Credentials $credentials, array $messages): SendMessageOperation
     {
@@ -78,7 +78,7 @@ class MessagingApi extends BaseApi implements MessagingApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function createMessageOperationUnencrypted(
         Credentials $credentials,
@@ -89,7 +89,7 @@ class MessagingApi extends BaseApi implements MessagingApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function createMessageOperationUnencryptedMultiple(
         Credentials $credentials,
@@ -100,7 +100,7 @@ class MessagingApi extends BaseApi implements MessagingApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function send(Credentials $credentials, ChainObject $to, string $message): ?TransactionConfirmation
     {
@@ -111,7 +111,7 @@ class MessagingApi extends BaseApi implements MessagingApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function sendMultiple(Credentials $credentials, array $messages): ?TransactionConfirmation
     {
@@ -122,7 +122,7 @@ class MessagingApi extends BaseApi implements MessagingApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function sendUnencrypted(Credentials $credentials, ChainObject $to, string $message): ?TransactionConfirmation
     {
@@ -133,7 +133,7 @@ class MessagingApi extends BaseApi implements MessagingApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function sendUnencryptedMultiple(Credentials $credentials, array $messages): ?TransactionConfirmation
     {

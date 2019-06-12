@@ -18,7 +18,7 @@ use DCorePHP\Net\Model\Request\SearchAccountBalanceHistory;
 class HistoryApi extends BaseApi implements HistoryApiInterface
 {
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getOperation(ChainObject $accountId, ChainObject $operationId): BalanceChange
     {
@@ -121,7 +121,7 @@ class HistoryApi extends BaseApi implements HistoryApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function listOperationsRelative(ChainObject $accountId, int $start = 0, int $limit = 100): array
     {
@@ -129,7 +129,7 @@ class HistoryApi extends BaseApi implements HistoryApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function findAllOperations(
         ChainObject $accountId,

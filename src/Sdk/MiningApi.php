@@ -23,7 +23,7 @@ use DCorePHP\Net\Model\Request\SearchMinerVoting;
 class MiningApi extends BaseApi implements MiningApiInterface
 {
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getActualVotes(): array
     {
@@ -31,7 +31,7 @@ class MiningApi extends BaseApi implements MiningApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getAssetPerBlock(string $blockNum): string
     {
@@ -39,7 +39,7 @@ class MiningApi extends BaseApi implements MiningApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getFeedsByMiner(ChainObject $account, int $count = 100)
     {
@@ -55,7 +55,7 @@ class MiningApi extends BaseApi implements MiningApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getMinerCount(): string
     {
@@ -63,7 +63,7 @@ class MiningApi extends BaseApi implements MiningApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getMiners(array $minerIds): array
     {
@@ -71,7 +71,7 @@ class MiningApi extends BaseApi implements MiningApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getMinersWithName(): array
     {
@@ -88,7 +88,7 @@ class MiningApi extends BaseApi implements MiningApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getNewAssetPerBlock(): string
     {
@@ -96,7 +96,7 @@ class MiningApi extends BaseApi implements MiningApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function listMinersRelative(string $lowerBound = '', int $limit = 1000): array
     {
@@ -104,7 +104,7 @@ class MiningApi extends BaseApi implements MiningApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function findVotedMiners(array $voteIds): array
     {
@@ -112,7 +112,7 @@ class MiningApi extends BaseApi implements MiningApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function findAllVotingInfo(
         string $searchTerm,
@@ -126,7 +126,7 @@ class MiningApi extends BaseApi implements MiningApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function createVoteOperation(ChainObject $accountId, array $minderIds): UpdateAccountOperation
     {
@@ -139,7 +139,7 @@ class MiningApi extends BaseApi implements MiningApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function vote(Credentials $credentials, array $minerIds): ?TransactionConfirmation
     {

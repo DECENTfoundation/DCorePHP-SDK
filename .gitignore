@@ -1,3 +1,5 @@
 /vendor/
 /build/
 .idea
+docs/
+warnings.log
