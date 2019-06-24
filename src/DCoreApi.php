@@ -21,6 +21,7 @@ use DCorePHP\Sdk\GeneralApi;
 use DCorePHP\Sdk\HistoryApi;
 use DCorePHP\Sdk\MessagingApi;
 use DCorePHP\Sdk\MiningApi;
+use DCorePHP\Sdk\NftApi;
 use DCorePHP\Sdk\ProposalApi;
 use DCorePHP\Sdk\PurchaseApi;
 use DCorePHP\Sdk\SeederApi;
@@ -36,6 +37,7 @@ class DCoreApi extends DCoreSdk
      * after the expiry the transaction is removed from recent pool and will be dismissed if not included in DCore block
      */
     public const TRANSACTION_EXPIRATION = 30;
+    public const REQ_LIMIT_MAX = 100;
 
     /** @var array */
     protected $permissions = [];
@@ -77,6 +79,8 @@ class DCoreApi extends DCoreSdk
     private $broadcastApi;
     /** @var BalanceApi */
     private $balanceApi;
+    /** @var NftApi */
+    private $nftApi;
 
     public function __construct(string $dcoreApiUrl, string $dcoreWebsocketUrl, bool $debug = false)
     {
@@ -98,6 +102,7 @@ class DCoreApi extends DCoreSdk
         $this->blockApi = new BlockApi($this);
         $this->broadcastApi = new BroadcastApi($this);
         $this->balanceApi = new BalanceApi($this);
+        $this->nftApi = new NftApi($this);
     }
 
     /**
@@ -198,7 +203,7 @@ class DCoreApi extends DCoreSdk
     /**
      * @param SeederApi $seederApi
      */
-    public function setSeedingGroup(SeederApi $seederApi): void
+    public function setSeedingApi(SeederApi $seederApi): void
     {
         $this->seederApi = $seederApi;
     }
@@ -431,6 +436,25 @@ class DCoreApi extends DCoreSdk
     public function setBalanceApi(BalanceApi $balanceApi): DCoreApi
     {
         $this->balanceApi = $balanceApi;
+
+        return $this;
+    }
+
+    /**
+     * @return NftApi
+     */
+    public function getNftApi(): NftApi
+    {
+        return $this->nftApi;
+    }
+
+    /**
+     * @param NftApi $nftApi
+     * @return DCoreApi
+     */
+    public function setNftApi(NftApi $nftApi): DCoreApi
+    {
+        $this->nftApi = $nftApi;
 
         return $this;
     }

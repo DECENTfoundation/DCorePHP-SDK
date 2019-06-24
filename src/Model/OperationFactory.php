@@ -2,6 +2,8 @@
 
 namespace DCorePHP\Model;
 
+use DCorePHP\Model\Operation\NftCreateOperation;
+use DCorePHP\Model\Operation\NftUpdateOperation;
 use DCorePHP\Model\Operation\UnknownOperation;
 
 class OperationFactory
@@ -52,7 +54,12 @@ class OperationFactory
             37 => 'update_monitored_asset_operation',
             Operation\ReadyToPublish2Operation::OPERATION_TYPE => Operation\ReadyToPublish2Operation::class,
             Operation\Transfer2::OPERATION_TYPE => Operation\Transfer2::class,
-            Operation\AssetUpdateAdvancedOperation::OPERATION_TYPE => Operation\AssetUpdateAdvancedOperation::class
+            Operation\AssetUpdateAdvancedOperation::OPERATION_TYPE => Operation\AssetUpdateAdvancedOperation::class,
+            Operation\NftCreateOperation::OPERATION_TYPE => Operation\NftCreateOperation::class,
+            Operation\NftUpdateOperation::OPERATION_TYPE => Operation\NftUpdateOperation::class,
+            Operation\NftIssueOperation::OPERATION_TYPE => Operation\NftIssueOperation::class,
+            Operation\NftTransferOperation::OPERATION_TYPE => Operation\NftTransferOperation::class,
+            Operation\NftUpdateDataOperation::OPERATION_TYPE => Operation\NftUpdateDataOperation::class
         ];
     }
 
