@@ -1,7 +1,24 @@
-version: '2'
+version: '3.2'
 services:
+  dcore:
+    container_name: dcore
+    build: ./test-dcore-node
+    ports:
+      - "8090:8090"
+    expose:
+      - "8090"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8090"]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+    # used for debug
+#    entrypoint: ['/bin/sh', '-c', 'while true; do sleep 2; date; done']
   php:
+    container_name: php-sdk
     build: .
+    depends_on:
+      - dcore
     tty: true
     volumes:
       - '.:/var/www/html'

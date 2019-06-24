@@ -39,7 +39,7 @@ class PublicKeyTest extends TestCase
         $publicKey = PublicKey::fromWif(DCoreSDKTest::PUBLIC_KEY_1);
         $checksum = $method->invokeArgs($publicKey, [$publicKey->toCompressedPublicKey()]);
 
-        $this->assertEquals('c732b4ce', $checksum);
+        $this->assertEquals('133e4dec', $checksum);
     }
 
     public function testFromPrivateKey(): void
@@ -53,7 +53,7 @@ class PublicKeyTest extends TestCase
     public function testToCompressedPublicKey(): void
     {
         $this->assertEquals(
-            '02cf2c986e78776c21e5a75d42dd858dfe8ef06cf663ee0e8363db89ad5999d84f',
+            '039cf1a65f567cf37066fbfc13419e16c47953a7194d621ceb2d00f3796f73f43c',
             PublicKey::fromWif(DCoreSDKTest::PUBLIC_KEY_1)->toCompressedPublicKey()
         );
     }

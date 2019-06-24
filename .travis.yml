@@ -20,6 +20,7 @@ before_install:
   - chmod +x docker-compose
   - sudo mv docker-compose /usr/local/bin
   # start our container
+  - cp Dockerfile.travis Dockerfile
   - docker-compose up -d
   # install dependencies
   - docker-compose exec php composer install --dev --prefer-dist --optimize-autoloader
@@ -41,3 +42,7 @@ deploy:
   on:
     tags: true
     branch: release
+
+after_script:
+  - docker-compose down
+

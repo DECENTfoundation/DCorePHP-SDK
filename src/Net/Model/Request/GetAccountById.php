@@ -17,7 +17,7 @@ class GetAccountById extends GetAccount
         );
     }
 
-    public static function responseToModel(BaseResponse $response): Account
+    public static function responseToModel(BaseResponse $response): ?Account
     {
         $rawAccounts = $response->getResult();
         $response->setResult(reset($rawAccounts));

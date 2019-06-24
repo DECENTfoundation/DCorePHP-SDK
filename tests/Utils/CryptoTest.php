@@ -36,7 +36,7 @@ class CryptoTest extends TestCase
         );
 
         $this->assertEquals(
-            'ad78ca053d024534ced1930381f58aea1abb24e08bfa0dfeb8c8ecf084c6ba48aef29bbcb0166eaf9c6a5d44bb06a388d7b80079ca4bcc62d6f5ecc00147c85a',
+            '7a726341c13e80a7e7199003c452e98e27656c777c3ec150463c153a94edeae869975603adcb6f0aa21fd18d05bff0cd248979560b6565e9b393f0668cb80bb6',
             $sharedSecret
         );
     }
@@ -51,7 +51,7 @@ class CryptoTest extends TestCase
         );
 
         $this->assertEquals(
-            '25f4f1ec0456d5b7aaf1abb0257464b5e077f7b092437748ec4359e802c33a58',
+            'a331f7b9f710c91c5c54449deb6f49ff6d5429dee189a9bd3b1b3f573cd246c0',
             $encryptedMessage
         );
     }
@@ -59,7 +59,7 @@ class CryptoTest extends TestCase
     public function testDecryptWithChecksum()
     {
         $encryptedMessage = $this->crypto->decryptWithChecksum(
-            '25f4f1ec0456d5b7aaf1abb0257464b5e077f7b092437748ec4359e802c33a58',
+            'a331f7b9f710c91c5c54449deb6f49ff6d5429dee189a9bd3b1b3f573cd246c0',
             PrivateKey::fromWif(DCoreSDKTest::PRIVATE_KEY_2),
             PublicKey::fromWif(DCoreSDKTest::PUBLIC_KEY_1),
             '17391111264393218816'
