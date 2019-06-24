@@ -5,7 +5,6 @@ namespace DCorePHP\Sdk;
 use DCorePHP\DCoreApi;
 use DCorePHP\Model\BaseOperation;
 use DCorePHP\Model\ChainObject;
-use DCorePHP\Model\OperationHistory;
 use DCorePHP\Model\ProcessedTransaction;
 use DCorePHP\Model\Transaction;
 use DCorePHP\Model\TransactionConfirmation;

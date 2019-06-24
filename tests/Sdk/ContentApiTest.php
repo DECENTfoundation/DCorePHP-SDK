@@ -6,24 +6,12 @@ use DCorePHP\Crypto\Credentials;
 use DCorePHP\Crypto\ECKeyPair;
 use DCorePHP\Exception\ValidationException;
 use DCorePHP\Model\Asset\AssetAmount;
+use DCorePHP\Model\ChainObject;
 use DCorePHP\Model\Content\Content;
 use DCorePHP\Model\Content\ContentKeys;
 use DCorePHP\Model\Content\ContentObject;
-use DCorePHP\Model\ChainObject;
 use DCorePHP\Model\Content\SubmitContent;
-use DCorePHP\Model\PubKey;
 use DCorePHP\Model\RegionalPrice;
-use DCorePHP\Net\Model\Request\BaseRequest;
-use DCorePHP\Net\Model\Request\BroadcastTransactionWithCallback;
-use DCorePHP\Net\Model\Request\GenerateContentKeys;
-use DCorePHP\Net\Model\Request\GetChainId;
-use DCorePHP\Net\Model\Request\GetContentById;
-use DCorePHP\Net\Model\Request\GetContentByURI;
-use DCorePHP\Net\Model\Request\GetDynamicGlobalProperties;
-use DCorePHP\Net\Model\Request\GetRequiredFees;
-use DCorePHP\Net\Model\Request\RestoreEncryptionKey;
-use DCorePHP\Net\Model\Request\SearchContent;
-use DCorePHP\Net\Model\Response\BaseResponse;
 use DCorePHPTests\DCoreSDKTest;
 
 class ContentApiTest extends DCoreSDKTest

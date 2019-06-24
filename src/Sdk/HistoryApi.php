@@ -2,17 +2,15 @@
 
 namespace DCorePHP\Sdk;
 
-use DCorePHP\Model\Account;
 use DCorePHP\Model\BalanceChange;
 use DCorePHP\Model\ChainObject;
 use DCorePHP\Model\DynamicGlobalProps;
-use DCorePHP\Model\OperationHistory;
 use DCorePHP\Model\Operation\Transfer2;
+use DCorePHP\Model\OperationHistory;
 use DCorePHP\Model\OperationHistoryComposed;
 use DCorePHP\Net\Model\Request\GetAccountBalanceForTransaction;
 use DCorePHP\Net\Model\Request\GetAccountHistory;
 use DCorePHP\Net\Model\Request\GetRelativeAccountHistory;
-use DCorePHP\Net\Model\Request\History;
 use DCorePHP\Net\Model\Request\SearchAccountBalanceHistory;
 
 class HistoryApi extends BaseApi implements HistoryApiInterface

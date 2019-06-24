@@ -14,18 +14,6 @@ use DCorePHP\Model\Asset\AssetOptions;
 use DCorePHP\Model\Asset\ExchangeRate;
 use DCorePHP\Model\Asset\RealSupply;
 use DCorePHP\Model\ChainObject;
-use DCorePHP\Net\Model\Request\BaseRequest;
-use DCorePHP\Net\Model\Request\BroadcastTransactionWithCallback;
-use DCorePHP\Net\Model\Request\GetAssetData;
-use DCorePHP\Net\Model\Request\GetAsset;
-use DCorePHP\Net\Model\Request\GetAssets;
-use DCorePHP\Net\Model\Request\GetChainId;
-use DCorePHP\Net\Model\Request\GetDynamicGlobalProperties;
-use DCorePHP\Net\Model\Request\GetRealSupply;
-use DCorePHP\Net\Model\Request\GetRequiredFees;
-use DCorePHP\Net\Model\Request\ListAssets;
-use DCorePHP\Net\Model\Request\LookupAssets;
-use DCorePHP\Net\Model\Response\BaseResponse;
 use DCorePHPTests\DCoreSDKTest;
 use WebSocket\BadOpcodeException;
 
