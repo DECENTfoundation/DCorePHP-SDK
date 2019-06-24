@@ -89,6 +89,31 @@ class ECKeyPairTest extends TestCase
         );
     }
 
+    public function testIsSignatureCanonical()
+    {
+        foreach (
+            [
+                '1f4e6bf03885ed1ef148e106415b2784a4ba7dfef367099ce534a1d81512bc3c5167773a2bb6f9505a9be62f70fdfb3ec197912622d1f073f37c53f40ac5e646f8',
+                '1f595122744cc19263b8e73bc8e1d57a045a01c3b4b04bc08216cd8b9104c81f2b154875b1941cef6e76d1d3d89bcbf906d56d4c581807098663c600ab1b0050ef',
+                '1f62ef0c229f0208642735bf85f20f25550e62dcaacba861e55a477587bed6e8f0490884251bf04cfe116aef02dc82771bd65fa48a6bb599bb1c57e86bcfb8756b',
+                '202c177696d954a03798d287cc9d4e48a95745d180db012394f39a42a32bf8e2947a434b7c53a619817d3b5c7c3285c6438c26e203ac16c2fd0c3c7de2300cd86c',
+            ] as $signature
+        ) {
+            $this->assertTrue(ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_2)->isSignatureCanonical($signature));
+        }
+
+        foreach (
+            [
+                '20136f5f01fb54076587670737cc350ef8c1d26d80006a62f28ce80b0df58d052b004fce54c9cc40f6191a94c617410434aab4f19ff35d296a47c1ad2ca6099a13',
+                '20c8d1f6ef03ec645b9c406431a325741a2247b25862a731993aa5dd3dbac723a66b73d75c5ba313dde012b499a6e1b1b48551e410a4e8758968b7bcdf64bd9a58',
+                '1fdbfd66ddf7c6cdd100568c15934e3bfef96022f2d335e161cff7ddeade802b5240c117706d004743296696b58138ef342a2cc2008fd5ff2ee3d76a60d2f09f05',
+                '1ffa382a4507662fd200e4c2bdef7a90b45362f51d79eef84ae35f0c966680a6172109f519f7709e25207462c54fdf465f8b10f84d04120f4d05db1ee5f99e867b',
+            ] as $signature
+        ) {
+            $this->assertFalse(ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_2)->isSignatureCanonical($signature));
+        }
+    }
+
     public function testEquals(): void
     {
         $ECKeyPair1 = ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1);
