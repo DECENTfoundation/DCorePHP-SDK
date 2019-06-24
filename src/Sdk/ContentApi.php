@@ -72,14 +72,6 @@ class ContentApi extends BaseApi implements ContentApiInterface
      */
     public function getAll(array $contentIds): array
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new GetContentsById($contentIds));
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getAll(array $contentIds): array
-    {
         return $this->dcoreApi->requestWebsocket(new GetContentsById($contentIds));
     }
 
@@ -207,44 +199,6 @@ class ContentApi extends BaseApi implements ContentApiInterface
 
     /**
      * @inheritDoc
-     */
-    public function deleteByRef($reference, Credentials $author, AssetAmount $fee): ?TransactionConfirmation
-    {
-        if ($reference instanceof ChainObject) {
-            return $this->deleteById($reference, $author, $fee);
-        }
-        if (ContentObject::hasValid($reference)) {
-            return $this->deleteByUrl($reference, $author, $fee);
-        }
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function deleteById(ChainObject $contentId, Credentials $author, AssetAmount $fee): ?TransactionConfirmation
-    {
-        return $this->deleteByUrl($this->get($contentId)->getURI(), $author, $fee);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function deleteByUrl(string $url, Credentials $author, AssetAmount $fee): ?TransactionConfirmation
-    {
-        $operation = new ContentCancellationOperation();
-        $operation
-            ->setAuthor($author->getAccount())
-            ->setUri($url)
-            ->setFee($fee);
-
-        return $this->dcoreApi->getBroadcastApi()->broadcastOperationWithECKeyPairWithCallback(
-            $author->getKeyPair(),
-            $operation
-        );
-    }
-
-    /**
-     * @inheritdoc
      */
     public function deleteByRef($reference, Credentials $author, AssetAmount $fee): ?TransactionConfirmation
     {
