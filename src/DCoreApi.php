@@ -28,6 +28,7 @@ use DCorePHP\Sdk\SeederApi;
 use DCorePHP\Sdk\SubscriptionApi;
 use DCorePHP\Sdk\TransactionApi;
 use DCorePHP\Sdk\ValidationApi;
+use InvalidArgumentException;
 use WebSocket\BadOpcodeException;
 
 class DCoreApi extends DCoreSdk
@@ -488,5 +489,12 @@ class DCoreApi extends DCoreSdk
             ->setChainId($chainId);
 
         return $transaction;
+    }
+
+    public static function require(bool $value, string $message = 'An Exception occurred'): void
+    {
+        if (!$value) {
+            throw new InvalidArgumentException($message);
+        }
     }
 }

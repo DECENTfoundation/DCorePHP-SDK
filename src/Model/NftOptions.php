@@ -2,6 +2,7 @@
 
 namespace DCorePHP\Model;
 
+use DCorePHP\DCoreApi;
 use DCorePHP\DCoreConstants;
 use DCorePHP\Exception\ValidationException;
 use DCorePHP\Utils\Math;
@@ -19,6 +20,21 @@ class NftOptions
     private $fixedMaxSupply;
     /** @var string */
     private $description;
+
+    public function update(string $maxSupply = null, bool $fixedMaxSupply = null, string $description = null): void
+    {
+        $maxSupply = $maxSupply ?? $this->maxSupply;
+        $fixedMaxSupply = $fixedMaxSupply ?? $this->fixedMaxSupply;
+        $description = $description ?? $this->description;
+
+        DCoreApi::require($maxSupply >= $this->maxSupply, "Max supply must be at least $this->maxSupply");
+        DCoreApi::require($fixedMaxSupply === $this->fixedMaxSupply || !$this->fixedMaxSupply, 'Max supply must remain fixed');
+        DCoreApi::require($maxSupply === $this->maxSupply || !$this->fixedMaxSupply, 'Can not change max supply (it\'s fixed)');
+
+        $this->maxSupply = $maxSupply;
+        $this->fixedMaxSupply = $fixedMaxSupply;
+        $this->description = $description;
+    }
 
     /**
      * @return ChainObject

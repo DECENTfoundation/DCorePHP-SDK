@@ -153,4 +153,20 @@ class NftApiTest extends DCoreSDKTest
         $this->assertEquals(100, $nft->getOptions()->getMaxSupply());
         $this->assertFalse($nft->getOptions()->isFixedMaxSupply());
     }
+
+    /**
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
+     * @throws ObjectNotFoundException
+     * @throws ValidationException
+     * @throws Exception
+     */
+    public function testUpdate(): void
+    {
+        $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
+        $this->sdk->getNftApi()->update($credentials, $this->nftSymbol, null, null, 'an apple update');
+
+        $updatedNft = $this->sdk->getNftApi()->getBySymbol($this->nftSymbol);
+        $this->assertEquals('an apple update', $updatedNft->getOptions()->getDescription());
+    }
 }

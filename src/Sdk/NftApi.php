@@ -5,6 +5,7 @@ namespace DCorePHP\Sdk;
 use DCorePHP\Crypto\Credentials;
 use DCorePHP\DCoreApi;
 use DCorePHP\Exception\ObjectNotFoundException;
+use DCorePHP\Exception\ValidationException;
 use DCorePHP\Model\Asset\AssetAmount;
 use DCorePHP\Model\ChainObject;
 use DCorePHP\Model\Memo;
@@ -242,9 +243,16 @@ class NftApi extends BaseApi implements NftApiInterface
     /**
      * @inheritDoc
      */
-    public function createUpdateOperation(string $idOrSymbol, Fee $fee = null): NftUpdateOperation
+    public function createUpdateOperation(string $idOrSymbol, $fee = null): NftUpdateOperation
     {
-        // TODO: Implement createUpdateOperation() method.
+        $nft = $this->get($idOrSymbol);
+        $operation = new NftUpdateOperation();
+        $operation
+            ->setIssuer($nft->getOptions()->getIssuer())
+            ->setId($nft->getId())
+            ->setOptions($nft->getOptions())
+            ->setFee($fee);
+        return $operation;
     }
 
     /**
@@ -256,9 +264,17 @@ class NftApi extends BaseApi implements NftApiInterface
         string $maxSupply = null,
         bool $fixedMaxSupply = null,
         string $description = null,
-        Fee $fee = null
+        $fee = null
     ): TransactionConfirmation {
-        // TODO: Implement update() method.
+        $fee = $fee ?: new AssetAmount();
+
+        $operation = $this->createUpdateOperation($idOrSymbol, $fee);
+        $operation->getOptions()->update($maxSupply, $fixedMaxSupply, $description);
+
+        return $this->dcoreApi->getBroadcastApi()->broadcastOperationWithECKeyPairWithCallback(
+            $credentials->getKeyPair(),
+            $operation
+        );
     }
 
     /**
@@ -270,7 +286,7 @@ class NftApi extends BaseApi implements NftApiInterface
         ChainObject $to,
         $data = null,
         Memo $memo = null,
-        Fee $fee = null
+        $fee = null
     ): NftIssueOperation {
         // TODO: Implement createIssueOperation() method.
     }

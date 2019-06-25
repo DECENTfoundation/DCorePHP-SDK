@@ -236,11 +236,16 @@ interface NftApiInterface
      * Create NFT update operation. Fills model with actual values.
      *
      * @param string $idOrSymbol
-     * @param Fee|null $fee
+     * @param null $fee
      *
      * @return NftUpdateOperation
+     *
+     * @throws ObjectNotFoundException
+     * @throws ValidationException
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
      */
-    public function createUpdateOperation(string $idOrSymbol, Fee $fee = null): NftUpdateOperation;
+    public function createUpdateOperation(string $idOrSymbol, $fee = null): NftUpdateOperation;
 
     /**
      * Update NFT
@@ -250,11 +255,13 @@ interface NftApiInterface
      * @param string|null $maxSupply
      * @param bool|null $fixedMaxSupply
      * @param string|null $description
-     * @param Fee|null $fee
+     * @param null $fee
      *
      * @return TransactionConfirmation
+     *
+     * @throws Exception
      */
-    public function update(Credentials $credentials, string $idOrSymbol, string $maxSupply = null, bool $fixedMaxSupply = null, string $description = null, Fee $fee = null): TransactionConfirmation;
+    public function update(Credentials $credentials, string $idOrSymbol, string $maxSupply = null, bool $fixedMaxSupply = null, string $description = null, $fee = null): TransactionConfirmation;
 
     /**
      * Create NFT issue operation. Creates a NFT data instance.
@@ -264,11 +271,11 @@ interface NftApiInterface
      * @param ChainObject $to
      * @param null $data
      * @param Memo|null $memo
-     * @param Fee|null $fee
+     * @param null $fee
      *
      * @return NftIssueOperation
      */
-    public function createIssueOperation(ChainObject $issuer, string $idOrSymbol, ChainObject $to, $data = null, Memo $memo = null, Fee $fee = null): NftIssueOperation;
+    public function createIssueOperation(ChainObject $issuer, string $idOrSymbol, ChainObject $to, $data = null, Memo $memo = null, $fee = null): NftIssueOperation;
 
     /**
      * Issue NFT. Creates a NFT data instance.
