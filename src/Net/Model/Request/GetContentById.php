@@ -11,7 +11,7 @@ class GetContentById extends GetContent
     public function __construct(ChainObject $contentId)
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_DATABASE,
             'get_objects',
             [[$contentId->getId()]]
         );

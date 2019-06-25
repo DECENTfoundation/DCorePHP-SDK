@@ -55,27 +55,6 @@ class Math
         return (($number+128) % 256) - 128;
     }
 
-    // Return byte Array
-    public static function writeUnsignedVarInt($value): array
-    {
-        $v = $value;
-        $byteArrayList = [];
-        $i = 0;
-        while (($v & -0x80) !== 0) {
-            $byteArrayList[$i++] = self::toByte($v & 0x7F | 0x80);
-            // Shift right
-            $v >>= 7;
-        }
-
-        $byteArrayList[$i] = self::toByte($v & 0x7F);
-        return $byteArrayList;
-    }
-
-    public static function writeUnsignedVarIntHex(int $value): string
-    {
-        return self::byteArrayToHex(self::writeUnsignedVarInt($value));
-    }
-
     public static function byteArrayToHex(array $byteArray): string
     {
         $chars = array_map('chr', $byteArray);
@@ -103,5 +82,35 @@ class Math
     public static function gmpDecHex($number): string
     {
         return gmp_strval(gmp_init($number, 10), 16);
+    }
+
+    public static function getInt8($number): string
+    {
+        return str_pad(self::gmpDecHex($number), 2, '0', STR_PAD_LEFT);
+    }
+
+    public static function getInt16($number): string
+    {
+        return str_pad(self::gmpDecHex(self::reverseBytesShort($number)), 4, '0', STR_PAD_LEFT);
+    }
+
+    public static function getInt16Reversed($number): string
+    {
+        return implode('', array_reverse(str_split(str_pad(self::gmpDecHex($number), 4, '0', STR_PAD_LEFT), 2)));
+    }
+
+    public static function getInt32($number): string
+    {
+        return str_pad(self::gmpDecHex(self::reverseBytesInt($number)), 8, '0', STR_PAD_LEFT);
+    }
+
+    public static function getInt32Reversed($number): string
+    {
+        return implode('', array_reverse(str_split(str_pad(self::gmpDecHex($number), 8, '0', STR_PAD_LEFT), 2)));
+    }
+
+    public static function getInt64($number): string
+    {
+        return str_pad(self::gmpDecHex(self::reverseBytesLong($number)), 16, '0', STR_PAD_LEFT);
     }
 }

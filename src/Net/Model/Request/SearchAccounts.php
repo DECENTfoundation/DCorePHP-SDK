@@ -22,7 +22,7 @@ class SearchAccounts extends GetAccount
     public function __construct(string $term = '', string $order = self::ORDER_NONE, string $startObjectId = '0.0.0', int $limit = 100)
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_DATABASE,
             'search_accounts',
             [$term, $order, $startObjectId, $limit]
         );

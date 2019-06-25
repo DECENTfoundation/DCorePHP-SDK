@@ -9,7 +9,7 @@ class GetAssetPerBlock extends BaseRequest
     public function __construct(string $blockNum)
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_DATABASE,
             'get_asset_per_block_by_block_num',
             [$blockNum]
         );

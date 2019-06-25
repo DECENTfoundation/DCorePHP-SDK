@@ -9,6 +9,7 @@ use DCorePHP\Model\Asset\MonitoredAssetOptions;
 use DCorePHP\Model\BaseOperation;
 use DCorePHP\Model\ChainObject;
 use DCorePHP\Utils\Math;
+use DCorePHP\Utils\VarInt;
 use Symfony\Component\Validator\Constraints\IsTrue;
 use Symfony\Component\Validator\Constraints\LessThanOrEqual;
 use Symfony\Component\Validator\Validation;
@@ -187,16 +188,18 @@ class AssetCreateOperation extends BaseOperation
             $this->getTypeBytes(),
             $this->getFee()->toBytes(),
             $this->getIssuer()->toBytes(),
-            Math::writeUnsignedVarIntHex(sizeof(Math::stringToByteArray($this->getSymbol()))),
+            VarInt::encodeDecToHex(sizeof(Math::stringToByteArray($this->getSymbol()))),
             Math::byteArrayToHex(Math::stringToByteArray($this->getSymbol())),
-            str_pad(Math::gmpDecHex($this->getPrecision()), 2, '0', STR_PAD_LEFT),
-            Math::writeUnsignedVarIntHex(sizeof(Math::stringToByteArray($this->getDescription()))),
+            Math::getInt8($this->getPrecision()),
+            VarInt::encodeDecToHex(sizeof(Math::stringToByteArray($this->getDescription()))),
             Math::byteArrayToHex(Math::stringToByteArray($this->getDescription())),
             $this->getOptions()->toBytes(),
             $this->getMonitoredOptions() ? $this->getMonitoredOptions()->toBytes() : '00',
             '01',
-            // TODO: Extensions Array
-            $this->getExtensions() ? '01' : '00'
+            $this->getExtensions() ?
+                VarInt::encodeDecToHex(sizeof($this->getExtensions()))
+                . '' // TODO array_map each element toBytes()
+                : '00'
         ]);
     }
 }

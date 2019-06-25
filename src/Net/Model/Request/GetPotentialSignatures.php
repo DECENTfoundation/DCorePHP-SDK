@@ -10,7 +10,7 @@ class GetPotentialSignatures extends BaseRequest
     public function __construct(Transaction $transaction)
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_DATABASE,
             'get_potential_signatures',
             [$transaction->toArray()]
         );

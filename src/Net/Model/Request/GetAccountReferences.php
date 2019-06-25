@@ -10,7 +10,7 @@ class GetAccountReferences extends BaseRequest
     public function __construct(ChainObject $accountId)
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_DATABASE,
             'get_account_references',
             [$accountId->getId()]
         );

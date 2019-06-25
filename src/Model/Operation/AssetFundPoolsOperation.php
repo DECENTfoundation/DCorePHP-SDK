@@ -5,6 +5,7 @@ namespace DCorePHP\Model\Operation;
 use DCorePHP\Model\Asset\AssetAmount;
 use DCorePHP\Model\BaseOperation;
 use DCorePHP\Model\ChainObject;
+use DCorePHP\Utils\VarInt;
 
 class AssetFundPoolsOperation extends BaseOperation
 {
@@ -111,8 +112,10 @@ class AssetFundPoolsOperation extends BaseOperation
             $this->getFrom()->toBytes(),
             $this->getUia()->toBytes(),
             $this->getDct()->toBytes(),
-            // TODO: Extensions Array
-            $this->getExtensions() ? '01' : '00'
+            $this->getExtensions() ?
+                VarInt::encodeDecToHex(sizeof($this->getExtensions()))
+                . '' // TODO array_map each element toBytes()
+                : '00'
         ]);
     }
 }

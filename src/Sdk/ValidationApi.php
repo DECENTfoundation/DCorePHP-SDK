@@ -12,7 +12,6 @@ use DCorePHP\Model\Operation\ProposalUpdate;
 use DCorePHP\Model\Operation\WithdrawPermissionClaim;
 use DCorePHP\Model\ProcessedTransaction;
 use DCorePHP\Model\Transaction;
-use DCorePHP\Net\Model\Request\Database;
 use DCorePHP\Net\Model\Request\GetPotentialSignatures;
 use DCorePHP\Net\Model\Request\GetRequiredFees;
 use DCorePHP\Net\Model\Request\GetRequiredSignatures;
@@ -24,55 +23,55 @@ use InvalidArgumentException;
 class ValidationApi extends BaseApi implements ValidationApiInterface
 {
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getRequiredSignatures(Transaction $transaction, array $keys): array
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new GetRequiredSignatures($transaction, $keys));
+        return $this->dcoreApi->requestWebsocket(new GetRequiredSignatures($transaction, $keys));
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getPotentialSignatures(Transaction $transaction): array
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new GetPotentialSignatures($transaction));
+        return $this->dcoreApi->requestWebsocket(new GetPotentialSignatures($transaction));
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function verifyAuthority(Transaction $transaction): bool
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new VerifyAuthority($transaction));
+        return $this->dcoreApi->requestWebsocket(new VerifyAuthority($transaction));
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function verifyAccountAuthority(string $nameOrId, array $keys): bool
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new VerifyAccountAuthority($nameOrId, $keys));
+        return $this->dcoreApi->requestWebsocket(new VerifyAccountAuthority($nameOrId, $keys));
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function validateTransaction(Transaction $transaction): ProcessedTransaction
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new ValidateTransaction($transaction));
+        return $this->dcoreApi->requestWebsocket(new ValidateTransaction($transaction));
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getFees(array $op, ChainObject $assetId = null): array
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new GetRequiredFees($op, $assetId));
+        return $this->dcoreApi->requestWebsocket(new GetRequiredFees($op, $assetId));
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getFee(BaseOperation $op, ChainObject $assetId = null): AssetAmount
     {
@@ -81,7 +80,7 @@ class ValidationApi extends BaseApi implements ValidationApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getFeeByType($type, ChainObject $assetId = null): AssetAmount
     {

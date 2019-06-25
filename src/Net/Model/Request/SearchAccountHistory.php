@@ -33,7 +33,7 @@ class SearchAccountHistory extends BaseRequest
     public function __construct(ChainObject $accountId, string $order = self::ORDER_TIME_DESC, string $startObjectId = '0.0.0', int $limit = 100)
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_DATABASE,
             'search_account_history',
             [$accountId->getId(), $order, $startObjectId, $limit]
         );

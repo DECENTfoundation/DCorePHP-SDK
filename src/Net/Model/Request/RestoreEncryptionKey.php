@@ -12,7 +12,7 @@ class RestoreEncryptionKey extends BaseRequest
     public function __construct(PubKey $privateElGamal, ChainObject $purchaseId)
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_DATABASE,
             'restore_encryption_key',
             [$privateElGamal->toArray(), $purchaseId->getId()]
         );

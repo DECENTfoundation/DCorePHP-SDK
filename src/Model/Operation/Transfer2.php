@@ -7,6 +7,7 @@ use DCorePHP\Model\BaseOperation;
 use DCorePHP\Model\ChainObject;
 use DCorePHP\Model\Memo;
 use DCorePHP\Crypto\Address;
+use DCorePHP\Utils\VarInt;
 
 class Transfer2 extends BaseOperation
 {
@@ -170,7 +171,10 @@ class Transfer2 extends BaseOperation
             $this->getTo()->toObjectTypeIdBytes(),
             $this->getAmount()->toBytes(),
             $this->getMemo()->toBytes(),
-            '00',
+            $this->getExtensions() ?
+                VarInt::encodeDecToHex(sizeof($this->getExtensions()))
+                . '' // TODO array_map each element toBytes()
+                : '00'
         ]);
     }
 }

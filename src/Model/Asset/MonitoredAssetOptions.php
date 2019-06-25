@@ -4,6 +4,7 @@
 namespace DCorePHP\Model\Asset;
 
 use DCorePHP\Utils\Math;
+use DCorePHP\Utils\VarInt;
 
 class MonitoredAssetOptions
 {
@@ -138,12 +139,14 @@ class MonitoredAssetOptions
     public function toBytes(): string
     {
         return implode('', [
-            // TODO: Feeds Array
-            $this->getFeeds() ? '01' : '00',
+            $this->getFeeds() ?
+                VarInt::encodeDecToHex(sizeof($this->getFeeds()))
+                . '' // TODO array_map each element toBytes()
+                : '00',
             $this->getCurrentFeed()->getCoreExchangeRate()->toBytes(),
-            str_pad(Math::gmpDecHex(Math::reverseBytesInt($this->getCurrentFeedPublicationTime()->format('U'))), 8, '0', STR_PAD_LEFT),
-            str_pad(Math::gmpDecHex(Math::reverseBytesInt($this->getFeedLifetimeSec())), 8, '0', STR_PAD_LEFT),
-            str_pad(Math::gmpDecHex(Math::reverseBytesShort($this->getMinimumFeeds())), 4, '0', STR_PAD_LEFT),
+            Math::getInt32($this->getCurrentFeedPublicationTime()->format('U')),
+            Math::getInt32($this->getFeedLifetimeSec()),
+            Math::getInt16($this->getMinimumFeeds()),
         ]);
     }
 }

@@ -10,7 +10,7 @@ class ListAccounts extends BaseRequest
     public function __construct(string $lowerbound, int $limit)
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_DATABASE,
             'lookup_accounts',
             [$lowerbound, $limit]
         );

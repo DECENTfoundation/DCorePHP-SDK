@@ -7,6 +7,7 @@ use DCorePHP\Model\Asset\Asset;
 use DCorePHP\Model\BaseOperation;
 use DCorePHP\Model\ChainObject;
 use DCorePHP\Utils\Math;
+use DCorePHP\Utils\VarInt;
 
 class AssetUpdateAdvancedOperation extends BaseOperation
 {
@@ -22,14 +23,6 @@ class AssetUpdateAdvancedOperation extends BaseOperation
     private $precision;
     /** @var bool */
     private $fixedMaxSupply;
-
-//    /**
-//     * AssetUpdateAdvancedOperation constructor.
-//     */
-//    public function __construct()
-//    {
-//    }
-
 
     /**
      * @param Asset $asset
@@ -153,11 +146,12 @@ class AssetUpdateAdvancedOperation extends BaseOperation
             $this->getFee()->toBytes(),
             $this->getIssuer()->toBytes(),
             $this->getAssetToUpdate()->toBytes(),
-            // TODO: Why is '01' here ? In TS it always shows up, no idea why
-            '01',
-            str_pad(Math::gmpDecHex($this->getPrecision()), 2, '0', STR_PAD_LEFT),
+            Math::getInt8($this->getPrecision()),
             $this->isFixedMaxSupply() ? '01' : '00',
-            $this->getExtensions() ? '' : '00'
+            $this->getExtensions() ?
+                VarInt::encodeDecToHex(sizeof($this->getExtensions()))
+                . '' // TODO array_map each element toBytes()
+                : '00'
         ]);
     }
 }

@@ -10,7 +10,7 @@ class GetKeyReferences extends BaseRequest
     public function __construct($keys)
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_DATABASE,
             'get_key_references',
             [$keys]
         );

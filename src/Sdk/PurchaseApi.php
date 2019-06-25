@@ -8,7 +8,6 @@ use DCorePHP\Model\ChainObject;
 use DCorePHP\Model\Content\Purchase;
 use DCorePHP\Model\Operation\LeaveRatingAndComment;
 use DCorePHP\Model\TransactionConfirmation;
-use DCorePHP\Net\Model\Request\Database;
 use DCorePHP\Net\Model\Request\GetBuyingByUri;
 use DCorePHP\Net\Model\Request\GetHistoryBuyingsByConsumer;
 use DCorePHP\Net\Model\Request\GetOpenBuyings;
@@ -25,7 +24,7 @@ class PurchaseApi extends BaseApi implements PurchaseApiInterface
      */
     public function getAllHistory(ChainObject $accountId): array
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new GetHistoryBuyingsByConsumer($accountId)) ?: [];
+        return $this->dcoreApi->requestWebsocket(new GetHistoryBuyingsByConsumer($accountId)) ?: [];
     }
 
     /**
@@ -33,7 +32,7 @@ class PurchaseApi extends BaseApi implements PurchaseApiInterface
      */
     public function getAllOpen(): array
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new GetOpenBuyings()) ?: [];
+        return $this->dcoreApi->requestWebsocket(new GetOpenBuyings()) ?: [];
     }
 
     /**
@@ -41,7 +40,7 @@ class PurchaseApi extends BaseApi implements PurchaseApiInterface
      */
     public function getAllOpenByUri(string $uri): array
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new GetOpenBuyingsByUri($uri)) ?: [];
+        return $this->dcoreApi->requestWebsocket(new GetOpenBuyingsByUri($uri)) ?: [];
     }
 
     /**
@@ -49,7 +48,7 @@ class PurchaseApi extends BaseApi implements PurchaseApiInterface
      */
     public function getAllOpenByAccount(ChainObject $accountId): array
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new GetOpenBuyingsByConsumer($accountId)) ?: [];
+        return $this->dcoreApi->requestWebsocket(new GetOpenBuyingsByConsumer($accountId)) ?: [];
     }
 
     /**
@@ -57,7 +56,7 @@ class PurchaseApi extends BaseApi implements PurchaseApiInterface
      */
     public function get(ChainObject $accountId, string $uri): Purchase
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new GetBuyingByUri($accountId, $uri));
+        return $this->dcoreApi->requestWebsocket(new GetBuyingByUri($accountId, $uri));
     }
 
     /**
@@ -70,7 +69,7 @@ class PurchaseApi extends BaseApi implements PurchaseApiInterface
         string $order = SearchBuyings::PURCHASED_DESC,
         int $limit = 100
     ): array {
-        return $this->dcoreApi->requestWebsocket(Database::class, new SearchBuyings($consumer, $term, $from, $order, $limit)) ?: [];
+        return $this->dcoreApi->requestWebsocket(new SearchBuyings($consumer, $term, $from, $order, $limit)) ?: [];
     }
 
     /**
@@ -79,7 +78,7 @@ class PurchaseApi extends BaseApi implements PurchaseApiInterface
     // TODO: Default arguments: StartId
     public function findAllForFeedback(string $uri, string $user = '', string $startId = ChainObject::NULL_OBJECT, int $count = 100): array
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new SearchFeedback($uri, $user, $startId, $count)) ?: [];
+        return $this->dcoreApi->requestWebsocket(new SearchFeedback($uri, $user, $startId, $count)) ?: [];
     }
 
     /**

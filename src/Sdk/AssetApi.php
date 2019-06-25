@@ -19,7 +19,6 @@ use DCorePHP\Model\Operation\AssetReserveOperation;
 use DCorePHP\Model\Operation\AssetUpdateAdvancedOperation;
 use DCorePHP\Model\Operation\AssetUpdateOperation;
 use DCorePHP\Model\TransactionConfirmation;
-use DCorePHP\Net\Model\Request\Database;
 use DCorePHP\Net\Model\Request\GetAssetData;
 use DCorePHP\Net\Model\Request\GetAssets;
 use DCorePHP\Net\Model\Request\GetRealSupply;
@@ -51,7 +50,7 @@ class AssetApi extends BaseApi implements AssetApiInterface
      */
     public function getAll(array $assetIds): array
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new GetAssets($assetIds)) ?: [];
+        return $this->dcoreApi->requestWebsocket(new GetAssets($assetIds)) ?: [];
     }
 
     /**
@@ -59,7 +58,7 @@ class AssetApi extends BaseApi implements AssetApiInterface
      */
     public function getRealSupply(): RealSupply
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new GetRealSupply());
+        return $this->dcoreApi->requestWebsocket(new GetRealSupply());
     }
 
     /**
@@ -67,7 +66,7 @@ class AssetApi extends BaseApi implements AssetApiInterface
      */
     public function listAllRelative(string $lowerBound, int $limit = 100): array
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new ListAssets($lowerBound, $limit));
+        return $this->dcoreApi->requestWebsocket(new ListAssets($lowerBound, $limit));
     }
 
     /**
@@ -86,14 +85,14 @@ class AssetApi extends BaseApi implements AssetApiInterface
      */
     public function getAllByName(array $assetSymbols): array
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new LookupAssets($assetSymbols)) ?: [];
+        return $this->dcoreApi->requestWebsocket(new LookupAssets($assetSymbols)) ?: [];
     }
 
     /**
      * @inheritdoc
      */
     public function getAssetsData(array $assetIds): array {
-        return $this->dcoreApi->requestWebsocket(Database::class, new GetAssetData($assetIds)) ?: [];
+        return $this->dcoreApi->requestWebsocket(new GetAssetData($assetIds)) ?: [];
     }
 
     /**

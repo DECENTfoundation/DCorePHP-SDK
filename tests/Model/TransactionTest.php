@@ -9,9 +9,9 @@ use DCorePHP\Model\BlockData;
 use DCorePHP\Model\DynamicGlobalProps;
 use DCorePHP\Model\Memo;
 use DCorePHP\Model\ChainObject;
-use DCorePHP\Model\Operation\CreateAccount;
+use DCorePHP\Model\Operation\CreateAccountOperation;
 use DCorePHP\Model\Operation\Transfer2;
-use DCorePHP\Model\Operation\UpdateAccount;
+use DCorePHP\Model\Operation\UpdateAccountOperation;
 use DCorePHP\Model\Options;
 use DCorePHP\Model\Subscription\AuthMap;
 use DCorePHP\Model\Transaction;
@@ -86,7 +86,7 @@ class TransactionTest extends TestCase
             ->sign($senderPrivateKeyWif);
 
         $this->assertEquals(
-            '1f30d821087c1622ab1a4bf8d89ff38c4e68aeb3f2b554ac53b4158a8c7595e724784748b9d757bb6b057a054e1c8bbe8acacdaad4089f22080dd72cacfe1d15a9',
+            '202ce584bb151776719959cadd9d88f93e1872083ea6c699105541eca34e16017263eefd5e849d18786188e693a42fe12075c251c6db141bcc39f196f2dd9cdd41',
             $transaction->getSignature()
         );
     }
@@ -128,15 +128,15 @@ class TransactionTest extends TestCase
             ->setExtensions([])
             ->setSubscriptionPeriod(0);
 
-        $operation = new CreateAccount();
+        $operation = new CreateAccountOperation();
         $operation
             ->setAccountName('mikeeee')
             ->setOwner((new Authority())->setKeyAuths([(new AuthMap())->setValue('DCT6718kUCCksnkeYD1YySWkXb1VLpzjkFfHHMirCRPexp5gDPJLU')]))
             ->setActive((new Authority())->setKeyAuths([(new AuthMap())->setValue('DCT6718kUCCksnkeYD1YySWkXb1VLpzjkFfHHMirCRPexp5gDPJLU')]))
             ->setRegistrar(new ChainObject('1.2.34'))
             ->setOptions($options)
-            ->setName(CreateAccount::OPERATION_NAME)
-            ->setType(CreateAccount::OPERATION_TYPE)
+            ->setName(CreateAccountOperation::OPERATION_NAME)
+            ->setType(CreateAccountOperation::OPERATION_TYPE)
             ->setFee((new AssetAmount())->setAmount(500000));
 
         $transaction = new Transaction();
@@ -147,11 +147,11 @@ class TransactionTest extends TestCase
             ->sign(DCoreSDKTest::PRIVATE_KEY_1);
 
         $this->assertEquals(
-            'e061b1d5fbff20e80b5b010120a10700000000000022076d696b6565656501000000000102a01c045821676cfc191832ad22cc5c9ade0ea1760131c87ff2dd3fed2f13dd33010001000000000102a01c045821676cfc191832ad22cc5c9ade0ea1760131c87ff2dd3fed2f13dd33010002a01c045821676cfc191832ad22cc5c9ade0ea1760131c87ff2dd3fed2f13dd33030000000000000000000000000000000000000000',
+            'e061b1d5fbff1fe80b5b010120a10700000000000022076d696b6565656501000000000102a01c045821676cfc191832ad22cc5c9ade0ea1760131c87ff2dd3fed2f13dd33010001000000000102a01c045821676cfc191832ad22cc5c9ade0ea1760131c87ff2dd3fed2f13dd33010002a01c045821676cfc191832ad22cc5c9ade0ea1760131c87ff2dd3fed2f13dd33030000000000000000000000000000000000000000',
             $transaction->toBytes()
         );
         $this->assertEquals(
-            '20617f01ff5f796567531ee2b4c1ae6713cc2e1ea2c20693663a6f3097c943931f5a709703037224eb216a08f5840a26c1c609316524bffa9802fbe7345ad0bc81',
+            '206cd94c347e104009a429b8234f0898d71426254dabb6ec4a37242d0f0d3658dc5795f05e0554eef61ee2b71337c68d66803267bae6545c3fe39c4dfabbab4d2f',
             $transaction->getSignature()
         );
     }
@@ -192,12 +192,12 @@ class TransactionTest extends TestCase
             ->setExtensions([])
             ->setSubscriptionPeriod(0);
 
-        $operation = new UpdateAccount();
+        $operation = new UpdateAccountOperation();
         $operation
             ->setAccountId(new ChainObject('1.2.34'))
             ->setOptions($options)
-            ->setName(CreateAccount::OPERATION_NAME)
-            ->setType(CreateAccount::OPERATION_TYPE)
+            ->setName(CreateAccountOperation::OPERATION_NAME)
+            ->setType(CreateAccountOperation::OPERATION_TYPE)
             ->setFee((new AssetAmount())->setAmount(500000));
 
         $transaction = new Transaction();
@@ -208,14 +208,14 @@ class TransactionTest extends TestCase
         $transaction->getBlockData()->increment();
 
         $this->assertEquals(
-            'ff82012880f8fd501a5c010220a1070000000000002200000102cf2c986e78776c21e5a75d42dd858dfe8ef06cf663ee0e8363db89ad5999d84f03000001000300000000000000000000000000000000000000',
+            'ff82012880f8fd501a5c010220a10700000000000022000001039cf1a65f567cf37066fbfc13419e16c47953a7194d621ceb2d00f3796f73f43c03000001000300000000000000000000000000000000000000',
             $transaction->toBytes()
         );
 
         $transaction->sign(DCoreSDKTest::PRIVATE_KEY_1);
 
         $this->assertEquals(
-            '1f135f72ee56c9d4b79d9a418442fd9e595e6a1bd2c30a7bc8d4ee9f818fd8f65f3a929e6aa2f19f616d260d6a912bb66f1a6029142e171469cf67e08475841bdf',
+            '1f6a0cad43d970a786385afd87ed7e0b70b8386e8496ded40a21d02bbab603c8923f9f914196ee0b0f5d2dd36b2f8aaaf37fbc0f73934be7829247bb8ea8595138',
             $transaction->getSignature()
         );
     }

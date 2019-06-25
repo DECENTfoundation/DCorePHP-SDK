@@ -8,7 +8,7 @@ use DCorePHP\Model\ChainObject;
 
 class ReturnEscrowSubmission extends BaseOperation
 {
-    public const OPERATION_TYPE = 41;
+    public const OPERATION_TYPE = 42;
     public const OPERATION_NAME = 'return_escrow_submission';
 
     /** @var AssetAmount */

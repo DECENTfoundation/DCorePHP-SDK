@@ -11,7 +11,7 @@ class GetTransactionsById extends BaseRequest
     public function __construct(array $trxIds)
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_DATABASE,
             'get_objects',
             [array_map(function (ChainObject $trxId) { return $trxId->getId(); }, $trxIds)]
         );

@@ -3,14 +3,15 @@
 namespace DCorePHPTests\Utils;
 
 use DCorePHP\Utils\Math;
+use DCorePHP\Utils\VarInt;
 use PHPUnit\Framework\TestCase;
 
-class MathTest extends TestCase
+class VarIntTest extends TestCase
 {
 
     public function testWriteUnsignedVarIntHex(): void
     {
-        $this->assertEquals('9b01', Math::writeUnsignedVarIntHex(155));
+        $this->assertEquals('ac02', VarInt::encodeDecToHex(300));
     }
 
 }

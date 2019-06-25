@@ -18,7 +18,7 @@ class GetAccountHistory extends BaseRequest
     public function __construct(ChainObject $accountId, string $startObjectId = '0.0.0', string $endObjectId = '0.0.0', int $limit = 100)
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_HISTORY,
             'get_account_history',
             [$accountId->getId(), $startObjectId, $limit, $endObjectId]
         );
@@ -54,11 +54,6 @@ class GetAccountHistory extends BaseRequest
             [$operationType, $rawOperation] = $rawOperationHistory['op'];
             if (!($operationType || $rawOperation)) {
                 throw new CouldNotParseOperationTypeException($rawOperationHistory);
-            }
-
-            // @todo implement missing operations
-            if ($operationType >= 46) {
-                continue;
             }
 
             $operation = OperationFactory::getOperation($operationType, $rawOperation);

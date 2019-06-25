@@ -11,7 +11,7 @@ class GetRequiredSignatures extends BaseRequest
     public function __construct(Transaction $transaction, array $keys)
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_DATABASE,
             'get_required_signatures',
             [$transaction->toArray(), array_map(function (Address $key) { return $key->encode(); }, $keys)]
         );

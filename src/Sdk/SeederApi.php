@@ -4,7 +4,6 @@ namespace DCorePHP\Sdk;
 
 use DCorePHP\Model\ChainObject;
 use DCorePHP\Model\Content\Seeder;
-use DCorePHP\Net\Model\Request\Database;
 use DCorePHP\Net\Model\Request\GetSeeder;
 use DCorePHP\Net\Model\Request\ListSeedersByPrice;
 use DCorePHP\Net\Model\Request\ListSeedersByRating;
@@ -19,7 +18,7 @@ class SeederApi extends BaseApi implements SeederApiInterface
      */
     public function get(ChainObject $accountId): Seeder
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new GetSeeder($accountId));
+        return $this->dcoreApi->requestWebsocket(new GetSeeder($accountId));
     }
 
     /**
@@ -27,7 +26,7 @@ class SeederApi extends BaseApi implements SeederApiInterface
      */
     public function listByPrice(int $count = 100): array
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new ListSeedersByPrice($count)) ?: [];
+        return $this->dcoreApi->requestWebsocket(new ListSeedersByPrice($count)) ?: [];
     }
 
     /**
@@ -35,7 +34,7 @@ class SeederApi extends BaseApi implements SeederApiInterface
      */
     public function listByUpload(int $count = 100): array
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new ListSeedersByUpload($count)) ?: [];
+        return $this->dcoreApi->requestWebsocket(new ListSeedersByUpload($count)) ?: [];
     }
 
     /**
@@ -43,7 +42,7 @@ class SeederApi extends BaseApi implements SeederApiInterface
      */
     public function listByRegion(string $region = 'default'): array
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new ListSeedersByRegion($region)) ?: [];
+        return $this->dcoreApi->requestWebsocket(new ListSeedersByRegion($region)) ?: [];
     }
 
     /**
@@ -51,6 +50,6 @@ class SeederApi extends BaseApi implements SeederApiInterface
      */
     public function listByRating(int $count = 100): array
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new ListSeedersByRating($count)) ?: [];
+        return $this->dcoreApi->requestWebsocket(new ListSeedersByRating($count)) ?: [];
     }
 }

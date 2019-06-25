@@ -5,7 +5,6 @@ namespace DCorePHP\Sdk;
 use DCorePHP\Model\Asset\Asset;
 use DCorePHP\Model\Asset\AssetAmount;
 use DCorePHP\Model\ChainObject;
-use DCorePHP\Net\Model\Request\Database;
 use DCorePHP\Net\Model\Request\GetAccountBalances;
 use DCorePHP\Net\Model\Request\GetNamedAccountBalances;
 use DCorePHP\Net\Model\Request\GetVestingBalances;
@@ -13,7 +12,7 @@ use DCorePHP\Net\Model\Request\GetVestingBalances;
 class BalanceApi extends BaseApi implements BalanceApiInterface
 {
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function get(ChainObject $accountId, ChainObject $asset): AssetAmount
     {
@@ -22,15 +21,15 @@ class BalanceApi extends BaseApi implements BalanceApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getAll(ChainObject $accountId, array $assets = []): array
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new GetAccountBalances($accountId, $assets)) ?: [];
+        return $this->dcoreApi->requestWebsocket(new GetAccountBalances($accountId, $assets)) ?: [];
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getByName(string $name, ChainObject $asset): AssetAmount
     {
@@ -39,15 +38,15 @@ class BalanceApi extends BaseApi implements BalanceApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getAllByName(string $name, array $assets = []): array
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new GetNamedAccountBalances($name, $assets)) ?: [];
+        return $this->dcoreApi->requestWebsocket(new GetNamedAccountBalances($name, $assets)) ?: [];
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getWithAsset(ChainObject $accountId, string $assetSymbol = 'DCT')
     {
@@ -56,7 +55,7 @@ class BalanceApi extends BaseApi implements BalanceApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getAllWithAsset(ChainObject $accountId, array $assetSymbols): array
     {
@@ -74,7 +73,7 @@ class BalanceApi extends BaseApi implements BalanceApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getWithAssetByName(string $name, string $assetSymbol = 'DCT')
     {
@@ -83,7 +82,7 @@ class BalanceApi extends BaseApi implements BalanceApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getAllWithAssetByName(string $name, array $assetSymbols): array
     {
@@ -101,10 +100,10 @@ class BalanceApi extends BaseApi implements BalanceApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getAllVesting(ChainObject $accountId): array
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new GetVestingBalances($accountId)) ?: [];
+        return $this->dcoreApi->requestWebsocket(new GetVestingBalances($accountId)) ?: [];
     }
 }

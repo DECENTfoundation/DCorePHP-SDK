@@ -10,7 +10,7 @@ class GetAccountBalanceForTransaction extends GetAccountBalanceAbstract
     public function __construct(ChainObject $accountId, ChainObject $operationId)
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_HISTORY,
             'get_account_balance_for_transaction',
             [$accountId->getId(), $operationId->getId()]
         );

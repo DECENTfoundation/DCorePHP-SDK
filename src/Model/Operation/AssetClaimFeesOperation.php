@@ -6,6 +6,7 @@ use DCorePHP\Exception\ValidationException;
 use DCorePHP\Model\Asset\AssetAmount;
 use DCorePHP\Model\BaseOperation;
 use DCorePHP\Model\ChainObject;
+use DCorePHP\Utils\VarInt;
 
 class AssetClaimFeesOperation extends BaseOperation
 {
@@ -113,7 +114,10 @@ class AssetClaimFeesOperation extends BaseOperation
             $this->getUia()->toBytes(),
             $this->getDct()->toBytes(),
             // TODO: Extensions Array
-            $this->getExtensions() ? '01' : '00'
+            $this->getExtensions() ?
+                VarInt::encodeDecToHex(sizeof($this->getExtensions()))
+                . '' // TODO array_map for every element in array
+                : '00'
         ]);
     }
 }

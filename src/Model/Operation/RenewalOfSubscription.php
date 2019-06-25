@@ -8,7 +8,7 @@ use DCorePHP\Model\ChainObject;
 
 class RenewalOfSubscription extends BaseOperation
 {
-    public const OPERATION_TYPE = 45;
+    public const OPERATION_TYPE = 46;
     public const OPERATION_NAME = 'renewal_of_subscription';
 
     /** @var AssetAmount */

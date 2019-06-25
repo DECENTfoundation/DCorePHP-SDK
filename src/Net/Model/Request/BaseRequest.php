@@ -8,7 +8,14 @@ use Symfony\Component\PropertyAccess\PropertyAccessor;
 
 abstract class BaseRequest
 {
-    /** @var string */
+    public const API_GROUP_DATABASE = 0;
+    public const API_GROUP_LOGIN = 1;
+    public const API_GROUP_BROADCAST = 2;
+    public const API_GROUP_HISTORY = 3;
+    public const API_GROUP_CRYPTO = 4;
+    public const API_GROUP_MESSAGING = 5;
+
+    /** @var int */
     protected $apiGroup;
     /** @var string */
     protected $method;
@@ -18,20 +25,22 @@ abstract class BaseRequest
     protected $jsonrpc;
     /** @var int */
     protected $id;
-    /** @var int */
-    private $resultNumber = 1;
+    /** @var bool */
+    private $withCallback;
 
     /**
-     * @param string $apiGroup
+     * @param int $apiGroup
      * @param string $method
      * @param array $params tuple, needs to resolve to json array after json_encode() call
+     * @param bool $withCallback
      * @param string $jsonRpc
      * @param integer $id
      */
     public function __construct(
-        string $apiGroup,
+        int $apiGroup,
         string $method,
         array $params = [],
+        $withCallback = false,
         $jsonRpc = '2.0',
         $id = 1
     )
@@ -41,9 +50,10 @@ abstract class BaseRequest
         $this->params = $params;
         $this->jsonrpc = $jsonRpc;
         $this->id = $id;
+        $this->withCallback = $withCallback;
     }
 
-    public function getApiGroup(): string
+    public function getApiGroup(): int
     {
         return $this->apiGroup;
     }
@@ -76,12 +86,21 @@ abstract class BaseRequest
     }
 
     /**
-     * @param int $resultNumber
+     * @return bool
+     */
+    public function isWithCallback(): bool
+    {
+        return $this->withCallback;
+    }
+
+    /**
+     * @param bool $withCallback
      * @return BaseRequest
      */
-    public function setResultNumber(int $resultNumber): BaseRequest
+    public function setWithCallback(bool $withCallback): BaseRequest
     {
-        $this->resultNumber = $resultNumber;
+        $this->withCallback = $withCallback;
+
         return $this;
     }
 
@@ -92,7 +111,7 @@ abstract class BaseRequest
             'id' => $this->id,
             'method' => 'call',
             'params' => [
-                $this->resultNumber,
+                $this->apiGroup,
                 $this->method,
                 $this->params
             ],

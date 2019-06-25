@@ -10,7 +10,7 @@ class LookupMinerAccounts extends BaseRequest
     public function __construct(string $lowerBound, int $limit)
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_DATABASE,
             'lookup_miner_accounts',
             [$lowerBound, $limit]
         );

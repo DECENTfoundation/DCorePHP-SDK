@@ -12,7 +12,7 @@ class GetFullAccounts extends BaseRequest
     public function __construct(array $namesOrIds, bool $subscribe)
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_DATABASE,
             'get_full_accounts',
             [$namesOrIds, $subscribe]
         );

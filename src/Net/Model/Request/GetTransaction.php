@@ -11,7 +11,7 @@ class GetTransaction extends BaseRequest
     public function __construct(string $blockNum, string $trxInBlock)
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_DATABASE,
             'get_transaction',
             [$blockNum, $trxInBlock]
         );

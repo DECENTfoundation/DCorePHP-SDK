@@ -8,8 +8,7 @@ use DCorePHP\Model\ChainObject;
 use DCorePHP\Model\Explorer\Miner;
 use DCorePHP\Model\Mining\MinerId;
 use DCorePHP\Model\TransactionConfirmation;
-use DCorePHP\Model\Operation\UpdateAccount;
-use DCorePHP\Net\Model\Request\Database;
+use DCorePHP\Model\Operation\UpdateAccountOperation;
 use DCorePHP\Net\Model\Request\GetActualVotes;
 use DCorePHP\Net\Model\Request\GetAssetPerBlock;
 use DCorePHP\Net\Model\Request\GetFeedsByMiner;
@@ -24,27 +23,27 @@ use DCorePHP\Net\Model\Request\SearchMinerVoting;
 class MiningApi extends BaseApi implements MiningApiInterface
 {
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getActualVotes(): array
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new GetActualVotes());
+        return $this->dcoreApi->requestWebsocket(new GetActualVotes());
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getAssetPerBlock(string $blockNum): string
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new GetAssetPerBlock($blockNum));
+        return $this->dcoreApi->requestWebsocket(new GetAssetPerBlock($blockNum));
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getFeedsByMiner(ChainObject $account, int $count = 100)
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new GetFeedsByMiner($account, $count));
+        return $this->dcoreApi->requestWebsocket(new GetFeedsByMiner($account, $count));
     }
 
     /**
@@ -52,27 +51,27 @@ class MiningApi extends BaseApi implements MiningApiInterface
      */
     public function getMinerByAccount(ChainObject $account): Miner
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new GetMinerByAccount($account));
+        return $this->dcoreApi->requestWebsocket(new GetMinerByAccount($account));
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getMinerCount(): string
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new GetMinerCount());
+        return $this->dcoreApi->requestWebsocket(new GetMinerCount());
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getMiners(array $minerIds): array
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new GetMiners($minerIds));
+        return $this->dcoreApi->requestWebsocket(new GetMiners($minerIds));
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getMinersWithName(): array
     {
@@ -89,31 +88,31 @@ class MiningApi extends BaseApi implements MiningApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getNewAssetPerBlock(): string
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new GetNewAssetPerBlock());
+        return $this->dcoreApi->requestWebsocket(new GetNewAssetPerBlock());
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function listMinersRelative(string $lowerBound = '', int $limit = 1000): array
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new LookupMinerAccounts($lowerBound, $limit));
+        return $this->dcoreApi->requestWebsocket(new LookupMinerAccounts($lowerBound, $limit));
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function findVotedMiners(array $voteIds): array
     {
-        return $this->dcoreApi->requestWebsocket(Database::class, new LookupVoteIds($voteIds));
+        return $this->dcoreApi->requestWebsocket(new LookupVoteIds($voteIds));
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function findAllVotingInfo(
         string $searchTerm,
@@ -123,24 +122,24 @@ class MiningApi extends BaseApi implements MiningApiInterface
         bool $onlyMyVotes = false,
         int $limit = 1000
     ): array {
-        return $this->dcoreApi->requestWebsocket(Database::class, new SearchMinerVoting($searchTerm, $order, $id, $accountName, $onlyMyVotes, $limit));
+        return $this->dcoreApi->requestWebsocket(new SearchMinerVoting($searchTerm, $order, $id, $accountName, $onlyMyVotes, $limit));
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
-    public function createVoteOperation(ChainObject $accountId, array $minderIds): UpdateAccount
+    public function createVoteOperation(ChainObject $accountId, array $minderIds): UpdateAccountOperation
     {
         $miners = $this->getMiners($minderIds);
         // array_unique used to remove duplicates
         $voteIds = array_unique(array_map(function (Miner $miner) { return $miner->getVoteId(); }, $miners));
         $account = $this->dcoreApi->getAccountApi()->get($accountId);
-        $update = new UpdateAccount();
+        $update = new UpdateAccountOperation();
         return $update->setAccountId($account->getId())->setOptions($account->getOptions()->setVotes($voteIds));
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function vote(Credentials $credentials, array $minerIds): ?TransactionConfirmation
     {

@@ -10,7 +10,7 @@ class GetOpenBuyingsByUri extends BaseRequest
     public function __construct(string $uri)
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_DATABASE,
             'get_open_buyings_by_URI',
             [$uri]
         );

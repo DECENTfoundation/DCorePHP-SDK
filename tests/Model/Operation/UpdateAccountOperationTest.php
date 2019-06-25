@@ -4,13 +4,13 @@ use DCorePHP\Exception\ValidationException;
 use DCorePHP\Model\Asset\AssetAmount;
 use DCorePHP\Model\Authority;
 use DCorePHP\Model\ChainObject;
-use DCorePHP\Model\Operation\UpdateAccount;
+use DCorePHP\Model\Operation\UpdateAccountOperation;
 use DCorePHP\Model\Options;
 use DCorePHP\Model\Subscription\AuthMap;
 use DCorePHPTests\DCoreSDKTest;
 use PHPUnit\Framework\TestCase;
 
-class UpdateAccountTest extends TestCase
+class UpdateAccountOperationTest extends TestCase
 {
     /**
      * @throws ValidationException
@@ -18,7 +18,7 @@ class UpdateAccountTest extends TestCase
      */
     public function testToBytes(): void
     {
-        $updateAccount = new UpdateAccount();
+        $updateAccount = new UpdateAccountOperation();
         $updateAccount
             ->setAccountId(new ChainObject('1.2.34'))
             ->setOptions(
@@ -42,11 +42,11 @@ class UpdateAccountTest extends TestCase
         ;
 
         $this->assertEquals(
-            '0220a1070000000000002200000102cf2c986e78776c21e5a75d42dd858dfe8ef06cf663ee0e8363db89ad5999d84f030000010003000000000000000000000000000000000000',
+            '0220a10700000000000022000001039cf1a65f567cf37066fbfc13419e16c47953a7194d621ceb2d00f3796f73f43c030000010003000000000000000000000000000000000000',
             $updateAccount->toBytes()
         );
 
-        $updateAccount = new UpdateAccount();
+        $updateAccount = new UpdateAccountOperation();
         $updateAccount
             ->setAccountId(new ChainObject('1.2.34'))
             ->setOwner((new Authority())->setKeyAuths([(new AuthMap())->setValue(DCoreSDKTest::PUBLIC_KEY_1)]))
@@ -72,7 +72,7 @@ class UpdateAccountTest extends TestCase
         ;
 
         $this->assertEquals(
-            '0220a107000000000000220101000000000102cf2c986e78776c21e5a75d42dd858dfe8ef06cf663ee0e8363db89ad5999d84f01000101000000000102cf2c986e78776c21e5a75d42dd858dfe8ef06cf663ee0e8363db89ad5999d84f01000102cf2c986e78776c21e5a75d42dd858dfe8ef06cf663ee0e8363db89ad5999d84f03000002000500000008000000000000000000000000000000000000',
+            '0220a1070000000000002201010000000001039cf1a65f567cf37066fbfc13419e16c47953a7194d621ceb2d00f3796f73f43c010001010000000001039cf1a65f567cf37066fbfc13419e16c47953a7194d621ceb2d00f3796f73f43c010001039cf1a65f567cf37066fbfc13419e16c47953a7194d621ceb2d00f3796f73f43c03000002000500000008000000000000000000000000000000000000',
             $updateAccount->toBytes()
         );
     }

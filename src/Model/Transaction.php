@@ -137,7 +137,7 @@ class Transaction
     {
         return implode('', [
             $this->getBlockData()->toBytes(),
-            str_pad(Math::gmpDecHex(\count($this->getOperations())), 2, '0', STR_PAD_LEFT), // number of operations
+            Math::getInt8(\count($this->getOperations())), // number of operations
             $this->getOperations() ? implode('', array_map(static function (BaseOperation $transfer) { // operation bytes
                 return $transfer->toBytes();
             }, $this->getOperations())) : '00',

@@ -2,6 +2,8 @@
 
 namespace DCorePHP\Model;
 
+use DCorePHP\Model\Operation\UnknownOperation;
+
 class OperationFactory
 {
     /**
@@ -11,8 +13,8 @@ class OperationFactory
     {
         return [
             Operation\Transfer::OPERATION_TYPE => Operation\Transfer::class,
-            Operation\CreateAccount::OPERATION_TYPE => Operation\CreateAccount::class,
-            Operation\UpdateAccount::OPERATION_TYPE => Operation\UpdateAccount::class,
+            Operation\CreateAccountOperation::OPERATION_TYPE => Operation\CreateAccountOperation::class,
+            Operation\UpdateAccountOperation::OPERATION_TYPE => Operation\UpdateAccountOperation::class,
             Operation\AssetCreateOperation::OPERATION_TYPE => Operation\AssetCreateOperation::class,
             Operation\AssetIssueOperation::OPERATION_TYPE => Operation\AssetIssueOperation::class,
             5 => 'asset_publish_feed',
@@ -50,13 +52,7 @@ class OperationFactory
             37 => 'update_monitored_asset_operation',
             Operation\ReadyToPublish2Operation::OPERATION_TYPE => Operation\ReadyToPublish2Operation::class,
             Operation\Transfer2::OPERATION_TYPE => Operation\Transfer2::class,
-            Operation\AssetUpdateAdvancedOperation::OPERATION_TYPE => Operation\AssetUpdateAdvancedOperation::class,
-            Operation\ReturnEscrowSubmission::OPERATION_TYPE => Operation\ReturnEscrowSubmission::class,
-            Operation\ReturnEscrowBuying::OPERATION_TYPE => Operation\ReturnEscrowBuying::class,
-            Operation\PaySeederOperation::OPERATION_TYPE => Operation\PaySeederOperation::class,
-            Operation\FinishBuyingOperation::OPERATION_TYPE => Operation\FinishBuyingOperation::class,
-            Operation\RenewalOfSubscription::OPERATION_TYPE => Operation\RenewalOfSubscription::class,
-            46 => 'unknown',
+            Operation\AssetUpdateAdvancedOperation::OPERATION_TYPE => Operation\AssetUpdateAdvancedOperation::class
         ];
     }
 
@@ -64,12 +60,11 @@ class OperationFactory
      * @param int $type
      * @param array $rawOperation
      * @return BaseOperation
-     * @throws InvalidOperationTypeException
      */
     public static function getOperation(int $type, array $rawOperation): BaseOperation
     {
         if (!array_key_exists($type, self::getTypes())) {
-            throw new InvalidOperationTypeException($type, self::getTypes());
+            return new UnknownOperation($type, $rawOperation);
         }
 
         $class = self::getTypes()[$type];

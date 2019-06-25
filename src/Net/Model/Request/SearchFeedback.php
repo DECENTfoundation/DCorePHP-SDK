@@ -10,7 +10,7 @@ class SearchFeedback extends BaseRequest
     public function __construct(string $uri, string $user, string $startId, int $count)
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_DATABASE,
             'search_feedback',
             [$user, $uri, $startId, $count]
         );

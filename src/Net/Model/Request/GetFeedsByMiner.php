@@ -10,7 +10,7 @@ class GetFeedsByMiner extends BaseRequest
     public function __construct(ChainObject $account, int $count = 100)
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_DATABASE,
             'get_feeds_by_miner',
             [$account->getId(), $count]
         );

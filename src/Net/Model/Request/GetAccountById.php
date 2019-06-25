@@ -11,13 +11,13 @@ class GetAccountById extends GetAccount
     public function __construct(ChainObject $id)
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_DATABASE,
             'get_accounts',
             [[$id->getId()]]
         );
     }
 
-    public static function responseToModel(BaseResponse $response): Account
+    public static function responseToModel(BaseResponse $response): ?Account
     {
         $rawAccounts = $response->getResult();
         $response->setResult(reset($rawAccounts));

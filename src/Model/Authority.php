@@ -4,6 +4,7 @@ namespace DCorePHP\Model;
 
 use DCorePHP\Model\Subscription\AuthMap;
 use DCorePHP\Utils\Math;
+use DCorePHP\Utils\VarInt;
 
 class Authority
 {
@@ -101,12 +102,9 @@ class Authority
     public function toBytes(): string
     {
         return implode('', [
-            implode('', array_reverse(str_split(
-                str_pad(Math::gmpDecHex($this->getWeightThreshold()), 8, '0', STR_PAD_LEFT),
-                2
-            ))),
+            Math::getInt32Reversed($this->getWeightThreshold()),
             '00',
-            str_pad(Math::gmpDecHex(count($this->getKeyAuths())), 2, '0', STR_PAD_LEFT),
+            VarInt::encodeDecToHex(sizeof($this->getKeyAuths())),
             implode('', array_map(function (AuthMap $authMap) {
                 return $authMap->toBytes();
             }, $this->getKeyAuths()))

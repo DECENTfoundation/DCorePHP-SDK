@@ -14,15 +14,15 @@ use DCorePHP\Net\Model\Request\NetworkBroadcast;
 class BroadcastApi extends BaseApi implements BroadcastApiInterface
 {
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function broadcast(Transaction $transaction): void
     {
-        $this->dcoreApi->requestWebsocket(NetworkBroadcast::class, new BroadcastTransaction($transaction));
+        $this->dcoreApi->requestWebsocket(new BroadcastTransaction($transaction));
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function broadcastOperationsWithECKeyPair(
         ECKeyPair $privateKey,
@@ -33,7 +33,7 @@ class BroadcastApi extends BaseApi implements BroadcastApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function broadcastOperationWithECKeyPair(
         ECKeyPair $privateKey,
@@ -44,7 +44,7 @@ class BroadcastApi extends BaseApi implements BroadcastApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function broadcastOperationsWithPrivateKey(
         string $privateKey,
@@ -58,7 +58,7 @@ class BroadcastApi extends BaseApi implements BroadcastApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function broadcastOperationWithPrivateKey(
         string $privateKey,
@@ -72,15 +72,15 @@ class BroadcastApi extends BaseApi implements BroadcastApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function broadcastWithCallback(Transaction $transaction): ?TransactionConfirmation
     {
-        return $this->dcoreApi->requestWebsocket(NetworkBroadcast::class, new BroadcastTransactionWithCallback($transaction));
+        return $this->dcoreApi->requestWebsocket(new BroadcastTransactionWithCallback($transaction));
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function broadcastOperationsWithECKeyPairWithCallback(
         ECKeyPair $privateKey,
@@ -95,7 +95,7 @@ class BroadcastApi extends BaseApi implements BroadcastApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function broadcastOperationWithECKeyPairWithCallback(
         ECKeyPair $privateKey,
@@ -110,7 +110,7 @@ class BroadcastApi extends BaseApi implements BroadcastApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function broadcastOperationsWithPrivateKeyWithCallback(
         string $privateKey,
@@ -124,7 +124,7 @@ class BroadcastApi extends BaseApi implements BroadcastApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function broadcastOperationWithPrivateKeyWithCallback(
         string $privateKey,
@@ -138,7 +138,7 @@ class BroadcastApi extends BaseApi implements BroadcastApiInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function broadcastSynchronous(Transaction $transaction): TransactionConfirmation
     {

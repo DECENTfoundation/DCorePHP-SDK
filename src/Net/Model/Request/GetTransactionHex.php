@@ -9,7 +9,7 @@ class GetTransactionHex extends BaseRequest
     public function __construct($transaction)
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_DATABASE,
             'get_transaction_hex',
             [$transaction]
         );

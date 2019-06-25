@@ -15,6 +15,15 @@ class TransactionConfirmation
     private $transaction;
 
     /**
+     * TransactionConfirmation constructor.
+     */
+    public function __construct()
+    {
+        $this->transaction = new ProcessedTransaction();
+    }
+
+
+    /**
      * @return string
      */
     public function getId(): string

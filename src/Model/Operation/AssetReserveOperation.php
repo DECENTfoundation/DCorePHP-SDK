@@ -6,6 +6,7 @@ use DCorePHP\Exception\ValidationException;
 use DCorePHP\Model\Asset\AssetAmount;
 use DCorePHP\Model\BaseOperation;
 use DCorePHP\Model\ChainObject;
+use DCorePHP\Utils\VarInt;
 
 class AssetReserveOperation extends BaseOperation
 {
@@ -87,8 +88,10 @@ class AssetReserveOperation extends BaseOperation
             $this->getFee()->toBytes(),
             $this->getPayer()->toBytes(),
             $this->getAmount()->toBytes(),
-            // TODO: Extensions Array
-            $this->getExtensions() ? '01' : '00'
+            $this->getExtensions() ?
+                VarInt::encodeDecToHex(sizeof($this->getExtensions()))
+                . '' // TODO array_map each element toBytes()
+                : '00'
         ]);
     }
 }

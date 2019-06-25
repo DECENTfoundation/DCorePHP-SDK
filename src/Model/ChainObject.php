@@ -4,6 +4,7 @@ namespace DCorePHP\Model;
 
 use DCorePHP\Exception\ValidationException;
 use DCorePHP\Utils\Math;
+use DCorePHP\Utils\VarInt;
 use Symfony\Component\Validator\Constraints\Regex;
 use Symfony\Component\Validator\Validation;
 
@@ -67,7 +68,7 @@ class ChainObject
     {
         [$space, $type, $instance] = explode('.', $this->getId());
 
-        return str_pad(Math::gmpDecHex($instance), 2, '0', STR_PAD_LEFT);
+        return VarInt::encodeDecToHex($instance);
     }
 
     /**
@@ -78,7 +79,7 @@ class ChainObject
         [$space, $type, $instance] = explode('.', $this->getId());
 
         return Math::gmpDecHex($instance) . str_pad(
-            str_pad(Math::gmpDecHex($type), 2, '0', STR_PAD_LEFT) . str_pad(Math::gmpDecHex($space), 2, '0', STR_PAD_LEFT),
+            Math::getInt8($type) . Math::getInt8($space),
             16 - strlen(Math::gmpDecHex($instance)),
             '0',
             STR_PAD_LEFT

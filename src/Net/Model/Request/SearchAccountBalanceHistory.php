@@ -28,7 +28,7 @@ class SearchAccountBalanceHistory extends GetAccountBalanceAbstract
         int $limit
     ) {
         parent::__construct(
-            'database',
+            self::API_GROUP_HISTORY,
             'search_account_balance_history',
             [$accountId->getId(), array_map(function(Asset $asset) { return $asset->getId(); }, $assets), $recipientAccount, $fromBlock, $toBlock, $startOffset, $limit]
         );

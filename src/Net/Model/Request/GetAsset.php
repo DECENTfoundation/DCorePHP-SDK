@@ -12,7 +12,7 @@ class GetAsset extends GetAssetAbstract
     public function __construct(ChainObject $assetId)
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_DATABASE,
             'get_assets',
             [[$assetId->getId()]]
         );

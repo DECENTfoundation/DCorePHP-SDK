@@ -11,7 +11,7 @@ class GetHistoryBuyingsByConsumer extends GetPurchase
     public function __construct(ChainObject $accountId)
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_DATABASE,
             'get_buying_history_objects_by_consumer',
             [$accountId->getId()]
         );

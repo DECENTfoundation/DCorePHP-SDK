@@ -9,6 +9,7 @@ use DCorePHP\Crypto\Address;
 use DCorePHP\Model\Subscription\AuthMap;
 use DCorePHP\Utils\Crypto;
 use DCorePHP\Utils\Math;
+use DCorePHP\Utils\VarInt;
 
 class Memo
 {
@@ -169,8 +170,8 @@ class Memo
             '01',
             $this->getFrom() ? PublicKey::fromWif($this->getFrom()->encode())->toCompressedPublicKey() : str_pad('', 66, '0'),
             $this->getTo() ? PublicKey::fromWif($this->getTo()->encode())->toCompressedPublicKey() : str_pad('', 66, '0'),
-            str_pad(Math::gmpDecHex(Math::reverseBytesLong($this->getNonce())), 16, '0', STR_PAD_LEFT),
-            Math::writeUnsignedVarIntHex(sizeof(Math::stringToByteArray(hex2bin($this->getMessage())))),
+            Math::getInt64($this->getNonce()),
+            VarInt::encodeDecToHex(sizeof(Math::stringToByteArray(hex2bin($this->getMessage())))),
             $this->getMessage()
         ]);
     }

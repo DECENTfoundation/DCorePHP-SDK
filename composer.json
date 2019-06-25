@@ -36,7 +36,8 @@
         "kornrunner/secp256k1": "^0.1.1",
         "bitcoin-php/bitcoin-ecdsa": "1.3.4",
         "symfony/validator": "^4.2",
-        "symfony/process": "^4.2"
+        "symfony/process": "^4.2",
+        "codacy/coverage": "^1.4"
     },
     "require-dev": {
         "phpunit/phpunit": "^7",

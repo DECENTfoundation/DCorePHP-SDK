@@ -7,7 +7,7 @@ class GetAccountByName extends GetAccount
     public function __construct(string $name)
     {
         parent::__construct(
-            'database',
+            self::API_GROUP_DATABASE,
             'get_account_by_name',
             [$name]
         );
