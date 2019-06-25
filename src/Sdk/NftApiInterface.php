@@ -11,11 +11,17 @@ use DCorePHP\Model\ChainObject;
 use DCorePHP\Model\Memo;
 use DCorePHP\Model\Nft;
 use DCorePHP\Model\NftData;
+use DCorePHP\Model\NftModel;
 use DCorePHP\Model\NftOptions;
 use DCorePHP\Model\Operation\NftCreateOperation;
+use DCorePHP\Model\Operation\NftIssueOperation;
+use DCorePHP\Model\Operation\NftTransferOperation;
+use DCorePHP\Model\Operation\NftUpdateDataOperation;
+use DCorePHP\Model\Operation\NftUpdateOperation;
 use DCorePHP\Model\Proposal\Fee;
 use DCorePHP\Model\TransactionConfirmation;
 use Exception;
+use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use WebSocket\BadOpcodeException;
 
 interface NftApiInterface
@@ -28,6 +34,9 @@ interface NftApiInterface
      * @return Nft
      *
      * @throws ValidationException
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
+     * @throws ObjectNotFoundException
      */
     public function get(string $idOrSymbol): Nft;
 
@@ -93,6 +102,9 @@ interface NftApiInterface
      * @param array $ids
      *
      * @return array
+     *
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
      */
     public function getAllDataRaw(array $ids): array;
 
@@ -112,6 +124,9 @@ interface NftApiInterface
      * @param ChainObject $id
      *
      * @return NftData
+     *
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
      */
     public function getDataRaw(ChainObject $id): NftData;
 
@@ -119,6 +134,9 @@ interface NftApiInterface
      * Count all NFTs
      *
      * @return string
+     *
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
      */
     public function countAll(): string;
 
@@ -126,6 +144,9 @@ interface NftApiInterface
      * Count all NFT data instances
      *
      * @return string
+     *
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
      */
     public function countAllData(): string;
 
@@ -181,15 +202,16 @@ interface NftApiInterface
     /**
      * @param string $symbol
      * @param NftOptions $options
-     * @param $model
+     * @param NftModel $model
      * @param bool $transferable
      * @param null $fee
      *
      * @return NftCreateOperation
      *
      * @throws ValidationException
+     * @throws ExceptionInterface
      */
-    public function createNftCreateOperation(string $symbol, NftOptions $options, $model, bool $transferable, $fee = null): NftCreateOperation;
+    public function createNftCreateOperation(string $symbol, NftOptions $options, NftModel $model, bool $transferable, $fee = null): NftCreateOperation;
 
     /**
      * Create NFT
@@ -199,15 +221,16 @@ interface NftApiInterface
      * @param string $maxSupply
      * @param bool $fixedMaxSupply
      * @param string $description
-     * @param $model
+     * @param NftModel $model
      * @param bool $transferable
      * @param null $fee
      *
      * @return TransactionConfirmation
      *
      * @throws Exception
+     * @throws ExceptionInterface
      */
-    public function create(Credentials $credentials, string $symbol, string $maxSupply, bool $fixedMaxSupply, string $description, $model, bool $transferable, $fee = null): TransactionConfirmation;
+    public function create(Credentials $credentials, string $symbol, string $maxSupply, bool $fixedMaxSupply, string $description, NftModel $model, bool $transferable, $fee = null): TransactionConfirmation;
 
     /**
      * Create NFT update operation. Fills model with actual values.
@@ -270,9 +293,9 @@ interface NftApiInterface
      * @param Memo|null $memo
      * @param Fee|null $fee
      *
-     * @return NftOperation
+     * @return NftTransferOperation
      */
-    public function createTransferOperation(ChainObject $from, ChainObject $to, ChainObject $id, Memo $memo = null, Fee $fee = null): NftOperation;
+    public function createTransferOperation(ChainObject $from, ChainObject $to, ChainObject $id, Memo $memo = null, Fee $fee = null): NftTransferOperation;
 
     /**
      * Transfer NFT data instance

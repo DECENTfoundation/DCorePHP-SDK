@@ -10,11 +10,18 @@ use DCorePHP\Model\ChainObject;
 use DCorePHP\Model\Memo;
 use DCorePHP\Model\Nft;
 use DCorePHP\Model\NftData;
+use DCorePHP\Model\NftModel;
 use DCorePHP\Model\NftOptions;
 use DCorePHP\Model\Operation\NftCreateOperation;
+use DCorePHP\Model\Operation\NftIssueOperation;
+use DCorePHP\Model\Operation\NftTransferOperation;
+use DCorePHP\Model\Operation\NftUpdateDataOperation;
+use DCorePHP\Model\Operation\NftUpdateOperation;
 use DCorePHP\Model\Proposal\Fee;
 use DCorePHP\Model\TransactionConfirmation;
+use DCorePHP\Net\Model\Request\GetNftCount;
 use DCorePHP\Net\Model\Request\GetNftData;
+use DCorePHP\Net\Model\Request\GetNftDataCount;
 use DCorePHP\Net\Model\Request\GetNfts;
 use DCorePHP\Net\Model\Request\GetNftsBySymbol;
 
@@ -107,7 +114,18 @@ class NftApi extends BaseApi implements NftApiInterface
      */
     public function getDataRaw(ChainObject $id): NftData
     {
-        // TODO: Implement getDataRaw() method.
+        $dataArray = $this->getAllDataRaw([$id]);
+        $data = reset($nfts);
+
+        return $data;
+
+        // TODO
+
+//        if ($data instanceof Nft) {
+//            return $data;
+//        }
+
+//        throw new ObjectNotFoundException("Nft with symbol $id doesn't exist.");
     }
 
     /**
@@ -115,7 +133,7 @@ class NftApi extends BaseApi implements NftApiInterface
      */
     public function countAll(): string
     {
-        // TODO: Implement countAll() method.
+        return $this->dcoreApi->requestWebsocket(new GetNftCount());
     }
 
     /**
@@ -123,7 +141,7 @@ class NftApi extends BaseApi implements NftApiInterface
      */
     public function countAllData(): string
     {
-        // TODO: Implement countAllData() method.
+        return $this->dcoreApi->requestWebsocket(new GetNftDataCount());
     }
 
     /**
@@ -180,7 +198,7 @@ class NftApi extends BaseApi implements NftApiInterface
     public function createNftCreateOperation(
         string $symbol,
         NftOptions $options,
-        $model,
+        NftModel $model,
         bool $transferable,
         $fee = null
     ): NftCreateOperation {
@@ -188,7 +206,7 @@ class NftApi extends BaseApi implements NftApiInterface
         $operation
             ->setSymbol($symbol)
             ->setOptions($options)
-            ->setDefinitions($model)
+            ->setDefinitions($model->createDefinitions())
             ->setTransferable($transferable)
             ->setFee($fee);
         return $operation;
@@ -203,7 +221,7 @@ class NftApi extends BaseApi implements NftApiInterface
         string $maxSupply,
         bool $fixedMaxSupply,
         string $description,
-        $model,
+        NftModel $model,
         bool $transferable,
         $fee = null
     ): TransactionConfirmation {
@@ -280,7 +298,7 @@ class NftApi extends BaseApi implements NftApiInterface
         ChainObject $id,
         Memo $memo = null,
         Fee $fee = null
-    ): NftOperation {
+    ): NftTransferOperation {
         // TODO: Implement createTransferOperation() method.
     }
 

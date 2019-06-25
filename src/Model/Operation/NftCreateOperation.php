@@ -84,9 +84,9 @@ class NftCreateOperation extends BaseOperation
      */
     public function setDefinitions(array $definitions): NftCreateOperation
     {
-//        foreach ($definitions as $definition) {
-//            $definition->validate();
-//        }
+        foreach ($definitions as $definition) {
+            $definition->validate();
+        }
         $this->definitions = $definitions;
 
         return $this;

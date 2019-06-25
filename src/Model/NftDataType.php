@@ -29,7 +29,7 @@ class NftDataType
     /** @var string */
     private $name;
 
-    public static function withValues($type, string $name, bool $unique = false, string $modifiable = self::NOBODY): NftDataType
+    public static function withValues($type, bool $unique = false, string $modifiable = self::NOBODY, string $name = null): NftDataType
     {
         $dataType = new self();
         return $dataType
@@ -99,7 +99,7 @@ class NftDataType
     /**
      * @return string
      */
-    public function getName(): string
+    public function getName(): ?string
     {
         return $this->name;
     }
@@ -108,7 +108,7 @@ class NftDataType
      * @param string $name
      * @return NftDataType
      */
-    public function setName(string $name): NftDataType
+    public function setName(?string $name): NftDataType
     {
         $this->name = $name;
 
@@ -117,11 +117,11 @@ class NftDataType
 
     public function validate(): void
     {
-        if ($this->modifiable === self::NOBODY || $this->name === null) {
+        if ($this->modifiable !== self::NOBODY && $this->name === null) {
             throw new InvalidArgumentException('modifiable data type must have name');
         }
 
-        if ($this->name === null || strlen($this->name) > DCoreConstants::NFT_NAME_MAX_CHARS) {
+        if ($this->name !== null && strlen($this->name) > DCoreConstants::NFT_NAME_MAX_CHARS) {
             throw new InvalidArgumentException('name cannot be longer then ' . DCoreConstants::NFT_NAME_MAX_CHARS . 'chars');
         }
     }
