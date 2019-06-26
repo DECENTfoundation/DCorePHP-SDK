@@ -1,0 +1,9 @@
+var searchData=
+[
+  ['validatemaxsupply',['validateMaxSupply',['../classDCorePHP_1_1Model_1_1Asset_1_1AssetOptions.html#a2309e4aa0dc456e80349de2fddfc2834',1,'DCorePHP::Model::Asset::AssetOptions']]],
+  ['validatetransaction',['validateTransaction',['../classDCorePHP_1_1Sdk_1_1ValidationApi.html#a949402d4421eb38e731b11b3ba26f513',1,'DCorePHP\Sdk\ValidationApi\validateTransaction()'],['../interfaceDCorePHP_1_1Sdk_1_1ValidationApiInterface.html#a8250238639b1e2740b7488926177ac6b',1,'DCorePHP\Sdk\ValidationApiInterface\validateTransaction()']]],
+  ['verifyaccountauthority',['verifyAccountAuthority',['../classDCorePHP_1_1Sdk_1_1ValidationApi.html#adea172b4f085e24edb561c9cfe85df0e',1,'DCorePHP\Sdk\ValidationApi\verifyAccountAuthority()'],['../interfaceDCorePHP_1_1Sdk_1_1ValidationApiInterface.html#ac76bda5fb7eece975e2be427016789c1',1,'DCorePHP\Sdk\ValidationApiInterface\verifyAccountAuthority()']]],
+  ['verifyauthority',['verifyAuthority',['../classDCorePHP_1_1Sdk_1_1ValidationApi.html#ae378e5615a70cb1f4cd2c7c9c965ca51',1,'DCorePHP\Sdk\ValidationApi\verifyAuthority()'],['../interfaceDCorePHP_1_1Sdk_1_1ValidationApiInterface.html#ab2203995bcd1edc905628c2a1aa16a9a',1,'DCorePHP\Sdk\ValidationApiInterface\verifyAuthority()']]],
+  ['vote',['vote',['../classDCorePHP_1_1Sdk_1_1MiningApi.html#a92c8dfa1f08f2d97852b67e44b84e6fc',1,'DCorePHP\Sdk\MiningApi\vote()'],['../interfaceDCorePHP_1_1Sdk_1_1MiningApiInterface.html#a218f63d430c58a00329e5a1548536f05',1,'DCorePHP\Sdk\MiningApiInterface\vote()']]],
+  ['voteforminer',['voteForMiner',['../classDCorePHP_1_1Sdk_1_1MiningApi.html#ae26416ff2cc0d1363e4fe5ca8c9b392f',1,'DCorePHP\Sdk\MiningApi\voteForMiner()'],['../interfaceDCorePHP_1_1Sdk_1_1MiningApiInterface.html#a0cb396ecc6f9dd74aca75341d8dee939',1,'DCorePHP\Sdk\MiningApiInterface\voteForMiner()']]]
+];
