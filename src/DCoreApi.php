@@ -490,11 +490,4 @@ class DCoreApi extends DCoreSdk
 
         return $transaction;
     }
-
-    public static function require(bool $value, string $message = 'An Exception occurred'): void
-    {
-        if (!$value) {
-            throw new InvalidArgumentException($message);
-        }
-    }
 }

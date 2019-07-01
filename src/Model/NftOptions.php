@@ -2,11 +2,11 @@
 
 namespace DCorePHP\Model;
 
-use DCorePHP\DCoreApi;
 use DCorePHP\DCoreConstants;
 use DCorePHP\Exception\ValidationException;
 use DCorePHP\Utils\Math;
 use DCorePHP\Utils\VarInt;
+use InvalidArgumentException;
 use Symfony\Component\Validator\Constraints\LessThanOrEqual;
 use Symfony\Component\Validator\Validation;
 
@@ -27,9 +27,17 @@ class NftOptions
         $fixedMaxSupply = $fixedMaxSupply ?? $this->fixedMaxSupply;
         $description = $description ?? $this->description;
 
-        DCoreApi::require($maxSupply >= $this->maxSupply, "Max supply must be at least $this->maxSupply");
-        DCoreApi::require($fixedMaxSupply === $this->fixedMaxSupply || !$this->fixedMaxSupply, 'Max supply must remain fixed');
-        DCoreApi::require($maxSupply === $this->maxSupply || !$this->fixedMaxSupply, 'Can not change max supply (it\'s fixed)');
+        if ($maxSupply < $this->maxSupply) {
+            throw new InvalidArgumentException("Max supply must be at least $this->maxSupply");
+        }
+
+        if ($fixedMaxSupply !== $this->fixedMaxSupply && $this->isFixedMaxSupply()) {
+            throw new InvalidArgumentException('Max supply must remain fixed');
+        }
+
+        if ($maxSupply !== $this->maxSupply && $this->isFixedMaxSupply()) {
+            throw new InvalidArgumentException('Can not change max supply (it\'s fixed)');
+        }
 
         $this->maxSupply = $maxSupply;
         $this->fixedMaxSupply = $fixedMaxSupply;
