@@ -199,7 +199,7 @@ class NftApi extends BaseApi implements NftApiInterface
     public function createNftCreateOperation(
         string $symbol,
         NftOptions $options,
-        NftModel $model,
+        $model,
         bool $transferable,
         $fee = null
     ): NftCreateOperation {
@@ -207,7 +207,7 @@ class NftApi extends BaseApi implements NftApiInterface
         $operation
             ->setSymbol($symbol)
             ->setOptions($options)
-            ->setDefinitions($model->createDefinitions())
+            ->setDefinitions(NftModel::createDefinitions($model))
             ->setTransferable($transferable)
             ->setFee($fee);
         return $operation;
@@ -222,7 +222,7 @@ class NftApi extends BaseApi implements NftApiInterface
         string $maxSupply,
         bool $fixedMaxSupply,
         string $description,
-        NftModel $model,
+        $model,
         bool $transferable,
         $fee = null
     ): TransactionConfirmation {

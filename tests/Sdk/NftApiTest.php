@@ -29,7 +29,7 @@ class NftApiTest extends DCoreSDKTest
         $this->nftSymbol = 'APPLE' . time() . 'T';
 
         $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
-        $this->sdk->getNftApi()->create($credentials, $this->nftSymbol, 100, false, 'an apple', new NftApple(), true);
+        $this->sdk->getNftApi()->create($credentials, $this->nftSymbol, 100, false, 'an apple', NftApple::class, true);
 
         $nft = $this->sdk->getNftApi()->getBySymbol($this->nftSymbol);
         $this->testNftId = $nft->getId();
@@ -145,7 +145,7 @@ class NftApiTest extends DCoreSDKTest
     {
         $symbol = 'APPLE' . time() . 'T';
         $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
-        $this->sdk->getNftApi()->create($credentials, $symbol, 100, false, 'an apple', new NftApple(), true);
+        $this->sdk->getNftApi()->create($credentials, $symbol, 100, false, 'an apple', NftApple::class, true);
 
         $nft = $this->sdk->getNftApi()->getBySymbol($symbol);
 

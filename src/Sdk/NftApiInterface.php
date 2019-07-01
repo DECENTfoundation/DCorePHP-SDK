@@ -202,7 +202,7 @@ interface NftApiInterface
     /**
      * @param string $symbol
      * @param NftOptions $options
-     * @param NftModel $model
+     * @param mixed $model
      * @param bool $transferable
      * @param null $fee
      *
@@ -211,7 +211,7 @@ interface NftApiInterface
      * @throws ValidationException
      * @throws ExceptionInterface
      */
-    public function createNftCreateOperation(string $symbol, NftOptions $options, NftModel $model, bool $transferable, $fee = null): NftCreateOperation;
+    public function createNftCreateOperation(string $symbol, NftOptions $options, $model, bool $transferable, $fee = null): NftCreateOperation;
 
     /**
      * Create NFT
@@ -221,7 +221,7 @@ interface NftApiInterface
      * @param string $maxSupply
      * @param bool $fixedMaxSupply
      * @param string $description
-     * @param NftModel $model
+     * @param mixed $model
      * @param bool $transferable
      * @param null $fee
      *
@@ -230,7 +230,7 @@ interface NftApiInterface
      * @throws Exception
      * @throws ExceptionInterface
      */
-    public function create(Credentials $credentials, string $symbol, string $maxSupply, bool $fixedMaxSupply, string $description, NftModel $model, bool $transferable, $fee = null): TransactionConfirmation;
+    public function create(Credentials $credentials, string $symbol, string $maxSupply, bool $fixedMaxSupply, string $description, $model, bool $transferable, $fee = null): TransactionConfirmation;
 
     /**
      * Create NFT update operation. Fills model with actual values.

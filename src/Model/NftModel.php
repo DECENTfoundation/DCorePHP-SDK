@@ -2,51 +2,65 @@
 
 namespace DCorePHP\Model;
 
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Exception\ExceptionInterface;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use Symfony\Component\Serializer\Serializer;
+use DCorePHP\Model\Annotation\Modifiable;
+use DCorePHP\Model\Annotation\Type;
+use DCorePHP\Model\Annotation\Unique;
+use Doctrine\Common\Annotations\AnnotationException;
+use Doctrine\Common\Annotations\AnnotationReader;
+use ReflectionClass;
+use ReflectionException;
 
 class NftModel
 {
 
-    private $values = [];
-    /** @var Serializer */
-    private $serializer;
-
     /**
-     * NftModel constructor.
+     * @param $model
+     *
+     * @return array
+     *
+     * @throws ReflectionException
+     * @throws AnnotationException
      */
-    public function __construct()
-    {
-        $this->serializer = new Serializer(
-            [new ObjectNormalizer()],
-            [new JsonEncoder()]
-        );
-    }
+    public static function createDefinitions($model): array {
+        $reflection = new ReflectionClass($model);
+        $reader = new AnnotationReader();
+        $definitions = [];
 
-    /**
-     * @return NftDataType[]
-     * @throws ExceptionInterface
-     */
-    public function createDefinitions(): array {
-        $this->values();
-        $dataTypes = [];
-        foreach ($this->values as $value) {
-            $dataTypes[] = $this->serializer->deserialize($value, NftDataType::class, 'json');
+        $properties = $reflection->getProperties();
+        foreach ($properties as $property) {
+            $annotations = $reader->getPropertyAnnotations($property);
+            $name = $property->getName();
+            $type = null;
+            $unique = false;
+            $modifiable = NftDataType::NOBODY;
+            foreach ($annotations as $annotation) {
+                if ($annotation instanceof Modifiable) {
+                    $modifiable = $annotation->modifiable;
+                } elseif ($annotation instanceof Unique) {
+                    $unique = true;
+                } elseif ($annotation instanceof Type) {
+                    $type = $annotation->value;
+                }
+            }
+            $definitions[] = NftDataType::withValues($type, $unique, $modifiable, $name);
         }
-        return $dataTypes;
+        return $definitions;
     }
+
     /**
-     * @throws ExceptionInterface
+     * @throws ReflectionException
      */
     public function values(): array {
-        if (!empty($this->values)) return $this->values;
+        $reflection = new ReflectionClass($this);
+        $properties = $reflection->getProperties();
+        $values = [];
 
-        $normalizedArray = $this->serializer->normalize($this);
-        foreach ($normalizedArray as $item) {
-            $this->values[] = $this->serializer->encode($item, 'json');
+        foreach ($properties as $property) {
+            if ($property->isPrivate()) {
+                $property->setAccessible(true);
+            }
+            $values[] = $property->getValue($this);
         }
-        return $this->values;
+        return $values;
     }
 }
