@@ -22,6 +22,8 @@ class NftDataType
 
     /** @var mixed */
     private $type;
+    /** @var mixed */
+    private $value;
     /** @var bool */
     private $unique = false;
     /** @var string */
@@ -29,11 +31,12 @@ class NftDataType
     /** @var string */
     private $name;
 
-    public static function withValues($type, bool $unique = false, string $modifiable = self::NOBODY, string $name = null): NftDataType
+    public static function withValues($type, $value = null, bool $unique = false, string $modifiable = self::NOBODY, string $name = null): NftDataType
     {
         $dataType = new self();
         return $dataType
             ->setType($type)
+            ->setValue($value)
             ->setUnique($unique)
             ->setModifiable($modifiable)
             ->setName($name);
@@ -54,6 +57,26 @@ class NftDataType
     public function setType($type): NftDataType
     {
         $this->type = $type;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getValue()
+    {
+        return $this->value;
+    }
+
+    /**
+     * @param mixed $value
+     *
+     * @return NftDataType
+     */
+    public function setValue($value): NftDataType
+    {
+        $this->value = $value;
 
         return $this;
     }

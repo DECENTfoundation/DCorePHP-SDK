@@ -169,4 +169,14 @@ class NftApiTest extends DCoreSDKTest
         $updatedNft = $this->sdk->getNftApi()->getBySymbol($this->nftSymbol);
         $this->assertEquals('an apple update', $updatedNft->getOptions()->getDescription());
     }
+
+    public function testIssue(): void
+    {
+        $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
+        $apple = new NftApple(5, 'red', false);
+        $this->sdk->getNftApi()->issue($credentials, $this->nftSymbol, new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), $apple);
+
+        $issuedNft = $this->sdk->getNftApi()->getBySymbol($this->nftSymbol);
+        $this->assertEquals(1, $issuedNft->getCurrentSupply());
+    }
 }

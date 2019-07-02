@@ -16,13 +16,17 @@ class NftApple extends NftModel
 
     /**
      * NftApple constructor.
+     *
+     * @param null $size
+     * @param null $color
+     * @param null $eaten
      */
-    public function __construct()
+    public function __construct($size = null, $color = null, $eaten = null)
     {
         parent::__construct();
-        $this->size = NftDataType::withValues('integer');
-        $this->color = NftDataType::withValues('string', true, NftDataType::NOBODY, 'color');
-        $this->eaten = NftDataType::withValues('boolean', false, NftDataType::BOTH, 'eaten');
+        $this->size = NftDataType::withValues('integer', $size);
+        $this->color = NftDataType::withValues('string', $color,true, NftDataType::NOBODY, 'color');
+        $this->eaten = NftDataType::withValues('boolean', $eaten, false, NftDataType::BOTH, 'eaten');
     }
 
     /**

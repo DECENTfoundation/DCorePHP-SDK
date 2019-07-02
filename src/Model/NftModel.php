@@ -10,7 +10,7 @@ use Symfony\Component\Serializer\Serializer;
 class NftModel
 {
 
-    private $values = [];
+    private $json = [];
     /** @var Serializer */
     private $serializer;
 
@@ -30,9 +30,9 @@ class NftModel
      * @throws ExceptionInterface
      */
     public function createDefinitions(): array {
-        $this->values();
+        $this->json();
         $dataTypes = [];
-        foreach ($this->values as $value) {
+        foreach ($this->json as $value) {
             $dataTypes[] = $this->serializer->deserialize($value, NftDataType::class, 'json');
         }
         return $dataTypes;
@@ -40,13 +40,26 @@ class NftModel
     /**
      * @throws ExceptionInterface
      */
-    public function values(): array {
-        if (!empty($this->values)) return $this->values;
+    public function json(): array {
+        if (!empty($this->json)) return $this->json;
 
         $normalizedArray = $this->serializer->normalize($this);
         foreach ($normalizedArray as $item) {
-            $this->values[] = $this->serializer->encode($item, 'json');
+            $this->json[] = $this->serializer->encode($item, 'json');
         }
-        return $this->values;
+        return $this->json;
+    }
+
+    /**
+     * @return array
+     * @throws ExceptionInterface
+     */
+    public function values(): array {
+        $definitions = $this->createDefinitions();
+        $values = [];
+        foreach ($definitions as $definition) {
+            $values[] = new Variant($definition->getType(), $definition->getValue());
+        }
+        return $values;
     }
 }
