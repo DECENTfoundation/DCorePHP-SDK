@@ -170,6 +170,13 @@ class NftApiTest extends DCoreSDKTest
         $this->assertEquals('an apple update', $updatedNft->getOptions()->getDescription());
     }
 
+    /**
+     * @throws BadOpcodeException
+     * @throws ExceptionInterface
+     * @throws InvalidApiCallException
+     * @throws ObjectNotFoundException
+     * @throws ValidationException
+     */
     public function testIssue(): void
     {
         $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
@@ -178,5 +185,17 @@ class NftApiTest extends DCoreSDKTest
 
         $issuedNft = $this->sdk->getNftApi()->getBySymbol($this->nftSymbol);
         $this->assertEquals(1, $issuedNft->getCurrentSupply());
+    }
+
+    public function testTransfer(): void
+    {
+        dump($this->testNftId);
+//        $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
+//        $this->sdk->getNftApi()->transfer($credentials, new ChainObject(DCoreSDKTest::ACCOUNT_ID_2), new ChainObject('1.11.2'));
+
+        dump($this->sdk->getNftApi()->countAll());
+        dump($this->sdk->getNftApi()->countAllData());
+//        $issuedNft = $this->sdk->getNftApi()->getBySymbol($this->nftSymbol);
+//        $this->assertEquals(1, $issuedNft->getCurrentSupply());
     }
 }

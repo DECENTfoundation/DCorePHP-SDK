@@ -307,11 +307,13 @@ interface NftApiInterface
      * @param ChainObject $to
      * @param ChainObject $id
      * @param Memo|null $memo
-     * @param Fee|null $fee
+     * @param $fee
      *
      * @return NftTransferOperation
+     *
+     * @throws ValidationException
      */
-    public function createTransferOperation(ChainObject $from, ChainObject $to, ChainObject $id, Memo $memo = null, Fee $fee = null): NftTransferOperation;
+    public function createTransferOperation(ChainObject $from, ChainObject $to, ChainObject $id, Memo $memo = null, $fee = null): NftTransferOperation;
 
     /**
      * Transfer NFT data instance
@@ -320,11 +322,13 @@ interface NftApiInterface
      * @param ChainObject $to
      * @param ChainObject $from
      * @param Memo|null $memo
-     * @param Fee|null $fee
+     * @param $fee
      *
      * @return TransactionConfirmation
+     *
+     * @throws Exception
      */
-    public function transfer(Credentials $credentials, ChainObject $to, ChainObject $from, Memo $memo = null, Fee $fee = null): TransactionConfirmation;
+    public function transfer(Credentials $credentials, ChainObject $to, ChainObject $from, Memo $memo = null, $fee = null): TransactionConfirmation;
 
     /**
      * Create NFT data instance update operation

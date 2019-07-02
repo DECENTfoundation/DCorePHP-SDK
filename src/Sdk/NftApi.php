@@ -327,9 +327,16 @@ class NftApi extends BaseApi implements NftApiInterface
         ChainObject $to,
         ChainObject $id,
         Memo $memo = null,
-        Fee $fee = null
+        $fee = null
     ): NftTransferOperation {
-        // TODO: Implement createTransferOperation() method.
+        $operation = new NftTransferOperation();
+        $operation
+            ->setFrom($from)
+            ->setTo($to)
+            ->setId($id)
+            ->setMemo($memo)
+            ->setFee($fee);
+        return $operation;
     }
 
     /**
@@ -338,11 +345,16 @@ class NftApi extends BaseApi implements NftApiInterface
     public function transfer(
         Credentials $credentials,
         ChainObject $to,
-        ChainObject $from,
+        ChainObject $id,
         Memo $memo = null,
-        Fee $fee = null
+        $fee = null
     ): TransactionConfirmation {
-        // TODO: Implement transfer() method.
+        $fee = $fee ?: new AssetAmount();
+
+        return $this->dcoreApi->getBroadcastApi()->broadcastOperationWithECKeyPairWithCallback(
+            $credentials->getKeyPair(),
+            $this->createTransferOperation($credentials->getAccount(), $to, $id, $memo, $fee)
+        );
     }
 
     /**
