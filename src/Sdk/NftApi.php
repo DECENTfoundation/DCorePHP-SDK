@@ -24,6 +24,7 @@ use DCorePHP\Net\Model\Request\GetNftData;
 use DCorePHP\Net\Model\Request\GetNftDataCount;
 use DCorePHP\Net\Model\Request\GetNfts;
 use DCorePHP\Net\Model\Request\GetNftsBySymbol;
+use DCorePHP\Net\Model\Request\ListNfts;
 
 class NftApi extends BaseApi implements NftApiInterface
 {
@@ -165,7 +166,7 @@ class NftApi extends BaseApi implements NftApiInterface
      */
     public function listAllRelative(string $lowerBound = '', int $limit = DCoreApi::REQ_LIMIT_MAX): array
     {
-        // TODO: Implement listAllRelative() method.
+        return $this->dcoreApi->requestWebsocket(new ListNfts($lowerBound, $limit));
     }
 
     /**

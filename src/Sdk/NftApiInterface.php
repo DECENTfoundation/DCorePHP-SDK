@@ -178,6 +178,9 @@ interface NftApiInterface
      * @param int $limit maximum number of NFTs to fetch (must not exceed 100)
      *
      * @return array NFTs found
+     *
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
      */
     public function listAllRelative(string $lowerBound = '', int $limit = DCoreApi::REQ_LIMIT_MAX): array;
 

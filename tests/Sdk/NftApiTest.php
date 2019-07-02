@@ -136,6 +136,21 @@ class NftApiTest extends DCoreSDKTest
     /**
      * @throws BadOpcodeException
      * @throws InvalidApiCallException
+     */
+    public function testListAllRelative(): void
+    {
+        $nfts = $this->sdk->getNftApi()->listAllRelative();
+
+        $this->assertGreaterThan(0, count($nfts));
+
+        foreach ($nfts as $nft) {
+            $this->assertInstanceOf(Nft::class, $nft);
+        }
+    }
+
+    /**
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
      * @throws ObjectNotFoundException
      * @throws ValidationException
      * @throws Exception
@@ -189,12 +204,10 @@ class NftApiTest extends DCoreSDKTest
 
     public function testTransfer(): void
     {
-        dump($this->testNftId);
+        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
 //        $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
 //        $this->sdk->getNftApi()->transfer($credentials, new ChainObject(DCoreSDKTest::ACCOUNT_ID_2), new ChainObject('1.11.2'));
 
-        dump($this->sdk->getNftApi()->countAll());
-        dump($this->sdk->getNftApi()->countAllData());
 //        $issuedNft = $this->sdk->getNftApi()->getBySymbol($this->nftSymbol);
 //        $this->assertEquals(1, $issuedNft->getCurrentSupply());
     }
