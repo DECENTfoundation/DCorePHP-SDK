@@ -92,7 +92,7 @@ interface NftApiInterface
      * Get NFT data instances with parsed model
      *
      * @param array $ids
-     * @return array
+     * @return NftData[]
      */
     public function getAllData(array $ids): array;
 

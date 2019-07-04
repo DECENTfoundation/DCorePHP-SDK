@@ -2,6 +2,8 @@
 
 namespace DCorePHP\Model;
 
+use ReflectionClass;
+use ReflectionException;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
@@ -61,5 +63,17 @@ class NftModel
             $values[] = new Variant($definition->getType(), $definition->getValue());
         }
         return $values;
+    }
+
+    /**
+     * @param $data
+     * @param $class
+     *
+     * @return object
+     * @throws ReflectionException
+     */
+    public static function make($data, $class) {
+        $reflection = new ReflectionClass($class);
+        return $reflection->newInstanceArgs($data);
     }
 }

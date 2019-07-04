@@ -6,6 +6,7 @@ use DCorePHP\Exception\InvalidApiCallException;
 use DCorePHP\Model\BaseOperation;
 use DCorePHP\Model\BlockData;
 use DCorePHP\Model\DynamicGlobalProps;
+use DCorePHP\Model\NftData;
 use DCorePHP\Model\Transaction;
 use DCorePHP\Net\JsonRpc;
 use DCorePHP\Net\Model\Request\BaseRequest;
@@ -39,6 +40,8 @@ class DCoreApi extends DCoreSdk
      */
     public const TRANSACTION_EXPIRATION = 30;
     public const REQ_LIMIT_MAX = 100;
+
+    private $registeredNfts = [];
 
     /** @var array */
     protected $permissions = [];
@@ -489,5 +492,13 @@ class DCoreApi extends DCoreSdk
             ->setChainId($chainId);
 
         return $transaction;
+    }
+
+    public function registerNfts(array $idToClass): void {
+        $this->registeredNfts = array_merge($this->registeredNfts, $idToClass);
+    }
+
+    public function isRegistered(string $nftId) {
+        return $this->registeredNfts[$nftId] ?? null;
     }
 }

@@ -9,6 +9,7 @@ use DCorePHP\Exception\ObjectNotFoundException;
 use DCorePHP\Exception\ValidationException;
 use DCorePHP\Model\ChainObject;
 use DCorePHP\Model\Nft;
+use DCorePHP\Model\NftData;
 use DCorePHPTests\DCoreSDKTest;
 use DCorePHPTests\Model\NftApple;
 use Exception;
@@ -102,14 +103,26 @@ class NftApiTest extends DCoreSDKTest
 
     public function testGetAllData(): void
     {
-//        $nfts = $this->sdk->getNftApi()->getAllData([new ChainObject('1.11.0'), new ChainObject('1.11.1')]);
-        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
+        // TODO: Ids ?
+        $this->sdk->registerNfts(['1.10.46' => NftApple::class, '1.10.50' => NftApple::class]);
+        $nfts = $this->sdk->getNftApi()->getAllData([new ChainObject('1.11.0'), new ChainObject('1.11.1')]);
+        /** @var NftData $nft */
+        foreach ($nfts as $nft) {
+            $this->assertInstanceOf(NftApple::class, $nft->getData());
+        }
     }
 
+    /**
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
+     * @throws ValidationException
+     */
     public function testGetAllDataRaw(): void
     {
-        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
-//        $this->sdk->getNftApi()->getAllDataRaw([new ChainObject('1.11.0')]);
+        $rawData = $this->sdk->getNftApi()->getAllDataRaw([new ChainObject('1.11.0')]);
+        foreach ($rawData as $data) {
+            $this->assertInstanceOf(NftData::class, $data);
+        }
     }
 
     /**

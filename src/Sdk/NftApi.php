@@ -91,7 +91,7 @@ class NftApi extends BaseApi implements NftApiInterface
      */
     public function getAllData(array $ids): array
     {
-        // TODO: Implement getAllData() method.
+        return $this->make($this->dcoreApi->requestWebsocket(new GetNftData($ids)));
     }
 
     /**
@@ -403,5 +403,15 @@ class NftApi extends BaseApi implements NftApiInterface
         Fee $fee = null
     ): TransactionConfirmation {
         // TODO: Implement updateDataWithNewData() method.
+    }
+
+    private function make(array $data) {
+        return array_map(function (NftData $nft) {
+            $class = $this->dcoreApi->isRegistered($nft->getNftId()->getId());
+            if ($class) {
+                return NftData::init($nft, $class);
+            }
+            return null;
+        }, $data);
     }
 }
