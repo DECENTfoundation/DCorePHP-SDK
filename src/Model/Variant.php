@@ -17,17 +17,21 @@ class Variant
     private $type;
     /** @var mixed */
     private $value;
+    /** @var string */
+    private $name;
 
     /**
      * Variant constructor.
      *
      * @param string $type
      * @param mixed $value
+     * @param string $name
      */
-    public function __construct(string $type, $value)
+    public function __construct(string $type, $value, string $name = null)
     {
         $this->type = $type;
         $this->value = $value;
+        $this->name = $name;
     }
 
     /**
@@ -66,6 +70,26 @@ class Variant
     public function setValue($value): Variant
     {
         $this->value = $value;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return Variant
+     */
+    public function setName(string $name): Variant
+    {
+        $this->name = $name;
 
         return $this;
     }

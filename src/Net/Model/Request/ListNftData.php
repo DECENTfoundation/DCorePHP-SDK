@@ -5,14 +5,14 @@ namespace DCorePHP\Net\Model\Request;
 use DCorePHP\Model\ChainObject;
 use DCorePHP\Net\Model\Response\BaseResponse;
 
-class GetNftData extends GetNftDataAbstract
+class ListNftData extends GetNftDataAbstract
 {
-    public function __construct(array $ids)
+    public function __construct(ChainObject $nftId)
     {
         parent::__construct(
             self::API_GROUP_DATABASE,
-            'get_non_fungible_token_data',
-            [array_map(static function (ChainObject $id) { return $id->getId(); }, $ids)]
+            'list_non_fungible_token_data',
+            [$nftId->getId()]
         );
     }
 

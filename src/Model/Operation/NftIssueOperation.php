@@ -151,7 +151,9 @@ class NftIssueOperation extends BaseOperation
                 'issuer' => $this->getIssuer()->getId(),
                 'nft_id' => $this->getId()->getId(),
                 'to' => $this->getTo()->getId(),
-                'data' => array_map(static function (Variant $variant) { return $variant->getValue(); }, $this->getData()),
+                'data' => array_map(static function (Variant $variant) {
+                        return $variant->getType() === 'integer' ? 'CASTTOINT-' . $variant->getValue() : $variant->getValue();
+                    }, $this->getData()),
                 'memo' => $this->getMemo() ? $this->getMemo()->toArray() : null,
                 'fee' => $this->getFee()->toArray()
             ]

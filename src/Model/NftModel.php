@@ -76,4 +76,18 @@ class NftModel
         $reflection = new ReflectionClass($class);
         return $reflection->newInstanceArgs($data);
     }
+
+    /**
+     * @return array
+     * @throws ExceptionInterface
+     */
+    public function createUpdate(): array {
+        $definitions = $this->createDefinitions();
+        $filtered = array_filter($definitions, static function (NftDataType $definition) { return $definition->getModifiable() !== NftDataType::NOBODY; });
+        $res = [];
+        foreach ($filtered as $item) {
+            $res[] = new Variant($item->getType(), $item->getValue(), $item->getName());
+        }
+        return $res;
+    }
 }

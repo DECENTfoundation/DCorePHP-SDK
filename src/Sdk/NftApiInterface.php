@@ -20,6 +20,7 @@ use DCorePHP\Model\Operation\NftUpdateDataOperation;
 use DCorePHP\Model\Operation\NftUpdateOperation;
 use DCorePHP\Model\Proposal\Fee;
 use DCorePHP\Model\TransactionConfirmation;
+use DCorePHP\Model\Variant;
 use Exception;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use WebSocket\BadOpcodeException;
@@ -89,10 +90,24 @@ interface NftApiInterface
     public function getBySymbol(string $symbol): Nft;
 
     /**
+     * @param array $ids
+     * @param string $class
+     *
+     * @return array
+     *
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
+     */
+    public function getAllDataWithClass(array $ids, string $class): array;
+
+    /**
      * Get NFT data instances with parsed model
      *
      * @param array $ids
      * @return NftData[]
+     *
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
      */
     public function getAllData(array $ids): array;
 
@@ -109,12 +124,30 @@ interface NftApiInterface
     public function getAllDataRaw(array $ids): array;
 
     /**
+     * Get NFT data instance with parsed model
+     *
+     * @param ChainObject $id
+     * @param string $class
+     *
+     * @return NftData
+     *
+     * @throws ObjectNotFoundException
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
+     */
+    public function getDataWithClass(ChainObject $id, string $class): NftData;
+
+    /**
      * Get NFT data instances with registered model, use [DCoreApi.registerNfts] to register nft model by object id,
      * if the model is not registered, [RawNft] will be used
      *
      * @param ChainObject $id
      *
      * @return NftData
+     *
+     * @throws ObjectNotFoundException
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
      */
     public function getData(ChainObject $id): NftData;
 
@@ -127,6 +160,7 @@ interface NftApiInterface
      *
      * @throws InvalidApiCallException
      * @throws BadOpcodeException
+     * @throws ObjectNotFoundException
      */
     public function getDataRaw(ChainObject $id): NftData;
 
@@ -157,6 +191,9 @@ interface NftApiInterface
      * @param array $nftIds
      *
      * @return array NFT data instances with raw model
+     *
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
      */
     public function getNftBalancesRaw(ChainObject $account, array $nftIds = []): array;
 
@@ -168,8 +205,25 @@ interface NftApiInterface
      * @param array $nftIds
      *
      * @return array
+     *
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
      */
     public function getNftBalances(ChainObject $account, array $nftIds = []): array;
+
+    /**
+     * Get NFT balances per account with parsed model
+     *
+     * @param ChainObject $account
+     * @param ChainObject $nftId
+     * @param string $class
+     *
+     * @return array
+     *
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
+     */
+    public function getNftBalancesWithClass(ChainObject $account, ChainObject $nftId, string $class): array;
 
     /**
      * Get NFTs alphabetically by symbol name
@@ -185,20 +239,44 @@ interface NftApiInterface
     public function listAllRelative(string $lowerBound = '', int $limit = DCoreApi::REQ_LIMIT_MAX): array;
 
     /**
+     * Get NFT data instances with parsed model
+     *
      * @param ChainObject $nftId
-     * @return array
+     * @param string $class
+     *
+     * @return NftData[]
+     *
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
+     */
+    public function listDataByNftWithClass(ChainObject $nftId, string $class): array;
+
+    /**
+     * @param ChainObject $nftId
+     *
+     * @return NftData[]
+     *
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
      */
     public function listDataByNft(ChainObject $nftId): array;
 
     /**
      * @param ChainObject $nftId
-     * @return array
+     * @return NftData[]
+     *
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
      */
     public function listDataByNftRaw(ChainObject $nftId): array;
 
     /**
      * @param ChainObject $nftDataId
+     *
      * @return array
+     *
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
      */
     public function searchNftHistory(ChainObject $nftDataId): array;
 
@@ -338,23 +416,24 @@ interface NftApiInterface
      *
      * @param ChainObject $modifier
      * @param ChainObject $id
-     * @param Fee|null $fee
+     * @param Variant[] $values
+     * @param $fee
      *
      * @return NftUpdateDataOperation
      */
-    public function createUpdateDataOperation(ChainObject $modifier, ChainObject $id, Fee $fee = null): NftUpdateDataOperation;
+    public function createUpdateDataOperationRaw(ChainObject $modifier, ChainObject $id, array $values, $fee = null): NftUpdateDataOperation;
 
     /**
      * Create NFT data instance update operation
      *
      * @param ChainObject $modifier
      * @param ChainObject $id
-     * @param $newData
-     * @param Fee|null $fee
+     * @param NftModel $newData
+     * @param $fee
      *
      * @return NftUpdateDataOperation
      */
-    public function createUpdateDataOperationWithNewData(ChainObject $modifier, ChainObject $id, $newData, Fee $fee = null): NftUpdateDataOperation;
+    public function createUpdateDataOperation(ChainObject $modifier, ChainObject $id, NftModel $newData, $fee = null): NftUpdateDataOperation;
 
     /**
      * Update NFT data instance
@@ -362,21 +441,21 @@ interface NftApiInterface
      * @param Credentials $credentials
      * @param ChainObject $id
      * @param array $values
-     * @param Fee|null $fee
+     * @param $fee
      *
      * @return TransactionConfirmation
      */
-    public function updateData(Credentials $credentials, ChainObject $id, array $values, Fee $fee = null): TransactionConfirmation;
+    public function updateDataRaw(Credentials $credentials, ChainObject $id, array $values, $fee = null): TransactionConfirmation;
 
     /**
      * Update NFT data instance
      *
      * @param Credentials $credentials
      * @param ChainObject $id
-     * @param $newData
-     * @param Fee|null $fee
+     * @param NftModel $values
+     * @param $fee
      *
      * @return TransactionConfirmation
      */
-    public function updateDataWithNewData(Credentials $credentials, ChainObject $id, $newData, Fee $fee = null): TransactionConfirmation;
+    public function updateData(Credentials $credentials, ChainObject $id, NftModel $values, $fee = null): TransactionConfirmation;
 }

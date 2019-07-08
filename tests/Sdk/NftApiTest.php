@@ -10,6 +10,8 @@ use DCorePHP\Exception\ValidationException;
 use DCorePHP\Model\ChainObject;
 use DCorePHP\Model\Nft;
 use DCorePHP\Model\NftData;
+use DCorePHP\Model\TransactionDetail;
+use DCorePHP\Model\Variant;
 use DCorePHPTests\DCoreSDKTest;
 use DCorePHPTests\Model\NftApple;
 use Exception;
@@ -101,6 +103,11 @@ class NftApiTest extends DCoreSDKTest
         $this->assertEquals('an apple', $nft->getOptions()->getDescription());
     }
 
+    /**
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
+     * @throws ValidationException
+     */
     public function testGetAllData(): void
     {
         // TODO: Ids ?
@@ -128,6 +135,44 @@ class NftApiTest extends DCoreSDKTest
     /**
      * @throws BadOpcodeException
      * @throws InvalidApiCallException
+     * @throws ObjectNotFoundException
+     * @throws ValidationException
+     */
+    public function testGetData(): void
+    {
+        $data = $this->sdk->getNftApi()->getDataWithClass(new ChainObject('1.11.0'), NftApple::class);
+        $this->assertInstanceOf(NftApple::class, $data->getData());
+    }
+
+    /**
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
+     * @throws ObjectNotFoundException
+     * @throws ValidationException
+     */
+    public function testGetDataRegistered(): void
+    {
+        // TODO: Id => 46 ? should be 0
+        $this->sdk->registerNfts(['1.10.46' => NftApple::class]);
+        $data = $this->sdk->getNftApi()->getData(new ChainObject('1.11.0'));
+        $this->assertInstanceOf(NftApple::class, $data->getData());
+    }
+
+    /**
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
+     * @throws ObjectNotFoundException
+     * @throws ValidationException
+     */
+    public function testGetDataRaw(): void
+    {
+        $data = $this->sdk->getNftApi()->getDataRaw(new ChainObject('1.11.0'));
+        $this->assertNotNull($data);
+    }
+
+    /**
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
      */
     public function testCountAll(): void
     {
@@ -141,9 +186,50 @@ class NftApiTest extends DCoreSDKTest
      */
     public function testCountAllData(): void
     {
-        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
-//        $count = $this->sdk->getNftApi()->countAllData();
-//        $this->assertGreaterThan(0, $count);
+        $count = $this->sdk->getNftApi()->countAllData();
+        $this->assertGreaterThan(0, $count);
+    }
+
+    /**
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
+     * @throws ValidationException
+     */
+    public function testGetNftBalancesRaw(): void
+    {
+        $balances = $this->sdk->getNftApi()->getNftBalancesRaw(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1));
+        foreach ($balances as $balance) {
+            $this->assertInstanceOf(NftData::class, $balance);
+        }
+    }
+
+    /**
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
+     * @throws ValidationException
+     */
+    public function testGetNftBalances(): void
+    {
+        // TODO: Id => 46 ? should be 0
+        $this->sdk->registerNfts(['1.10.46' => NftApple::class]);
+        $balances = $this->sdk->getNftApi()->getNftBalances(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), [new ChainObject('1.10.46')]);
+        /** @var NftData $balance */
+        $balance = reset($balances);
+        $this->assertInstanceOf(NftApple::class, $balance->getData());
+    }
+
+    /**
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
+     * @throws ValidationException
+     */
+    public function testGetNftBalancesWithClass(): void
+    {
+        // TODO: Id => 46 ? should be 0
+        $balances = $this->sdk->getNftApi()->getNftBalancesWithClass(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), new ChainObject('1.10.46'), NftApple::class);
+        /** @var NftData $balance */
+        $balance = reset($balances);
+        $this->assertInstanceOf(NftApple::class, $balance->getData());
     }
 
     /**
@@ -158,6 +244,66 @@ class NftApiTest extends DCoreSDKTest
 
         foreach ($nfts as $nft) {
             $this->assertInstanceOf(Nft::class, $nft);
+        }
+    }
+
+    /**
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
+     * @throws ValidationException
+     */
+    public function testListDataByNftRaw(): void
+    {
+        // TODO: Id => 46 ? should be 0
+        $nfts = $this->sdk->getNftApi()->listDataByNftRaw(new ChainObject('1.10.46'));
+        foreach ($nfts as $nft) {
+            $this->assertInstanceOf(NftData::class, $nft);
+        }
+    }
+
+    /**
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
+     * @throws ValidationException
+     */
+    public function testListDataByNft(): void
+    {
+        $this->sdk->registerNfts(['1.10.46' => NftApple::class]);
+        // TODO: Id => 46 ? should be 0
+        $nfts = $this->sdk->getNftApi()->listDataByNft(new ChainObject('1.10.46'));
+        /** @var NftData $nft */
+        foreach ($nfts as $nft) {
+            $this->assertInstanceOf(NftApple::class, $nft->getData());
+        }
+    }
+
+    /**
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
+     * @throws ValidationException
+     */
+    public function testListDataByNftWIthClass(): void
+    {
+        // TODO: Id => 46 ? should be 0
+        $nfts = $this->sdk->getNftApi()->listDataByNftWithClass(new ChainObject('1.10.46'), NftApple::class);
+        /** @var NftData $nft */
+        foreach ($nfts as $nft) {
+            $this->assertInstanceOf(NftApple::class, $nft->getData());
+        }
+    }
+
+    /**
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
+     * @throws ValidationException
+     */
+    public function testSearchNftHistory(): void
+    {
+        $history = $this->sdk->getNftApi()->searchNftHistory(new ChainObject('1.11.2'));
+        /** @var TransactionDetail $item */
+        foreach ($history as $item) {
+            $this->assertInstanceOf(TransactionDetail::class, $item);
+            $this->assertEquals('1.11.2', $item->getNftDataId()->getId());
         }
     }
 
@@ -204,6 +350,7 @@ class NftApiTest extends DCoreSDKTest
      * @throws InvalidApiCallException
      * @throws ObjectNotFoundException
      * @throws ValidationException
+     * @throws Exception
      */
     public function testIssue(): void
     {
@@ -215,13 +362,69 @@ class NftApiTest extends DCoreSDKTest
         $this->assertEquals(1, $issuedNft->getCurrentSupply());
     }
 
+    /**
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
+     * @throws ObjectNotFoundException
+     * @throws ValidationException
+     * @throws Exception
+     */
     public function testTransfer(): void
     {
-        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
-//        $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
-//        $this->sdk->getNftApi()->transfer($credentials, new ChainObject(DCoreSDKTest::ACCOUNT_ID_2), new ChainObject('1.11.2'));
+//        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
+        $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
+        $this->sdk->getNftApi()->transfer($credentials, new ChainObject(DCoreSDKTest::ACCOUNT_ID_2), new ChainObject('1.11.0'));
 
-//        $issuedNft = $this->sdk->getNftApi()->getBySymbol($this->nftSymbol);
-//        $this->assertEquals(1, $issuedNft->getCurrentSupply());
+        $issuedNft = $this->sdk->getNftApi()->getBySymbol($this->nftSymbol);
+        dump($issuedNft);
+        $this->assertEquals(1, $issuedNft->getCurrentSupply());
+    }
+
+    /**
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
+     * @throws ObjectNotFoundException
+     * @throws ValidationException
+     * @throws Exception
+     */
+    public function testUpdateData(): void
+    {
+        $nftData = $this->sdk->getNftApi()->getDataWithClass(new ChainObject('1.11.0'), NftApple::class);
+        /** @var NftApple $data */
+        $data = $nftData->getData();
+        $eaten = $data->getEaten()->getValue();
+        $data->getEaten()->setValue(!$data->getEaten()->getValue());
+
+        $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
+        $this->sdk->getNftApi()->updateData($credentials, $nftData->getId(), $data);
+
+        $nftDataAfter = $this->sdk->getNftApi()->getDataWithClass(new ChainObject('1.11.0'), NftApple::class);
+        /** @var NftApple $dataAfter */
+        $dataAfter = $nftDataAfter->getData();
+        $this->assertEquals($eaten, !$dataAfter->getEaten()->getValue());
+    }
+
+    /**
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
+     * @throws ObjectNotFoundException
+     * @throws ValidationException
+     * @throws Exception
+     */
+    public function testUpdateDataRaw(): void
+    {
+        $nftData = $this->sdk->getNftApi()->getDataWithClass(new ChainObject('1.11.0'), NftApple::class);
+        /** @var NftApple $data */
+        $data = $nftData->getData();
+        $eaten = $data->getEaten()->getValue();
+        $data = [new Variant('boolean', !$eaten, $data->getEaten()->getName())];
+
+        $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
+        $this->sdk->getNftApi()->updateDataRaw($credentials, $nftData->getId(), $data);
+
+        $nftDataAfter = $this->sdk->getNftApi()->getDataWithClass(new ChainObject('1.11.0'), NftApple::class);
+        /** @var NftApple $dataAfter */
+        $dataAfter = $nftDataAfter->getData();
+        $this->assertEquals($eaten, !$dataAfter->getEaten()->getValue());
     }
 }

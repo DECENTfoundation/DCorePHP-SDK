@@ -23,8 +23,11 @@ use DCorePHP\Net\Model\Request\GetNftCount;
 use DCorePHP\Net\Model\Request\GetNftData;
 use DCorePHP\Net\Model\Request\GetNftDataCount;
 use DCorePHP\Net\Model\Request\GetNfts;
+use DCorePHP\Net\Model\Request\GetNftsBalances;
 use DCorePHP\Net\Model\Request\GetNftsBySymbol;
+use DCorePHP\Net\Model\Request\ListNftData;
 use DCorePHP\Net\Model\Request\ListNfts;
+use DCorePHP\Net\Model\Request\SearchNftHistory;
 
 class NftApi extends BaseApi implements NftApiInterface
 {
@@ -86,12 +89,17 @@ class NftApi extends BaseApi implements NftApiInterface
         throw new ObjectNotFoundException("Nft with symbol $symbol doesn't exist.");
     }
 
+    public function getAllDataWithClass(array $ids, string $class): array
+    {
+        return $this->make($this->dcoreApi->requestWebsocket(new GetNftData($ids)), $class);
+    }
+
     /**
      * @inheritDoc
      */
     public function getAllData(array $ids): array
     {
-        return $this->make($this->dcoreApi->requestWebsocket(new GetNftData($ids)));
+        return $this->make($this->getAllDataRaw($ids));
     }
 
     /**
@@ -105,9 +113,27 @@ class NftApi extends BaseApi implements NftApiInterface
     /**
      * @inheritDoc
      */
+    public function getDataWithClass(ChainObject $id, string $class): NftData
+    {
+        $data = $this->getAllDataWithClass([$id], $class);
+        $data = reset($data);
+        if ($data instanceof NftData) {
+            return $data;
+        }
+        throw new ObjectNotFoundException("Nft with symbol $id doesn't exist.");
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function getData(ChainObject $id): NftData
     {
-        // TODO: Implement getData() method.
+        $data = $this->getAllData([$id]);
+        $data = reset($data);
+        if ($data instanceof NftData) {
+            return $data;
+        }
+        throw new ObjectNotFoundException("Nft with symbol $id doesn't exist.");
     }
 
     /**
@@ -115,18 +141,12 @@ class NftApi extends BaseApi implements NftApiInterface
      */
     public function getDataRaw(ChainObject $id): NftData
     {
-        $dataArray = $this->getAllDataRaw([$id]);
-        $data = reset($nfts);
-
-        return $data;
-
-        // TODO
-
-//        if ($data instanceof Nft) {
-//            return $data;
-//        }
-
-//        throw new ObjectNotFoundException("Nft with symbol $id doesn't exist.");
+        $data = $this->getAllDataRaw([$id]);
+        $data = reset($data);
+        if ($data instanceof NftData) {
+            return $data;
+        }
+        throw new ObjectNotFoundException("Nft with symbol $id doesn't exist.");
     }
 
     /**
@@ -150,7 +170,7 @@ class NftApi extends BaseApi implements NftApiInterface
      */
     public function getNftBalancesRaw(ChainObject $account, array $nftIds = []): array
     {
-        // TODO: Implement getNftBalancesRaw() method.
+        return $this->dcoreApi->requestWebsocket(new GetNftsBalances($account, $nftIds));
     }
 
     /**
@@ -158,7 +178,15 @@ class NftApi extends BaseApi implements NftApiInterface
      */
     public function getNftBalances(ChainObject $account, array $nftIds = []): array
     {
-        // TODO: Implement getNftBalances() method.
+        return $this->make($this->getNftBalancesRaw($account, $nftIds));
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getNftBalancesWithClass(ChainObject $account, ChainObject $nftId, string $class): array
+    {
+        return $this->make($this->getNftBalancesRaw($account, [$nftId]), $class);
     }
 
     /**
@@ -172,9 +200,17 @@ class NftApi extends BaseApi implements NftApiInterface
     /**
      * @inheritDoc
      */
+    public function listDataByNftWithClass(ChainObject $nftId, string $class): array
+    {
+        return $this->make($this->listDataByNftRaw($nftId), $class);
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function listDataByNft(ChainObject $nftId): array
     {
-        // TODO: Implement listDataByNft() method.
+        return $this->make($this->listDataByNftRaw($nftId));
     }
 
     /**
@@ -182,7 +218,7 @@ class NftApi extends BaseApi implements NftApiInterface
      */
     public function listDataByNftRaw(ChainObject $nftId): array
     {
-        // TODO: Implement listDataByNftRaw() method.
+        return $this->dcoreApi->requestWebsocket(new ListNftData($nftId));
     }
 
     /**
@@ -190,7 +226,7 @@ class NftApi extends BaseApi implements NftApiInterface
      */
     public function searchNftHistory(ChainObject $nftDataId): array
     {
-        // TODO: Implement searchNftHistory() method.
+        return $this->dcoreApi->requestWebsocket(new SearchNftHistory($nftDataId));
     }
 
     /**
@@ -361,24 +397,53 @@ class NftApi extends BaseApi implements NftApiInterface
     /**
      * @inheritDoc
      */
-    public function createUpdateDataOperation(
+    public function createUpdateDataOperationRaw(
         ChainObject $modifier,
         ChainObject $id,
-        Fee $fee = null
+        array $values,
+        $fee = null
     ): NftUpdateDataOperation {
-        // TODO: Implement createUpdateDataOperation() method.
+        $operation = new NftUpdateDataOperation();
+        $operation
+            ->setModifier($modifier)
+            ->setId($id)
+            ->setData($values)
+            ->setFee($fee);
+        return $operation;
     }
 
     /**
      * @inheritDoc
      */
-    public function createUpdateDataOperationWithNewData(
+    public function createUpdateDataOperation(
         ChainObject $modifier,
         ChainObject $id,
-        $newData,
-        Fee $fee = null
+        NftModel $data,
+        $fee = null
     ): NftUpdateDataOperation {
-        // TODO: Implement createUpdateDataOperationWithNewData() method.
+        $operation = new NftUpdateDataOperation();
+        $operation
+            ->setModifier($modifier)
+            ->setId($id)
+            ->setData($data->createUpdate())
+            ->setFee($fee);
+        return $operation;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function updateDataRaw(
+        Credentials $credentials,
+        ChainObject $id,
+        array $values,
+        $fee = null
+    ): TransactionConfirmation {
+        $fee = $fee ?: new AssetAmount();
+        return $this->dcoreApi->getBroadcastApi()->broadcastOperationWithECKeyPairWithCallback(
+            $credentials->getKeyPair(),
+            $this->createUpdateDataOperationRaw($credentials->getAccount(), $id, $values, $fee)
+        );
     }
 
     /**
@@ -387,31 +452,23 @@ class NftApi extends BaseApi implements NftApiInterface
     public function updateData(
         Credentials $credentials,
         ChainObject $id,
-        array $values,
-        Fee $fee = null
+        NftModel $data,
+        $fee = null
     ): TransactionConfirmation {
-        // TODO: Implement updateData() method.
+        $fee = $fee ?: new AssetAmount();
+        return $this->dcoreApi->getBroadcastApi()->broadcastOperationWithECKeyPairWithCallback(
+            $credentials->getKeyPair(),
+            $this->createUpdateDataOperation($credentials->getAccount(), $id, $data, $fee)
+        );
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function updateDataWithNewData(
-        Credentials $credentials,
-        ChainObject $id,
-        $newData,
-        Fee $fee = null
-    ): TransactionConfirmation {
-        // TODO: Implement updateDataWithNewData() method.
-    }
-
-    private function make(array $data) {
-        return array_map(function (NftData $nft) {
-            $class = $this->dcoreApi->isRegistered($nft->getNftId()->getId());
+    private function make(array $data, string $clazz = null) {
+        return array_map(function (NftData $nft) use ($clazz) {
+            $class = $clazz ?? $this->dcoreApi->isRegistered($nft->getNftId()->getId());
             if ($class) {
                 return NftData::init($nft, $class);
             }
-            return null;
+            return $nft;
         }, $data);
     }
 }

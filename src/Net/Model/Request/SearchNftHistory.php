@@ -2,48 +2,22 @@
 
 namespace DCorePHP\Net\Model\Request;
 
-use DCorePHP\Model\Account;
 use DCorePHP\Model\ChainObject;
 use DCorePHP\Model\TransactionDetail;
 use DCorePHP\Net\Model\Response\BaseResponse;
 
-class SearchAccountHistory extends BaseRequest
+class SearchNftHistory extends BaseRequest
 {
-    public const ORDER_TYPE_ASC = '+type';
-    public const ORDER_TO_ASC = '+to';
-    public const ORDER_FROM_ASC = '+from';
-    public const ORDER_PRICE_ASC = '+price';
-    public const ORDER_FEE_ASC = '+fee';
-    public const ORDER_DESCRIPTION_ASC = '+description';
-    public const ORDER_TIME_ASC = '+time';
-    public const ORDER_TYPE_DESC = '-type';
-    public const ORDER_TO_DESC = '-to';
-    public const ORDER_FROM_DESC = '-from';
-    public const ORDER_PRICE_DESC = '-price';
-    public const ORDER_FEE_DESC = '-fee';
-    public const ORDER__DESCRIPTION_DESC = '-description';
-    public const ORDER_TIME_DESC = '-time';
-
-    /**
-     * @param ChainObject $accountId
-     * @param string $order
-     * @param string $startObjectId
-     * @param int $limit
-     */
-    public function __construct(ChainObject $accountId, string $order = self::ORDER_TIME_DESC, string $startObjectId = '0.0.0', int $limit = 100)
+    public function __construct(ChainObject $nftDataId)
     {
         parent::__construct(
             self::API_GROUP_DATABASE,
-            'search_account_history',
-            [$accountId->getId(), $order, $startObjectId, $limit]
+            'search_non_fungible_token_history',
+            [$nftDataId->getId()]
         );
     }
 
-    /**
-     * @param BaseResponse $response
-     * @return Account[]
-     */
-    public static function responseToModel(BaseResponse $response): array
+    public static function responseToModel(BaseResponse $response)
     {
         $transactionDetails = [];
         foreach ($response->getResult() as $rawTransaction) {
