@@ -102,6 +102,24 @@ class NftApi extends BaseApi implements NftApiInterface
         return $this->dcoreApi->requestWebsocket(new GetNftData($ids));
     }
 
+    public function getAllDataWithClass(array $ids, string $class): array
+    {
+        return $this->make($this->dcoreApi->requestWebsocket(new GetNftData($ids)), $class);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getDataWithClass(ChainObject $id, string $class): NftData
+    {
+        $data = $this->getAllDataWithClass([$id], $class);
+        $data = reset($data);
+        if ($data instanceof NftData) {
+            return $data;
+        }
+        throw new ObjectNotFoundException("Nft with symbol $id doesn't exist.");
+    }
+
     /**
      * @inheritDoc
      */
@@ -284,11 +302,21 @@ class NftApi extends BaseApi implements NftApiInterface
         ChainObject $issuer,
         string $idOrSymbol,
         ChainObject $to,
-        $data = null,
+        NftModel $data = null,
         Memo $memo = null,
         $fee = null
     ): NftIssueOperation {
-        // TODO: Implement createIssueOperation() method.
+        $nft = $this->get($idOrSymbol);
+        $dataArray = $data ? $data->values() : [];
+        $operation = new NftIssueOperation();
+        $operation
+            ->setIssuer($issuer)
+            ->setId($nft->getId())
+            ->setTo($to)
+            ->setData($dataArray)
+            ->setMemo($memo)
+            ->setFee($fee);
+        return $operation;
     }
 
     /**
@@ -298,11 +326,16 @@ class NftApi extends BaseApi implements NftApiInterface
         Credentials $credentials,
         string $idOrSymbol,
         ChainObject $to,
-        $data = null,
+        NftModel $data = null,
         Memo $memo = null,
-        Fee $fee = null
+        $fee = null
     ): TransactionConfirmation {
-        // TODO: Implement issue() method.
+        $fee = $fee ?: new AssetAmount();
+
+        return $this->dcoreApi->getBroadcastApi()->broadcastOperationWithECKeyPairWithCallback(
+            $credentials->getKeyPair(),
+            $this->createIssueOperation($credentials->getAccount(), $idOrSymbol, $to, $data, $memo, $fee)
+        );
     }
 
     /**
@@ -337,9 +370,16 @@ class NftApi extends BaseApi implements NftApiInterface
     public function createUpdateDataOperation(
         ChainObject $modifier,
         ChainObject $id,
-        Fee $fee = null
+        NftModel $data,
+        $fee = null
     ): NftUpdateDataOperation {
-        // TODO: Implement createUpdateDataOperation() method.
+        $operation = new NftUpdateDataOperation();
+        $operation
+            ->setModifier($modifier)
+            ->setId($id)
+            ->setData($data->createUpdate())
+            ->setFee($fee);
+        return $operation;
     }
 
     /**
@@ -360,10 +400,14 @@ class NftApi extends BaseApi implements NftApiInterface
     public function updateData(
         Credentials $credentials,
         ChainObject $id,
-        array $values,
-        Fee $fee = null
+        NftModel $values,
+        $fee = null
     ): TransactionConfirmation {
-        // TODO: Implement updateData() method.
+        $fee = $fee ?: new AssetAmount();
+        return $this->dcoreApi->getBroadcastApi()->broadcastOperationWithECKeyPairWithCallback(
+            $credentials->getKeyPair(),
+            $this->createUpdateDataOperation($credentials->getAccount(), $id, $values, $fee)
+        );
     }
 
     /**
@@ -376,5 +420,15 @@ class NftApi extends BaseApi implements NftApiInterface
         Fee $fee = null
     ): TransactionConfirmation {
         // TODO: Implement updateDataWithNewData() method.
+    }
+
+    private function make(array $data, string $clazz = null) {
+        return array_map(function (NftData $nft) use ($clazz) {
+            $class = $clazz ?? $this->dcoreApi->isRegistered($nft->getNftId()->getId());
+            if ($class) {
+                return NftData::init($nft, $class);
+            }
+            return $nft;
+        }, $data);
     }
 }

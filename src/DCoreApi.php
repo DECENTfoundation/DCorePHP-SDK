@@ -83,6 +83,8 @@ class DCoreApi extends DCoreSdk
     /** @var NftApi */
     private $nftApi;
 
+    private $registeredNfts = [];
+
     public function __construct(string $dcoreApiUrl, string $dcoreWebsocketUrl, bool $debug = false)
     {
         parent::__construct($dcoreApiUrl, $dcoreWebsocketUrl, $debug);
@@ -489,5 +491,13 @@ class DCoreApi extends DCoreSdk
             ->setChainId($chainId);
 
         return $transaction;
+    }
+
+    public function registerNfts(array $idToClass): void {
+        $this->registeredNfts = array_merge($this->registeredNfts, $idToClass);
+    }
+
+    public function isRegistered(string $nftId) {
+        return $this->registeredNfts[$nftId] ?? null;
     }
 }

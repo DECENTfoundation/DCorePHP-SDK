@@ -3,6 +3,7 @@
 namespace DCorePHP\Net\Model\Request;
 
 use DCorePHP\Model\ChainObject;
+use DCorePHP\Model\NftData;
 use DCorePHP\Net\Model\Response\BaseResponse;
 
 class GetNftData extends BaseRequest
@@ -18,7 +19,24 @@ class GetNftData extends BaseRequest
 
     public static function responseToModel(BaseResponse $response)
     {
-        dump($response->getResult());
-        // TODO: Implement responseToModel() method.
+        $data = [];
+        foreach ($response->getResult() as $result) {
+            $nftData = new NftData();
+            foreach (
+                [
+                    '[id]' => 'id',
+                    '[nft_id]' => 'nftId',
+                    '[owner]' => 'owner',
+                    '[data]' => 'data'
+                ] as $path => $modelPath
+            ) {
+                $value = self::getPropertyAccessor()->getValue($result, $path);
+                self::getPropertyAccessor()->setValue($nftData, $modelPath, $value);
+            }
+
+            $data[] = $nftData;
+        }
+
+        return $data;
     }
 }

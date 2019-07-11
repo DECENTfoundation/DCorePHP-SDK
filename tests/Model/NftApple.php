@@ -36,7 +36,7 @@ class NftApple extends NftModel
      */
     public function __construct($size, $color, $eaten)
     {
-        $this->size = $size;
+        $this->size = gmp_init($size);
         $this->color = $color;
         $this->eaten = $eaten;
     }

@@ -7,6 +7,7 @@ use DCorePHP\Model\Annotation\Type;
 use DCorePHP\Model\Annotation\Unique;
 use Doctrine\Common\Annotations\AnnotationException;
 use Doctrine\Common\Annotations\AnnotationReader;
+use GMP;
 use ReflectionClass;
 use ReflectionException;
 
@@ -62,5 +63,17 @@ class NftModel
             $values[] = $property->getValue($this);
         }
         return $values;
+    }
+
+    /**
+     * @param $data
+     * @param $class
+     *
+     * @return object
+     * @throws ReflectionException
+     */
+    public static function make($data, $class) {
+        $reflection = new ReflectionClass($class);
+        return $reflection->newInstanceArgs($data);
     }
 }

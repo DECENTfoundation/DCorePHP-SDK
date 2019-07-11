@@ -269,13 +269,13 @@ interface NftApiInterface
      * @param ChainObject $issuer
      * @param string $idOrSymbol
      * @param ChainObject $to
-     * @param null $data
+     * @param NftModel|null $data
      * @param Memo|null $memo
      * @param null $fee
      *
      * @return NftIssueOperation
      */
-    public function createIssueOperation(ChainObject $issuer, string $idOrSymbol, ChainObject $to, $data = null, Memo $memo = null, $fee = null): NftIssueOperation;
+    public function createIssueOperation(ChainObject $issuer, string $idOrSymbol, ChainObject $to, NftModel $data = null, Memo $memo = null, $fee = null): NftIssueOperation;
 
     /**
      * Issue NFT. Creates a NFT data instance.
@@ -283,13 +283,13 @@ interface NftApiInterface
      * @param Credentials $credentials
      * @param string $idOrSymbol
      * @param ChainObject $to
-     * @param null $data
+     * @param NftModel|null $data
      * @param Memo|null $memo
-     * @param Fee|null $fee
+     * @param $fee
      *
      * @return TransactionConfirmation
      */
-    public function issue(Credentials $credentials, string $idOrSymbol, ChainObject $to, $data = null, Memo $memo = null, Fee $fee = null): TransactionConfirmation;
+    public function issue(Credentials $credentials, string $idOrSymbol, ChainObject $to, NftModel $data = null, Memo $memo = null, $fee = null): TransactionConfirmation;
 
     /**
      * Create NFT data instance transfer operation
@@ -322,11 +322,12 @@ interface NftApiInterface
      *
      * @param ChainObject $modifier
      * @param ChainObject $id
-     * @param Fee|null $fee
+     * @param NftModel $data
+     * @param $fee
      *
      * @return NftUpdateDataOperation
      */
-    public function createUpdateDataOperation(ChainObject $modifier, ChainObject $id, Fee $fee = null): NftUpdateDataOperation;
+    public function createUpdateDataOperation(ChainObject $modifier, ChainObject $id, NftModel $data, $fee = null): NftUpdateDataOperation;
 
     /**
      * Create NFT data instance update operation
@@ -345,12 +346,12 @@ interface NftApiInterface
      *
      * @param Credentials $credentials
      * @param ChainObject $id
-     * @param array $values
-     * @param Fee|null $fee
+     * @param NftModel $values
+     * @param $fee
      *
      * @return TransactionConfirmation
      */
-    public function updateData(Credentials $credentials, ChainObject $id, array $values, Fee $fee = null): TransactionConfirmation;
+    public function updateData(Credentials $credentials, ChainObject $id, NftModel $values, $fee = null): TransactionConfirmation;
 
     /**
      * Update NFT data instance
