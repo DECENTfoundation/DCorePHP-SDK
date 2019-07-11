@@ -40,7 +40,7 @@ class BroadcastTransactionWithCallback extends BaseRequest
                 '[trx][ref_block_num]' => 'transaction.refBlockNum',
                 '[trx][ref_block_prefix]' => 'transaction.refBlockPrefix',
                 '[trx][expiration]' => 'transaction.expiration',
-                // TODO: opResults
+                '[trx][operation_results]' => 'transaction.opResults'
             ] as $path => $modelPath
         ) {
             $value = self::getPropertyAccessor()->getValue($rawTrxConf, $path);

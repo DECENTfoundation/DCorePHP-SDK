@@ -17,19 +17,19 @@ abstract class DCoreSDKTest extends TestCase
     public const PUBLIC_KEY_2 = 'DCT82MTCQVa9TDFmz3ZwaLzsFAmCLoJzrtFugpF72vsbuE1CpCwKy';
 
     /** @var DCoreApi */
-    protected $sdk;
+    protected static $sdk;
 
-    protected function setUp()
+    public static function setUpBeforeClass()
     {
-        $this->sdk = new DCoreApi(
+        self::$sdk = new DCoreApi(
             'http://dcore:8090/',
             'ws://dcore:8090/',
             true
         );
     }
 
-    protected function tearDown()
+    public static function tearDownAfterClass()
     {
-        $this->sdk = null;
+        self::$sdk = null;
     }
 }
