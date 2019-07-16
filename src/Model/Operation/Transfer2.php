@@ -127,7 +127,7 @@ class Transfer2 extends BaseOperation
     /**
      * @return Memo
      */
-    public function getMemo(): Memo
+    public function getMemo(): ?Memo
     {
         return $this->memo;
     }
@@ -136,7 +136,7 @@ class Transfer2 extends BaseOperation
      * @param Memo $memo
      * @return Transfer2
      */
-    public function setMemo(Memo $memo): Transfer2
+    public function setMemo(?Memo $memo): Transfer2
     {
         $this->memo = $memo;
         return $this;
@@ -153,7 +153,7 @@ class Transfer2 extends BaseOperation
                     'amount' => $this->getAmount()->toArray(),
                     'fee' => $this->getFee()->toArray(),
                 ],
-                ['memo' => $this->getMemo()->toArray()]
+                ['memo' => $this->getMemo() ? $this->getMemo()->toArray() : null]
             ),
         ];
     }
@@ -170,7 +170,7 @@ class Transfer2 extends BaseOperation
             $this->getFrom()->toBytes(),
             $this->getTo()->toObjectTypeIdBytes(),
             $this->getAmount()->toBytes(),
-            $this->getMemo()->toBytes(),
+            $this->getMemo() ? $this->getMemo()->toBytes() : '00',
             $this->getExtensions() ?
                 VarInt::encodeDecToHex(sizeof($this->getExtensions()))
                 . '' // TODO array_map each element toBytes()
