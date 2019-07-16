@@ -1,6 +1,6 @@
 {
     "name": "decentfoundation/dcorephp-sdk",
-    "version": "2.4.1",
+    "version": "2.5.0",
     "description": "DCore PHP SDK library",
     "type": "library",
     "license": "GPL-3.0-only",
