@@ -8,14 +8,14 @@ use Symfony\Component\PropertyAccess\PropertyAccessor;
 
 abstract class BaseRequest
 {
-    public const API_GROUP_DATABASE = 0;
-    public const API_GROUP_LOGIN = 1;
-    public const API_GROUP_BROADCAST = 2;
-    public const API_GROUP_HISTORY = 3;
-    public const API_GROUP_CRYPTO = 4;
-    public const API_GROUP_MESSAGING = 5;
+    public const API_GROUP_DATABASE = 'database_api';
+    public const API_GROUP_LOGIN = 'login_api';
+    public const API_GROUP_BROADCAST = 'network_broadcast_api';
+    public const API_GROUP_HISTORY = 'history_api';
+    public const API_GROUP_CRYPTO = 'crypto_api';
+    public const API_GROUP_MESSAGING = 'messaging_api';
 
-    /** @var int */
+    /** @var string */
     protected $apiGroup;
     /** @var string */
     protected $method;
@@ -29,7 +29,7 @@ abstract class BaseRequest
     private $withCallback;
 
     /**
-     * @param int $apiGroup
+     * @param string $apiGroup
      * @param string $method
      * @param array $params tuple, needs to resolve to json array after json_encode() call
      * @param bool $withCallback
@@ -37,7 +37,7 @@ abstract class BaseRequest
      * @param integer $id
      */
     public function __construct(
-        int $apiGroup,
+        string $apiGroup,
         string $method,
         array $params = [],
         $withCallback = false,
@@ -53,7 +53,7 @@ abstract class BaseRequest
         $this->withCallback = $withCallback;
     }
 
-    public function getApiGroup(): int
+    public function getApiGroup(): string
     {
         return $this->apiGroup;
     }
