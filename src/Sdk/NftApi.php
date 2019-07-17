@@ -28,6 +28,7 @@ use DCorePHP\Net\Model\Request\GetNftsBySymbol;
 use DCorePHP\Net\Model\Request\ListNftData;
 use DCorePHP\Net\Model\Request\ListNfts;
 use DCorePHP\Net\Model\Request\SearchNftHistory;
+use InvalidArgumentException;
 
 class NftApi extends BaseApi implements NftApiInterface
 {
@@ -417,13 +418,24 @@ class NftApi extends BaseApi implements NftApiInterface
     /**
      * @inheritDoc
      */
-    public function createUpdateDataOperationWithNewData(
+    public function createUpdateDataOperationRaw(
         ChainObject $modifier,
         ChainObject $id,
-        $newData,
-        Fee $fee = null
+        array $values,
+        $fee = null
     ): NftUpdateDataOperation {
-        // TODO: Implement createUpdateDataOperationWithNewData() method.
+        $data = $this->getDataRaw($id);
+        $nft = $this->getById($data->getNftId());
+        $toUpdate = NftModel::createUpdateRaw($nft, $values);
+        if (empty($toUpdate)) {
+            throw new InvalidArgumentException('No values to update');
+        }
+        $operation = new NftUpdateDataOperation();
+        $operation
+            ->setModifier($modifier)
+            ->setId($id)
+            ->setData($toUpdate);
+        return $operation;
     }
 
     /**
@@ -445,13 +457,17 @@ class NftApi extends BaseApi implements NftApiInterface
     /**
      * @inheritDoc
      */
-    public function updateDataWithNewData(
+    public function updateDataRaw(
         Credentials $credentials,
         ChainObject $id,
-        $newData,
-        Fee $fee = null
+        array $values,
+        $fee = null
     ): TransactionConfirmation {
-        // TODO: Implement updateDataWithNewData() method.
+        $fee = $fee ?: new AssetAmount();
+        return $this->dcoreApi->getBroadcastApi()->broadcastOperationWithECKeyPairWithCallback(
+            $credentials->getKeyPair(),
+            $this->createUpdateDataOperationRaw($credentials->getAccount(), $id, $values, $fee)
+        );
     }
 
     private function make(array $data, string $clazz = null) {

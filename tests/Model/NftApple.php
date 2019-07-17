@@ -10,18 +10,15 @@ use DCorePHP\Model\NftModel;
 class NftApple extends NftModel
 {
     /**
-     * @var int
      * @Type("integer")
      */
     public $size;
     /**
-     * @var string
      * @Type("string")
      * @Unique
      */
     public $color;
     /**
-     * @var boolean
      * @Type("boolean")
      * @Modifiable("both")
      */

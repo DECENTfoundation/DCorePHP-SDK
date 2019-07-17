@@ -204,4 +204,19 @@ class NftApiTest extends DCoreSDKTest
         $dataAfter = $nftDataAfter->getData();
 //        $this->assertEquals($eaten, !$dataAfter->getEaten()->getValue());
     }
+
+    public function testUpdateDataRaw(): void
+    {
+        $nftData = $this->sdk->getNftApi()->getDataWithClass(new ChainObject('1.11.0'), NftApple::class);
+        /** @var NftApple $data */
+        $data = $nftData->getData();
+
+        $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
+        $this->sdk->getNftApi()->updateDataRaw($credentials, $nftData->getId(), [['eaten', !$data->eaten]]);
+
+        $nftDataAfter = $this->sdk->getNftApi()->getDataWithClass(new ChainObject('1.11.0'), NftApple::class);
+        /** @var NftApple $dataAfter */
+//        $dataAfter = $nftDataAfter->getData();
+//        $this->assertEquals($eaten, !$dataAfter->getEaten()->getValue());
+    }
 }

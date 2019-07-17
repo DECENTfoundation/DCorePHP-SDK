@@ -98,6 +98,34 @@ class NftModel
         return $filtered;
     }
 
+    public static function createUpdateRaw(Nft $nft, array $values): array {
+        $result = [];
+        foreach ($nft->getDefinitions() as $definition) {
+            if ($definition->getModifiable() !== NftDataType::NOBODY && ($definition->getName() !== '' || $definition->getName() !== null)) {
+                $value = self::getValue($values, $definition->getName());
+                if ($value !== null) {
+                    $result[] = [$definition->getName(), $value];
+                }
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * @param array $values
+     * @param string $name
+     *
+     * @return mixed|null
+     */
+    private static function getValue(array $values, string $name) {
+        foreach ($values as $value) {
+            if ($value[0] === $name) {
+                return $value[1];
+            }
+        }
+        return null;
+    }
+
     public function getPropertyValue(ReflectionProperty $property) {
         if ($property->isPrivate()) {
             $property->setAccessible(true);
