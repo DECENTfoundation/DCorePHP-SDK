@@ -23,7 +23,7 @@ class NftApple extends NftModel
     /**
      * @var boolean
      * @Type("boolean")
-     * @Modifiable("nobody")
+     * @Modifiable("both")
      */
     public $eaten;
 

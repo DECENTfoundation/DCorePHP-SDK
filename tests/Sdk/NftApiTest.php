@@ -181,6 +181,14 @@ class NftApiTest extends DCoreSDKTest
         $this->assertEquals(1, $issuedNft->getCurrentSupply());
     }
 
+    public function testTransfer(): void
+    {
+        $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
+        $this->sdk->getNftApi()->transfer($credentials, new ChainObject(DCoreSDKTest::ACCOUNT_ID_2), new ChainObject('1.11.0'));
+        $issuedNft = $this->sdk->getNftApi()->getBySymbol($this->nftSymbol);
+        $this->assertEquals(1, $issuedNft->getCurrentSupply());
+    }
+
     public function testUpdateData(): void
     {
         $nftData = $this->sdk->getNftApi()->getDataWithClass(new ChainObject('1.11.0'), NftApple::class);
@@ -191,9 +199,9 @@ class NftApiTest extends DCoreSDKTest
         $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
         $this->sdk->getNftApi()->updateData($credentials, $nftData->getId(), $data);
 
-//        $nftDataAfter = $this->sdk->getNftApi()->getDataWithClass(new ChainObject('1.11.0'), NftApple::class);
-//        /** @var NftApple $dataAfter */
-//        $dataAfter = $nftDataAfter->getData();
+        $nftDataAfter = $this->sdk->getNftApi()->getDataWithClass(new ChainObject('1.11.0'), NftApple::class);
+        /** @var NftApple $dataAfter */
+        $dataAfter = $nftDataAfter->getData();
 //        $this->assertEquals($eaten, !$dataAfter->getEaten()->getValue());
     }
 }

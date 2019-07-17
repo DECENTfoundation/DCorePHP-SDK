@@ -87,20 +87,10 @@ class NftUpdateDataOperation extends BaseOperation
             [
                 'modifier' => $this->getModifier()->getId(),
                 'nft_data_id' => $this->getId()->getId(),
-                'data' => $this->getDataAsArray(),
+                'data' => $this->getData(),
                 'fee' => $this->getFee()->toArray(),
             ],
         ];
-    }
-
-    private function getDataAsArray(): array
-    {
-        $result = [];
-        /** @var Variant $variant */
-        foreach ($this->getData() as $variant) {
-            $result[] = [$variant->getName(), $variant->getValue()];
-        }
-        return $result;
     }
 
     public function toBytes(): string
@@ -110,12 +100,12 @@ class NftUpdateDataOperation extends BaseOperation
             $this->getFee()->toBytes(),
             $this->getModifier()->toBytes(),
             $this->getId()->toBytes(),
-            VarInt::encodeDecToHex(sizeof($this->getData())),
-            implode('', array_map(static function (Variant $element) {
+            VarInt::encodeDecToHex(count($this->getData())),
+            implode('', array_map(static function ($element) {
                 return implode('', [
-                    VarInt::encodeDecToHex(sizeof(Math::stringToByteArray($element->getName()))),
-                    Math::byteArrayToHex(Math::stringToByteArray($element->getName())),
-                    $element->toBytes()]);
+                    VarInt::encodeDecToHex(sizeof(Math::stringToByteArray($element[0]))),
+                    Math::byteArrayToHex(Math::stringToByteArray($element[0])),
+                    Variant::toBytes($element[1])]);
             }, $this->getData())),
             '00',
         ]);

@@ -5,7 +5,6 @@ namespace DCorePHP\Sdk;
 use DCorePHP\Crypto\Credentials;
 use DCorePHP\DCoreApi;
 use DCorePHP\Exception\ObjectNotFoundException;
-use DCorePHP\Exception\ValidationException;
 use DCorePHP\Model\Asset\AssetAmount;
 use DCorePHP\Model\ChainObject;
 use DCorePHP\Model\Memo;
@@ -24,7 +23,11 @@ use DCorePHP\Net\Model\Request\GetNftCount;
 use DCorePHP\Net\Model\Request\GetNftData;
 use DCorePHP\Net\Model\Request\GetNftDataCount;
 use DCorePHP\Net\Model\Request\GetNfts;
+use DCorePHP\Net\Model\Request\GetNftsBalances;
 use DCorePHP\Net\Model\Request\GetNftsBySymbol;
+use DCorePHP\Net\Model\Request\ListNftData;
+use DCorePHP\Net\Model\Request\ListNfts;
+use DCorePHP\Net\Model\Request\SearchNftHistory;
 
 class NftApi extends BaseApi implements NftApiInterface
 {
@@ -91,7 +94,7 @@ class NftApi extends BaseApi implements NftApiInterface
      */
     public function getAllData(array $ids): array
     {
-        // TODO: Implement getAllData() method.
+        return $this->make($this->getAllDataRaw($ids));
     }
 
     /**
@@ -102,6 +105,9 @@ class NftApi extends BaseApi implements NftApiInterface
         return $this->dcoreApi->requestWebsocket(new GetNftData($ids));
     }
 
+    /**
+     * @inheritDoc
+     */
     public function getAllDataWithClass(array $ids, string $class): array
     {
         return $this->make($this->dcoreApi->requestWebsocket(new GetNftData($ids)), $class);
@@ -125,7 +131,12 @@ class NftApi extends BaseApi implements NftApiInterface
      */
     public function getData(ChainObject $id): NftData
     {
-        // TODO: Implement getData() method.
+        $data = $this->getAllData([$id]);
+        $data = reset($data);
+        if ($data instanceof NftData) {
+            return $data;
+        }
+        throw new ObjectNotFoundException("Nft with symbol $id doesn't exist.");
     }
 
     /**
@@ -133,18 +144,12 @@ class NftApi extends BaseApi implements NftApiInterface
      */
     public function getDataRaw(ChainObject $id): NftData
     {
-        $dataArray = $this->getAllDataRaw([$id]);
-        $data = reset($nfts);
-
-        return $data;
-
-        // TODO
-
-//        if ($data instanceof Nft) {
-//            return $data;
-//        }
-
-//        throw new ObjectNotFoundException("Nft with symbol $id doesn't exist.");
+        $data = $this->getAllDataRaw([$id]);
+        $data = reset($data);
+        if ($data instanceof NftData) {
+            return $data;
+        }
+        throw new ObjectNotFoundException("Nft with symbol $id doesn't exist.");
     }
 
     /**
@@ -168,7 +173,7 @@ class NftApi extends BaseApi implements NftApiInterface
      */
     public function getNftBalancesRaw(ChainObject $account, array $nftIds = []): array
     {
-        // TODO: Implement getNftBalancesRaw() method.
+        return $this->dcoreApi->requestWebsocket(new GetNftsBalances($account, $nftIds));
     }
 
     /**
@@ -176,7 +181,15 @@ class NftApi extends BaseApi implements NftApiInterface
      */
     public function getNftBalances(ChainObject $account, array $nftIds = []): array
     {
-        // TODO: Implement getNftBalances() method.
+        return $this->make($this->getNftBalancesRaw($account, $nftIds));
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getNftBalancesWithClass(ChainObject $account, ChainObject $nftId, string $class): array
+    {
+        return $this->make($this->getNftBalancesRaw($account, [$nftId]), $class);
     }
 
     /**
@@ -184,7 +197,15 @@ class NftApi extends BaseApi implements NftApiInterface
      */
     public function listAllRelative(string $lowerBound = '', int $limit = DCoreApi::REQ_LIMIT_MAX): array
     {
-        // TODO: Implement listAllRelative() method.
+        return $this->dcoreApi->requestWebsocket(new ListNfts($lowerBound, $limit));
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function listDataByNftWithClass(ChainObject $nftId, string $class): array
+    {
+        return $this->make($this->listDataByNftRaw($nftId), $class);
     }
 
     /**
@@ -192,7 +213,7 @@ class NftApi extends BaseApi implements NftApiInterface
      */
     public function listDataByNft(ChainObject $nftId): array
     {
-        // TODO: Implement listDataByNft() method.
+        return $this->make($this->listDataByNftRaw($nftId));
     }
 
     /**
@@ -200,7 +221,7 @@ class NftApi extends BaseApi implements NftApiInterface
      */
     public function listDataByNftRaw(ChainObject $nftId): array
     {
-        // TODO: Implement listDataByNftRaw() method.
+        return $this->dcoreApi->requestWebsocket(new ListNftData($nftId));
     }
 
     /**
@@ -208,7 +229,7 @@ class NftApi extends BaseApi implements NftApiInterface
      */
     public function searchNftHistory(ChainObject $nftDataId): array
     {
-        // TODO: Implement searchNftHistory() method.
+        return $this->dcoreApi->requestWebsocket(new SearchNftHistory($nftDataId));
     }
 
     /**
@@ -346,9 +367,16 @@ class NftApi extends BaseApi implements NftApiInterface
         ChainObject $to,
         ChainObject $id,
         Memo $memo = null,
-        Fee $fee = null
+        $fee = null
     ): NftTransferOperation {
-        // TODO: Implement createTransferOperation() method.
+        $operation = new NftTransferOperation();
+        $operation
+            ->setFrom($from)
+            ->setTo($to)
+            ->setId($id)
+            ->setMemo($memo)
+            ->setFee($fee);
+        return $operation;
     }
 
     /**
@@ -357,11 +385,15 @@ class NftApi extends BaseApi implements NftApiInterface
     public function transfer(
         Credentials $credentials,
         ChainObject $to,
-        ChainObject $from,
+        ChainObject $id,
         Memo $memo = null,
-        Fee $fee = null
+        $fee = null
     ): TransactionConfirmation {
-        // TODO: Implement transfer() method.
+        $fee = $fee ?: new AssetAmount();
+        return $this->dcoreApi->getBroadcastApi()->broadcastOperationWithECKeyPairWithCallback(
+            $credentials->getKeyPair(),
+            $this->createTransferOperation($credentials->getAccount(), $to, $id, $memo, $fee)
+        );
     }
 
     /**

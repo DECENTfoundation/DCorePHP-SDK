@@ -10,6 +10,7 @@ use Doctrine\Common\Annotations\AnnotationReader;
 use GMP;
 use ReflectionClass;
 use ReflectionException;
+use ReflectionProperty;
 
 class NftModel
 {
@@ -57,10 +58,7 @@ class NftModel
         $values = [];
 
         foreach ($properties as $property) {
-            if ($property->isPrivate()) {
-                $property->setAccessible(true);
-            }
-            $values[] = $property->getValue($this);
+            $values[] = $this->getPropertyValue($property);
         }
         return $values;
     }
@@ -75,5 +73,35 @@ class NftModel
     public static function make($data, $class) {
         $reflection = new ReflectionClass($class);
         return $reflection->newInstanceArgs($data);
+    }
+
+    /**
+     * @throws AnnotationException
+     * @throws ReflectionException
+     */
+    public function createUpdate(): array {
+        $reflection = new ReflectionClass($this);
+        $reader = new AnnotationReader();
+        $filtered = [];
+
+        $properties = $reflection->getProperties();
+        foreach ($properties as $property) {
+            $annotations = $reader->getPropertyAnnotations($property);
+            $name = $property->getName();
+            foreach ($annotations as $annotation) {
+                if ($annotation instanceof Modifiable) {
+                    $value = $this->getPropertyValue($property);
+                    $filtered[] = $annotation->modifiable !== 'nobody' ? [$name, $value] : null;
+                }
+            }
+        }
+        return $filtered;
+    }
+
+    public function getPropertyValue(ReflectionProperty $property) {
+        if ($property->isPrivate()) {
+            $property->setAccessible(true);
+        }
+        return $property->getValue($this);
     }
 }

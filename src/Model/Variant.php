@@ -14,7 +14,7 @@ class Variant
     public const BOOL_TYPE = 4;
     public const STRING_TYPE = 5;
 
-    public static function toByte($value): string
+    public static function toBytes($value): string
     {
         if ($value instanceof GMP) {
             $type = gmp_cmp($value, 0) >= 0 ? self::UINT64_TYPE : self::INT64_TYPE;

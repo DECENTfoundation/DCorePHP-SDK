@@ -150,7 +150,7 @@ class NftIssueOperation extends BaseOperation
             $this->getTo()->toBytes(),
             $this->getId()->toBytes(),
             VarInt::encodeDecToHex(sizeof($this->getData())),
-            implode('', array_map(static function ($value) { return Variant::toByte($value); }, $this->getData())),
+            implode('', array_map(static function ($value) { return Variant::toBytes($value); }, $this->getData())),
             $this->getMemo() ? $this->getMemo()->toBytes() : '00',
             '00'
         ]);
