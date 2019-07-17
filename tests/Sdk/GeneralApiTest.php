@@ -20,13 +20,13 @@ class GeneralApiTest extends DCoreSDKTest
 {
     public function testGetInfo(): void
     {
-        $info = $this->sdk->getGeneralApi()->info();
+        $info = self::$sdk->getGeneralApi()->info();
         $this->assertEquals('database_api', $info);
     }
 
     public function testGetChainProps(): void
     {
-        $chainProps = $this->sdk->getGeneralApi()->getChainProperties();
+        $chainProps = self::$sdk->getGeneralApi()->getChainProperties();
 
         $this->assertInstanceOf(ChainProperty::class, $chainProps);
         $this->assertEquals('2.9.0', $chainProps->getId()->getId());
@@ -35,7 +35,7 @@ class GeneralApiTest extends DCoreSDKTest
 
     public function testGetGlobalProps(): void
     {
-        $globalProps = $this->sdk->getGeneralApi()->getGlobalProperties();
+        $globalProps = self::$sdk->getGeneralApi()->getGlobalProperties();
 
         $this->assertInstanceOf(GlobalProperty::class, $globalProps);
         $this->assertEquals('2.0.0', $globalProps->getId());
@@ -45,20 +45,20 @@ class GeneralApiTest extends DCoreSDKTest
 
     public function testGetConfig(): void
     {
-        $config = $this->sdk->getGeneralApi()->getConfig();
+        $config = self::$sdk->getGeneralApi()->getConfig();
         $this->assertEquals('DCT', $config->getGrapheneSymbol());
         $this->assertEquals('DCT', $config->getGrapheneAddressPrefix());
     }
 
     public function testChainId(): void
     {
-        $chainId = $this->sdk->getGeneralApi()->getChainId();
+        $chainId = self::$sdk->getGeneralApi()->getChainId();
         $this->assertEquals('34b44a8df3c6910cbe4ca4656b4d23e8d6dc137b2ef8d1313d4b39fea05ff7be', $chainId);
     }
 
     public function testGetDynamicProperties(): void
     {
-        $dynamicGlobalProps = $this->sdk->getGeneralApi()->getDynamicGlobalProperties();
+        $dynamicGlobalProps = self::$sdk->getGeneralApi()->getDynamicGlobalProperties();
         $this->assertEquals('2.1.0', $dynamicGlobalProps->getId());
     }
 
@@ -67,7 +67,7 @@ class GeneralApiTest extends DCoreSDKTest
      */
     public function testTimeToMaintenance(): void
     {
-        $minerReward = $this->sdk->getGeneralApi()->getTimeToMaintenance('2018-10-13T22:26:02.825');
+        $minerReward = self::$sdk->getGeneralApi()->getTimeToMaintenance('2018-10-13T22:26:02.825');
         $this->assertInstanceOf(MinerRewardInput::class, $minerReward);
     }
 

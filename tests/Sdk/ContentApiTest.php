@@ -42,9 +42,9 @@ class ContentApiTest extends DCoreSDKTest
             ->setPrice([(new RegionalPrice)->setPrice((new AssetAmount())->setAmount(1000))->setRegion(1)]);
 
         $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
-        $this->sdk->getContentApi()->create($content, $credentials, (new AssetAmount())->setAmount(1000000)->setAssetId('1.3.0'), (new AssetAmount())->setAmount(1000000)->setAssetId('1.3.0'));
+        self::$sdk->getContentApi()->create($content, $credentials, (new AssetAmount())->setAmount(1000000)->setAssetId('1.3.0'), (new AssetAmount())->setAmount(1000000)->setAssetId('1.3.0'));
 
-        $submittedContentObject = $this->sdk->getContentApi()->getByURI($this->contentUri);
+        $submittedContentObject = self::$sdk->getContentApi()->getByURI($this->contentUri);
         $this->contentId = $submittedContentObject->getId();
     }
 
@@ -54,7 +54,7 @@ class ContentApiTest extends DCoreSDKTest
      */
     public function testGenerateKeys(): void
     {
-        $contentKeys = $this->sdk->getContentApi()->generateKeys([]);
+        $contentKeys = self::$sdk->getContentApi()->generateKeys([]);
 
         $this->assertInstanceOf(ContentKeys::class, $contentKeys);
     }
@@ -66,10 +66,10 @@ class ContentApiTest extends DCoreSDKTest
      */
     public function testGet(): void
     {
-        $contentByURI = $this->sdk->getContentApi()->getByURI($this->contentUri);
+        $contentByURI = self::$sdk->getContentApi()->getByURI($this->contentUri);
 
         /** @var ContentObject $content */
-        $content = $this->sdk->getContentApi()->get($contentByURI->getId());
+        $content = self::$sdk->getContentApi()->get($contentByURI->getId());
 
         $this->assertEquals($this->contentUri, $content->getURI());
         $this->assertEquals('1.2.27', $content->getAuthor());
@@ -83,7 +83,7 @@ class ContentApiTest extends DCoreSDKTest
      */
     public function testGetByURI(): void
     {
-        $content = $this->sdk->getContentApi()->getByURI($this->contentUri);
+        $content = self::$sdk->getContentApi()->getByURI($this->contentUri);
 
         $this->assertEquals($this->contentUri, $content->getURI());
         $this->assertEquals('1.2.27', $content->getAuthor());
@@ -93,14 +93,14 @@ class ContentApiTest extends DCoreSDKTest
     // TODO: Untested no data
     public function testListAllPublishersRelative(): void
     {
-        $sth = $this->sdk->getContentApi()->listAllPublishersRelative('');
+        $sth = self::$sdk->getContentApi()->listAllPublishersRelative('');
         $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
     }
 
     public function testRestoreEncryptionKey(): void
     {
         $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
-//        $response = $this->sdk->getContentApi()->restoreEncryptionKey(
+//        $response = self::$sdk->getContentApi()->restoreEncryptionKey(
 //            (new PubKey())->setPubKey('8149734503494312909116126763927194608124629667940168421251424974828815164868905638030541425377704620941193711130535974967507480114755414928915429397074890'),
 //            new ChainObject('2.12.3')
 //        );
@@ -110,7 +110,7 @@ class ContentApiTest extends DCoreSDKTest
 
     public function testFindAll(): void
     {
-        $contents = $this->sdk->getContentApi()->findAll();
+        $contents = self::$sdk->getContentApi()->findAll();
 
         $this->assertInternalType('array', $contents);
 
@@ -125,7 +125,7 @@ class ContentApiTest extends DCoreSDKTest
     public function testCreatePurchaseOperation(): void
     {
         $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
-        $purchaseOp = $this->sdk->getContentApi()->createPurchaseOperation($credentials, clone $this->contentId);
+        $purchaseOp = self::$sdk->getContentApi()->createPurchaseOperation($credentials, clone $this->contentId);
 
         $this->assertEquals(DCoreSDKTest::ACCOUNT_ID_1, $purchaseOp->getConsumer());
         $this->assertEquals($this->contentUri, $purchaseOp->getUri());
@@ -139,9 +139,9 @@ class ContentApiTest extends DCoreSDKTest
     {
         $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
 
-        $this->sdk->getContentApi()->purchase($credentials, $this->contentId);
+        self::$sdk->getContentApi()->purchase($credentials, $this->contentId);
 
-        $contentAfter = $this->sdk->getContentApi()->getByURI($this->contentUri);
+        $contentAfter = self::$sdk->getContentApi()->getByURI($this->contentUri);
         $this->assertEquals(1, $contentAfter->getTimesBought());
     }
 
@@ -172,9 +172,9 @@ class ContentApiTest extends DCoreSDKTest
             ->setPrice([(new RegionalPrice)->setPrice((new AssetAmount())->setAmount(1000))->setRegion(1)]);
 
         $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
-        $this->sdk->getContentApi()->create($content, $credentials, (new AssetAmount())->setAmount(1000000)->setAssetId('1.3.0'), (new AssetAmount())->setAmount(1000000)->setAssetId('1.3.0'));
+        self::$sdk->getContentApi()->create($content, $credentials, (new AssetAmount())->setAmount(1000000)->setAssetId('1.3.0'), (new AssetAmount())->setAmount(1000000)->setAssetId('1.3.0'));
 
-        $submittedContentObject = $this->sdk->getContentApi()->getByURI($randomUri);
+        $submittedContentObject = self::$sdk->getContentApi()->getByURI($randomUri);
         $this->assertEquals( $randomUri, $submittedContentObject->getURI());
         $this->assertEquals(DCoreSDKTest::ACCOUNT_ID_1, $submittedContentObject->getAuthor());
         $this->assertEquals('2222222222222222222222222222222222222222', $submittedContentObject->getHash());
@@ -206,12 +206,12 @@ class ContentApiTest extends DCoreSDKTest
             ->setExpiration($expiration)
             ->setPrice([(new RegionalPrice)->setPrice((new AssetAmount())->setAmount(1000))->setRegion(1)]);
 
-        $this->sdk->getContentApi()->create($content, $credentials, (new AssetAmount())->setAmount(1000000)->setAssetId('1.3.0'), (new AssetAmount())->setAmount(1000000)->setAssetId('1.3.0'));
+        self::$sdk->getContentApi()->create($content, $credentials, (new AssetAmount())->setAmount(1000000)->setAssetId('1.3.0'), (new AssetAmount())->setAmount(1000000)->setAssetId('1.3.0'));
 
         $content->setSynopsis(json_encode(['title' => 'Game Title Updated by PHP', 'description' => 'Description Updated by PHP', 'content_type_id' => '1.2.3']));
-        $this->sdk->getContentApi()->update($content, $credentials, (new AssetAmount())->setAmount(1000001)->setAssetId('1.3.0'), (new AssetAmount())->setAmount(1000001)->setAssetId('1.3.0'));
+        self::$sdk->getContentApi()->update($content, $credentials, (new AssetAmount())->setAmount(1000001)->setAssetId('1.3.0'), (new AssetAmount())->setAmount(1000001)->setAssetId('1.3.0'));
 
-        $submittedContentObject = $this->sdk->getContentApi()->getByURI($uri);
+        $submittedContentObject = self::$sdk->getContentApi()->getByURI($uri);
         $this->assertEquals( $uri, $submittedContentObject->getURI());
         $this->assertEquals(DCoreSDKTest::ACCOUNT_ID_1, $submittedContentObject->getAuthor());
         $this->assertEquals('Game Title Updated by PHP', $submittedContentObject->getSynopsisDecoded()['title']);
@@ -242,15 +242,15 @@ class ContentApiTest extends DCoreSDKTest
 //            ->setExpiration(new \DateTime('+2 day'))
 //            ->setPrice([(new RegionalPrice)->setPrice((new AssetAmount())->setAmount(1000))->setRegion(1)]);
 //
-//        $this->sdk->getContentApi()->create($content, $credentials, (new AssetAmount())->setAmount(0)->setAssetId('1.3.0'), (new AssetAmount())->setAmount(1000)->setAssetId('1.3.0'));
+//        self::$sdk->getContentApi()->create($content, $credentials, (new AssetAmount())->setAmount(0)->setAssetId('1.3.0'), (new AssetAmount())->setAmount(1000)->setAssetId('1.3.0'));
 //
 //        dump('Before:');
-//        dump($this->sdk->getContentApi()->getByURI($randomUri));
+//        dump(self::$sdk->getContentApi()->getByURI($randomUri));
 //
-//        $this->sdk->getContentApi()->deleteByUrl($randomUri, $credentials, (new AssetAmount())->setAmount(0)->setAssetId('1.3.0'));
+//        self::$sdk->getContentApi()->deleteByUrl($randomUri, $credentials, (new AssetAmount())->setAmount(0)->setAssetId('1.3.0'));
 //
 //        dump('After:');
-//        dump($this->sdk->getContentApi()->getByURI($randomUri));
+//        dump(self::$sdk->getContentApi()->getByURI($randomUri));
     }
 
     public function testSubmitContentAsync(): void

@@ -16,7 +16,7 @@ class PurchaseApiTest extends DCoreSDKTest
 
     public function testGetAllHistory(): void
     {
-        $purchases = $this->sdk->getPurchaseApi()->getAllHistory(new ChainObject('1.2.34'));
+        $purchases = self::$sdk->getPurchaseApi()->getAllHistory(new ChainObject('1.2.34'));
 
         foreach ($purchases as $purchase) {
             $this->assertInstanceOf(Purchase::class, $purchase);
@@ -27,7 +27,7 @@ class PurchaseApiTest extends DCoreSDKTest
 
     public function testGetAllOpen(): void
     {
-        $purchases = $this->sdk->getPurchaseApi()->getAllOpen();
+        $purchases = self::$sdk->getPurchaseApi()->getAllOpen();
 
         foreach ($purchases as $purchase) {
             $this->assertInstanceOf(Purchase::class, $purchase);
@@ -39,7 +39,7 @@ class PurchaseApiTest extends DCoreSDKTest
     public function testGetAllOpenByUri(): void
     {
 
-        $purchases = $this->sdk->getPurchaseApi()->getAllOpenByUri('http://some.uri');
+        $purchases = self::$sdk->getPurchaseApi()->getAllOpenByUri('http://some.uri');
 
         foreach ($purchases as $purchase) {
             $this->assertInstanceOf(Purchase::class, $purchase);
@@ -50,7 +50,7 @@ class PurchaseApiTest extends DCoreSDKTest
 
     public function testGetAllOpenByAccount(): void
     {
-        $purchases = $this->sdk->getPurchaseApi()->getAllOpenByAccount(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1));
+        $purchases = self::$sdk->getPurchaseApi()->getAllOpenByAccount(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1));
 
         foreach ($purchases as $purchase) {
             $this->assertInstanceOf(Purchase::class, $purchase);
@@ -65,7 +65,7 @@ class PurchaseApiTest extends DCoreSDKTest
     public function testGet(): void
     {
         $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
-//        $purchase = $this->sdk->getPurchaseApi()->get(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), 'ipfs:QmWBoRBYuxzH5a8d3gssRbMS5scs6fqLKgapBfqVNUFUtZ');
+//        $purchase = self::$sdk->getPurchaseApi()->get(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), 'ipfs:QmWBoRBYuxzH5a8d3gssRbMS5scs6fqLKgapBfqVNUFUtZ');
 //
 //        $this->assertEquals(DCoreSDKTest::ACCOUNT_ID_1, $purchase->getConsumer()->getId());
 //        $this->assertEquals('ipfs:QmWBoRBYuxzH5a8d3gssRbMS5scs6fqLKgapBfqVNUFUtZ', $purchase->getUri());
@@ -73,7 +73,7 @@ class PurchaseApiTest extends DCoreSDKTest
 
     public function testFindAll(): void
     {
-        $purchases = $this->sdk->getPurchaseApi()->findAll(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), 'new');
+        $purchases = self::$sdk->getPurchaseApi()->findAll(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), 'new');
 
         foreach ($purchases as $purchase) {
             $this->assertInstanceOf(Purchase::class, $purchase);
@@ -84,7 +84,7 @@ class PurchaseApiTest extends DCoreSDKTest
 
     public function testFindAllForFeedback(): void
     {
-        $purchases = $this->sdk->getPurchaseApi()->findAllForFeedback('');
+        $purchases = self::$sdk->getPurchaseApi()->findAllForFeedback('');
 
         $this->assertInternalType('array', $purchases);
     }
@@ -115,19 +115,19 @@ class PurchaseApiTest extends DCoreSDKTest
 
         $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
 
-        $this->sdk->getContentApi()->create(
+        self::$sdk->getContentApi()->create(
             $content,
             $credentials,
             (new AssetAmount())->setAmount(1000000)->setAssetId('1.3.0'),
             (new AssetAmount())->setAmount(1000000)->setAssetId('1.3.0'));
 
-        $content = $this->sdk->getContentApi()->getByURI($randomUri);
+        $content = self::$sdk->getContentApi()->getByURI($randomUri);
 
-        $this->sdk->getContentApi()->purchase($credentials, $content->getId());
+        self::$sdk->getContentApi()->purchase($credentials, $content->getId());
 
-        $this->sdk->getPurchaseApi()->rateAndComment($credentials, $content->getURI(), 5, 'PHP Rating Comment');
+        self::$sdk->getPurchaseApi()->rateAndComment($credentials, $content->getURI(), 5, 'PHP Rating Comment');
 
-        $contentAfter = $this->sdk->getContentApi()->getByURI($randomUri);
+        $contentAfter = self::$sdk->getContentApi()->getByURI($randomUri);
         $this->assertEquals(5000, $contentAfter->getAVGRating());
     }
 

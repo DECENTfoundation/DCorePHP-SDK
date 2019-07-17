@@ -21,7 +21,7 @@ class SubscriptionApiTest extends DCoreSDKTest
     public function testGet(): void
     {
         $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
-//        $subscription = $this->sdk->getSubscriptionApi()->get(new ChainObject('2.15.0'));
+//        $subscription = self::$sdk->getSubscriptionApi()->get(new ChainObject('2.15.0'));
 //
 //        $this->assertEquals('2.15.0', $subscription->getId()->getId());
 //        $this->assertFalse($subscription->isRenewal());
@@ -32,7 +32,7 @@ class SubscriptionApiTest extends DCoreSDKTest
      */
     public function testGetAllActiveByConsumer(): void
     {
-        $subscriptions = $this->sdk->getSubscriptionApi()->getAllActiveByConsumer(new ChainObject('1.2.62'));
+        $subscriptions = self::$sdk->getSubscriptionApi()->getAllActiveByConsumer(new ChainObject('1.2.62'));
 
         if (empty($subscriptions)) {
             $this->expectNotToPerformAssertions();
@@ -48,7 +48,7 @@ class SubscriptionApiTest extends DCoreSDKTest
      */
     public function testGetAllActiveByAuthor(): void
     {
-        $subscriptions = $this->sdk->getSubscriptionApi()->getAllActiveByAuthor(new ChainObject('1.2.62'));
+        $subscriptions = self::$sdk->getSubscriptionApi()->getAllActiveByAuthor(new ChainObject('1.2.62'));
 
         if (empty($subscriptions)) {
             $this->expectNotToPerformAssertions();
@@ -64,7 +64,7 @@ class SubscriptionApiTest extends DCoreSDKTest
     public function testGetAllByConsumer(): void
     {
         $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
-//        $subscriptions = $this->sdk->getSubscriptionApi()->getAllByConsumer(new ChainObject('1.2.83'));
+//        $subscriptions = self::$sdk->getSubscriptionApi()->getAllByConsumer(new ChainObject('1.2.83'));
 //        $subscription = reset($subscriptions);
 //
 //        $this->assertEquals('1.2.83', $subscription->getFrom()->getId());
@@ -76,7 +76,7 @@ class SubscriptionApiTest extends DCoreSDKTest
     public function testGetAllByAuthor(): void
     {
         $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
-//        $subscriptions = $this->sdk->getSubscriptionApi()->getAllByAuthor(new ChainObject('1.2.82'));
+//        $subscriptions = self::$sdk->getSubscriptionApi()->getAllByAuthor(new ChainObject('1.2.82'));
 //        $subscription = reset($subscriptions);
 //
 //        $this->assertEquals('1.2.82', $subscription->getTo()->getId());

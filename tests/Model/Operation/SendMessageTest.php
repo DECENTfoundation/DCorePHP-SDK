@@ -23,8 +23,8 @@ class SendMessageTest extends DCoreSDKTest
 //     */
 //    public function testToBytesEncrypted(): void
 //    {
-//        $sender = $this->sdk->getAccountApi()->get(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1));
-//        $recipient = $this->sdk->getAccountApi()->get(new ChainObject(DCoreSDKTest::ACCOUNT_ID_2));
+//        $sender = self::$sdk->getAccountApi()->get(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1));
+//        $recipient = self::$sdk->getAccountApi()->get(new ChainObject(DCoreSDKTest::ACCOUNT_ID_2));
 //        $keyPair = ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1);
 //        $msg = Memo::fromECKeyPair('hello messaging api', $keyPair, $recipient->getOptions()->getMemoKey(), '10216254519122646016');
 //        $payloadReceiver = new MessagePayloadReceiver($recipient->getId(), $msg->getMessage(), $recipient->getOptions()->getMemoKey(), $msg->getNonce());
@@ -65,7 +65,7 @@ class SendMessageTest extends DCoreSDKTest
         $from = new ChainObject(DCoreSDKTest::ACCOUNT_ID_1);
         $to = new ChainObject(DCoreSDKTest::ACCOUNT_ID_2);
         $credentials = new Credentials($from, ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
-        $msgOp = $this->sdk->getMessagingApi()->createMessageOperationUnencrypted($credentials, $to, $msg);
+        $msgOp = self::$sdk->getMessagingApi()->createMessageOperationUnencrypted($credentials, $to, $msg);
 
         $this->assertEquals(DCoreSDKTest::ACCOUNT_ID_1, $msgOp->getPayer()->getId());
         $this->assertEquals('7b2266726f6d223a22312e322e3237222c227265636569766572735f64617461223a5b7b22746f223a22312e322e3238222c2264617461223a2230303030303030303638363536633663366632303664363537333733363136373639366536373230363137303639323037353665363536653633373237393730373436353634323034363532346634643230353034383530227d5d7d', $msgOp->getData());

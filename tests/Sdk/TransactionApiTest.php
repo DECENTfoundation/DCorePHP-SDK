@@ -34,7 +34,7 @@ class TransactionApiTest extends DCoreSDKTest
             ->setFrom(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1))
             ->setTo(new ChainObject(DCoreSDKTest::ACCOUNT_ID_2))
             ->setAmount((new AssetAmount())->setAmount(10));
-        $transaction = $this->sdk->getTransactionApi()->createTransaction([$operation]);
+        $transaction = self::$sdk->getTransactionApi()->createTransaction([$operation]);
         $this->assertInstanceOf(Transaction::class, $transaction);
     }
 
@@ -50,7 +50,7 @@ class TransactionApiTest extends DCoreSDKTest
             ->setFrom(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1))
             ->setTo(new ChainObject(DCoreSDKTest::ACCOUNT_ID_2))
             ->setAmount((new AssetAmount())->setAmount(10));
-        $transaction = $this->sdk->getTransactionApi()->createTransactionSingleOperation($operation);
+        $transaction = self::$sdk->getTransactionApi()->createTransactionSingleOperation($operation);
         $this->assertInstanceOf(Transaction::class, $transaction);
     }
 
@@ -59,14 +59,14 @@ class TransactionApiTest extends DCoreSDKTest
      */
     public function testGetAllProposed(): void
     {
-//        $this->sdk->getTransactionApi()->getAllProposed(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1));
+//        self::$sdk->getTransactionApi()->getAllProposed(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1));
         $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
     }
 
     public function testGetRecent(): void
     {
         // TODO: Test response
-//        $transaction = $this->sdk->getTransactionApi()->getRecent('abb2c83679c2217bd20bed723f3a9ffa8653a953');
+//        $transaction = self::$sdk->getTransactionApi()->getRecent('abb2c83679c2217bd20bed723f3a9ffa8653a953');
         $this->markTestIncomplete('This test has not been implemented yet.');
     }
 
@@ -76,7 +76,7 @@ class TransactionApiTest extends DCoreSDKTest
     public function testGetById(): void
     {
         $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
-//        $transaction = $this->sdk->getTransactionApi()->getById('abb2c83679c2217bd20bed723f3a9ffa8653a953');
+//        $transaction = self::$sdk->getTransactionApi()->getById('abb2c83679c2217bd20bed723f3a9ffa8653a953');
 //        $this->assertEquals(53315, $transaction->getRefBlockNum());
 //        $this->assertEquals('1f6083f0939790223832e806e1bbc04612eee8d592061029b6c5ea40fbe712777c1ddfc46db934b17cd6b585f38d183d3d9b274d44371901d7f43ee7ce03e67a20', $transaction->getSignatures()[0]);
     }
@@ -87,7 +87,7 @@ class TransactionApiTest extends DCoreSDKTest
     public function testGetByBlockNum(): void
     {
         $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
-//        $transaction = $this->sdk->getTransactionApi()->getByBlockNum(446532, 0);
+//        $transaction = self::$sdk->getTransactionApi()->getByBlockNum(446532, 0);
 //        $this->assertEquals('1f6083f0939790223832e806e1bbc04612eee8d592061029b6c5ea40fbe712777c1ddfc46db934b17cd6b585f38d183d3d9b274d44371901d7f43ee7ce03e67a20', $transaction->getSignatures()[0]);
 //        $this->assertEquals('1.2.27', $transaction->getOperations()[0]->getFrom()->getId());
     }
@@ -99,14 +99,14 @@ class TransactionApiTest extends DCoreSDKTest
     public function testGetByConfirmation(): void
     {
         $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
-//        $transaction = $this->sdk->getTransactionApi()->getByBlockNum(446532, 0);
+//        $transaction = self::$sdk->getTransactionApi()->getByBlockNum(446532, 0);
 //        $transactionConfirmation = new TransactionConfirmation();
 //        $transactionConfirmation
 //            ->setId('abb2c83679c2217bd20bed723f3a9ffa8653a953')
 //            ->setBlockNum('446532')
 //            ->setTransaction($transaction)
 //            ->setTrxNum('0');
-//        $trxByConfirmation = $this->sdk->getTransactionApi()->getByConfirmation($transactionConfirmation);
+//        $trxByConfirmation = self::$sdk->getTransactionApi()->getByConfirmation($transactionConfirmation);
 //
 //        $this->assertEquals('1f6083f0939790223832e806e1bbc04612eee8d592061029b6c5ea40fbe712777c1ddfc46db934b17cd6b585f38d183d3d9b274d44371901d7f43ee7ce03e67a20', $trxByConfirmation->getSignatures()[0]);
 //        $this->assertEquals(53315, $trxByConfirmation->getRefBlockNum());
@@ -126,8 +126,8 @@ class TransactionApiTest extends DCoreSDKTest
             ->setFrom(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1))
             ->setTo(new ChainObject(DCoreSDKTest::ACCOUNT_ID_2))
             ->setAmount((new AssetAmount())->setAmount(10));
-        $transaction = $this->sdk->getTransactionApi()->createTransaction([$operation]);
-        $res = $this->sdk->getTransactionApi()->getHexDump($transaction);
+        $transaction = self::$sdk->getTransactionApi()->createTransaction([$operation]);
+        $res = self::$sdk->getTransactionApi()->getHexDump($transaction);
 
         $this->assertEquals('00000000000000000000000000', $res);
     }
