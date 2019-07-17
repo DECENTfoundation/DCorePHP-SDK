@@ -28,7 +28,6 @@ use DCorePHP\Sdk\SeederApi;
 use DCorePHP\Sdk\SubscriptionApi;
 use DCorePHP\Sdk\TransactionApi;
 use DCorePHP\Sdk\ValidationApi;
-use InvalidArgumentException;
 use WebSocket\BadOpcodeException;
 
 class DCoreApi extends DCoreSdk

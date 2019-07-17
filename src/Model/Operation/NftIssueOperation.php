@@ -2,6 +2,7 @@
 
 namespace DCorePHP\Model\Operation;
 
+use DCorePHP\Exception\ValidationException;
 use DCorePHP\Model\BaseOperation;
 use DCorePHP\Model\ChainObject;
 use DCorePHP\Model\Memo;
@@ -22,7 +23,7 @@ class NftIssueOperation extends BaseOperation
     /** @var array */
     private $data = [];
     /** @var Memo */
-    private $memo = null;
+    private $memo;
 
     /**
      * @return ChainObject
@@ -33,12 +34,16 @@ class NftIssueOperation extends BaseOperation
     }
 
     /**
-     * @param ChainObject $issuer
+     * @param ChainObject|string $issuer
      *
      * @return NftIssueOperation
+     * @throws ValidationException
      */
-    public function setIssuer(ChainObject $issuer): NftIssueOperation
+    public function setIssuer($issuer): NftIssueOperation
     {
+        if (is_string($issuer)) {
+            $issuer = new ChainObject($issuer);
+        }
         $this->issuer = $issuer;
 
         return $this;
@@ -53,12 +58,16 @@ class NftIssueOperation extends BaseOperation
     }
 
     /**
-     * @param ChainObject $id
+     * @param ChainObject|string $id
      *
      * @return NftIssueOperation
+     * @throws ValidationException
      */
-    public function setId(ChainObject $id): NftIssueOperation
+    public function setId($id): NftIssueOperation
     {
+        if (is_string($id)) {
+            $id = new ChainObject($id);
+        }
         $this->id = $id;
 
         return $this;
@@ -73,12 +82,16 @@ class NftIssueOperation extends BaseOperation
     }
 
     /**
-     * @param ChainObject $to
+     * @param ChainObject|string $to
      *
      * @return NftIssueOperation
+     * @throws ValidationException
      */
-    public function setTo(ChainObject $to): NftIssueOperation
+    public function setTo($to): NftIssueOperation
     {
+        if (is_string($to)) {
+            $to = new ChainObject($to);
+        }
         $this->to = $to;
 
         return $this;

@@ -7,7 +7,6 @@ use DCorePHP\Model\Annotation\Type;
 use DCorePHP\Model\Annotation\Unique;
 use Doctrine\Common\Annotations\AnnotationException;
 use Doctrine\Common\Annotations\AnnotationReader;
-use GMP;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionProperty;

@@ -2,9 +2,9 @@
 
 namespace DCorePHP\Model\Operation;
 
+use DCorePHP\Exception\ValidationException;
 use DCorePHP\Model\BaseOperation;
 use DCorePHP\Model\ChainObject;
-use DCorePHP\Model\NftOptions;
 use DCorePHP\Model\Variant;
 use DCorePHP\Utils\Math;
 use DCorePHP\Utils\VarInt;
@@ -29,12 +29,16 @@ class NftUpdateDataOperation extends BaseOperation
     }
 
     /**
-     * @param ChainObject $modifier
+     * @param ChainObject|string $modifier
      *
      * @return NftUpdateDataOperation
+     * @throws ValidationException
      */
-    public function setModifier(ChainObject $modifier): NftUpdateDataOperation
+    public function setModifier($modifier): NftUpdateDataOperation
     {
+        if (is_string($modifier)) {
+            $modifier = new ChainObject($modifier);
+        }
         $this->modifier = $modifier;
 
         return $this;
@@ -49,12 +53,16 @@ class NftUpdateDataOperation extends BaseOperation
     }
 
     /**
-     * @param ChainObject $id
+     * @param ChainObject|string $id
      *
      * @return NftUpdateDataOperation
+     * @throws ValidationException
      */
-    public function setId(ChainObject $id): NftUpdateDataOperation
+    public function setId($id): NftUpdateDataOperation
     {
+        if (is_string($id)) {
+            $id = new ChainObject($id);
+        }
         $this->id = $id;
 
         return $this;
