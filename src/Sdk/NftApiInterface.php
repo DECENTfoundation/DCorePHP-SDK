@@ -18,7 +18,6 @@ use DCorePHP\Model\Operation\NftIssueOperation;
 use DCorePHP\Model\Operation\NftTransferOperation;
 use DCorePHP\Model\Operation\NftUpdateDataOperation;
 use DCorePHP\Model\Operation\NftUpdateOperation;
-use DCorePHP\Model\Proposal\Fee;
 use DCorePHP\Model\TransactionConfirmation;
 use Doctrine\Common\Annotations\AnnotationException;
 use Exception;
@@ -419,6 +418,9 @@ interface NftApiInterface
      * @param $fee
      *
      * @return NftUpdateDataOperation
+     *
+     * @throws AnnotationException
+     * @throws ReflectionException
      */
     public function createUpdateDataOperation(ChainObject $modifier, ChainObject $id, NftModel $data, $fee = null): NftUpdateDataOperation;
 
@@ -431,6 +433,11 @@ interface NftApiInterface
      * @param $fee
      *
      * @return NftUpdateDataOperation
+     *
+     * @throws ValidationException
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
+     * @throws ObjectNotFoundException
      */
     public function createUpdateDataOperationRaw(ChainObject $modifier, ChainObject $id, array $values, $fee = null): NftUpdateDataOperation;
 
@@ -443,6 +450,8 @@ interface NftApiInterface
      * @param $fee
      *
      * @return TransactionConfirmation
+     *
+     * @throws Exception
      */
     public function updateData(Credentials $credentials, ChainObject $id, NftModel $values, $fee = null): TransactionConfirmation;
 
@@ -455,6 +464,8 @@ interface NftApiInterface
      * @param $fee
      *
      * @return TransactionConfirmation
+     *
+     * @throws Exception
      */
     public function updateDataRaw(Credentials $credentials, ChainObject $id, array $values, $fee = null): TransactionConfirmation;
 }

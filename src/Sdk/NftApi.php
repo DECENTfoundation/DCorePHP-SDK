@@ -17,7 +17,6 @@ use DCorePHP\Model\Operation\NftIssueOperation;
 use DCorePHP\Model\Operation\NftTransferOperation;
 use DCorePHP\Model\Operation\NftUpdateDataOperation;
 use DCorePHP\Model\Operation\NftUpdateOperation;
-use DCorePHP\Model\Proposal\Fee;
 use DCorePHP\Model\TransactionConfirmation;
 use DCorePHP\Net\Model\Request\GetNftCount;
 use DCorePHP\Net\Model\Request\GetNftData;

@@ -139,7 +139,7 @@ class ProcessedTransaction
     /**
      * @return array
      */
-    public function getOpResults(): array
+    public function getOpResults(): ?array
     {
         return $this->opResults;
     }
