@@ -48,8 +48,8 @@ You can find developer documentation for latest release [here](https://decentfou
 
 ```php
 $dcoreApi = new \DCorePHP\DCoreApi(
-    'https://testnet-api.dcore.io/',
-    'wss://testnet-api.dcore.io'
+    'https://testnet.dcore.io/',
+    'wss://testnet-socket.dcore.io'
 );
 ```
 
