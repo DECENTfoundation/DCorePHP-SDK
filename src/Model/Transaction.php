@@ -167,6 +167,7 @@ class Transaction
         do {
             try {
                 $signature = $ecKeyPair->signature($this->toBytes(), $this->getChainId());
+                dump($signature);
             } catch (\Exception $e) {
                 // try again
             }

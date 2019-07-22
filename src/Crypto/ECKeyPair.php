@@ -7,9 +7,15 @@ use DCorePHP\DCoreSdk;
 use DCorePHP\Exception\ValidationException;
 use DCorePHP\Utils\Math;
 use kornrunner\Secp256k1;
+use kornrunner\Serializer\HexPrivateKeySerializer;
 use kornrunner\Serializer\HexSignatureSerializer;
 use Mdanter\Ecc\Crypto\Signature\SignatureInterface;
+use Mdanter\Ecc\Crypto\Signature\Signer;
+use Mdanter\Ecc\Crypto\Signature\SignHasher;
+use Mdanter\Ecc\EccFactory;
 use Mdanter\Ecc\Primitives\PointInterface;
+use Mdanter\Ecc\Serializer\PrivateKey\DerPrivateKeySerializer;
+use Mdanter\Ecc\Serializer\PrivateKey\PemPrivateKeySerializer;
 use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
 use Symfony\Component\Validator\Constraints\NotNull;
 use Symfony\Component\Validator\Validation;
@@ -133,9 +139,41 @@ class ECKeyPair
     {
         $hash = hash('sha256', pack('H*', $chainId . $hexData)); // 1cb9ecc48ea039dda1c4626965db67c241486ce886a007903c8d5446465d7c0c
         $derPrivateKey = $this->getPrivate()->toHex();
-        $derPublicKey = $this->getPublic()->toCompressedPublicKey(); // compressed public key
-        $signature = (new Secp256k1())->sign($hash, $derPrivateKey); // [98168512353566611467237581092075278762442757234040552549754768745652925038257, 44848356081555762428592265712819773562446994169847499152120711725219453447745]
-        $signatureHex = (new HexSignatureSerializer())->serialize($signature); // d90968b241bfdce430bc1dfd15039b08429783d3f1380364294311ca86e0feb16327451e425f07be71768a7fe25d60f232cd12eafe036b9f24b600104415ae41
+//        $derPublicKey = $this->getPublic()->toCompressedPublicKey(); // compressed public key
+//        $signature = (new Secp256k1())->sign($hash, $derPrivateKey); // [98168512353566611467237581092075278762442757234040552549754768745652925038257, 44848356081555762428592265712819773562446994169847499152120711725219453447745]
+//        $signatureHex = (new HexSignatureSerializer())->serialize($signature); // d90968b241bfdce430bc1dfd15039b08429783d3f1380364294311ca86e0feb16327451e425f07be71768a7fe25d60f232cd12eafe036b9f24b600104415ae41
+//        dump("signature");
+//        dump(gmp_strval($signature->getR()));
+//        dump(gmp_strval($signature->getS()));
+
+        dump('-----new life------');
+        $adapter = EccFactory::getAdapter();
+        $generator = EccFactory::getNistCurves()->generator256();
+        $useDerandomizedSignatures = true;
+        $algorithm = 'sha256';
+
+        $serializer = new PemPrivateKeySerializer(new DerPrivateKeySerializer($adapter));
+        dump('kokt');
+        dump($serializer->parse($derPrivateKey));
+//        $key = $pemSerializer->parse($derPrivateKey);
+
+        $hasher = new SignHasher($algorithm, $adapter);
+        $hashD = $hasher->makeHash($hexData, $generator);
+
+        if ($useDerandomizedSignatures) {
+            $random = \Mdanter\Ecc\Random\RandomGeneratorFactory::getHmacRandomGenerator($key, $hashD, $algorithm);
+        } else {
+            $random = \Mdanter\Ecc\Random\RandomGeneratorFactory::getRandomGenerator();
+        }
+        $randomK = $random->generate($generator->getOrder());
+
+        $signer = new Signer($adapter);
+        $signatureD = $signer->sign($key, $hashD, $randomK);
+        dump(gmp_strval($signatureD->getR()));
+        dump(gmp_strval($signatureD->getS()));
+        dump('=======');
+
+        die();
 
         $finalRecId = -1;
         $recId = 31;

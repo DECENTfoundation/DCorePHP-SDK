@@ -2,6 +2,7 @@
 
 namespace DCorePHP\Model;
 
+use DateTime;
 use DCorePHP\Utils\Math;
 
 class BlockData
@@ -10,14 +11,14 @@ class BlockData
     private $refBlockNum;
     /** @var string */
     private $refBlockPrefix;
-    /** @var \DateTime */
+    /** @var DateTime */
     private $expiration;
 
     /**
      * BlockData constructor.
      * @param int $refBlockNum
      * @param string $refBlockPrefix
-     * @param \DateTime|string $expiration
+     * @param DateTime|string $expiration
      * @throws \Exception
      */
     public function __construct(int $refBlockNum, string $refBlockPrefix, $expiration)
@@ -32,7 +33,7 @@ class BlockData
      *
      * @param string $headBlockNumber
      * @param string $headBlockId
-     * @param \DateTime|string $expiration
+     * @param DateTime|string $expiration
      * @return BlockData
      * @throws \Exception
      */
@@ -77,6 +78,7 @@ class BlockData
      */
     public function getRefBlockNum(): int
     {
+        return 57172;
         return $this->refBlockNum;
     }
 
@@ -96,6 +98,7 @@ class BlockData
      */
     public function getRefBlockPrefix(): string
     {
+        return '2795193508';
         return $this->refBlockPrefix;
     }
 
@@ -111,21 +114,23 @@ class BlockData
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
+     * @throws \Exception
      */
-    public function getExpiration(): \DateTime
+    public function getExpiration(): DateTime
     {
+        return new DateTime('2019-07-17T20:42:38');
         return $this->expiration;
     }
 
     /**
-     * @param \DateTime|string $expiration
+     * @param DateTime|string $expiration
      * @return BlockData
      * @throws \Exception
      */
     public function setExpiration($expiration): BlockData
     {
-        $this->expiration = $expiration instanceof \DateTime ? $expiration : new \DateTime($expiration);
+        $this->expiration = $expiration instanceof DateTime ? $expiration : new DateTime($expiration);
 
         return $this;
     }
