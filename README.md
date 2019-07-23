@@ -133,6 +133,43 @@ $contents = $dcoreApi->getContentApi()->findAll(
 );
 ```
 
+### NFT
+NftModels **require** `@Type("type")` annotation for correct functioning. [GMP library](https://www.php.net/manual/en/intro.gmp.php) is also **necessary** when working with integers.
+#### NftModel 
+```php
+class NftApple extends NftModel
+{
+    /**
+     * @Type("integer")
+     */
+    public $size;
+    /**
+     * @Type("string")
+     * @Unique
+     */
+    public $color;
+    /**
+     * @Type("boolean")
+     * @Modifiable("both")
+     */
+    public $eaten;
+
+    public function __construct($size, $color, $eaten)
+    {
+        $this->size = gmp_init($size);
+        $this->color = $color;
+        $this->eaten = $eaten;
+    }
+}
+```
+
+#### Create NFT
+```php
+$credentials = new Credentials(new ChainObject('1.2.27'), ECKeyPair::fromBase58('DCT6MA5TQQ6UbMyMaLPmPXE2Syh5G3ZVhv5SbFedqLPqdFChSeqTz'));
+$dcoreApi->getNftApi()->create($credentials, 'APPLE', 100, false, 'an apple', NftApple::class, true);
+```
+More examples can be found in ./tests/Sdk/NftApiTest.php.
+
 ### Development requirements & recommendations
 
 - [docker](https://docs.docker.com/install/)

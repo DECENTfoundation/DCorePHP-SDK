@@ -26,7 +26,7 @@ class MessagingApiTest extends DCoreSDKTest
     public function testGetAllOperations(): void
     {
         $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
-//        $messageResponses = $this->sdk->getMessagingApi()->getAllOperations(null, new ChainObject(DCoreSDKTest::ACCOUNT_ID_1));
+//        $messageResponses = self::$sdk->getMessagingApi()->getAllOperations(null, new ChainObject(DCoreSDKTest::ACCOUNT_ID_1));
 //        foreach ($messageResponses as $messageResponse) {
 //            $this->assertInstanceOf(MessageResponse::class, $messageResponse);
 //        }
@@ -37,11 +37,10 @@ class MessagingApiTest extends DCoreSDKTest
      */
     public function testGetAll(): void
     {
-        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
-//        $messages = $this->sdk->getMessagingApi()->getAll(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1) );
-//        foreach ($messages as $message) {
-//            $this->assertInstanceOf(Message::class, $message);
-//        }
+        $messages = self::$sdk->getMessagingApi()->getAll(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1) );
+        foreach ($messages as $message) {
+            $this->assertInstanceOf(Message::class, $message);
+        }
     }
 
     /**
@@ -50,16 +49,15 @@ class MessagingApiTest extends DCoreSDKTest
      */
     public function testGetAllDecryptedForSender(): void
     {
-        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
-//        $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
-//        /** @var Message[] $messages */
-//        $messages = $this->sdk->getMessagingApi()->getAllDecryptedForSender($credentials);
-//
-//        foreach ($messages as $message) {
-//            $this->assertInstanceOf(Message::class, $message);
-//            $this->assertEquals(DCoreSDKTest::ACCOUNT_ID_1, $message->getSender()->getId());
-//            $this->assertFalse($message->isEncrypted());
-//        }
+        $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
+        /** @var Message[] $messages */
+        $messages = self::$sdk->getMessagingApi()->getAllDecryptedForSender($credentials);
+
+        foreach ($messages as $message) {
+            $this->assertInstanceOf(Message::class, $message);
+            $this->assertEquals(DCoreSDKTest::ACCOUNT_ID_1, $message->getSender()->getId());
+            $this->assertFalse($message->isEncrypted());
+        }
     }
 
     /**
@@ -68,16 +66,15 @@ class MessagingApiTest extends DCoreSDKTest
      */
     public function testGetAllDecryptedForReceiver(): void
     {
-        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
-//        $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_2), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_2));
-//        /** @var Message[] $messages */
-//        $messages = $this->sdk->getMessagingApi()->getAllDecryptedForReceiver($credentials);
-//
-//        foreach ($messages as $message) {
-//            $this->assertInstanceOf(Message::class, $message);
-//            $this->assertEquals(DCoreSDKTest::ACCOUNT_ID_2, $message->getReceiver()->getId());
-//            $this->assertFalse($message->isEncrypted());
-//        }
+        $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_2), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_2));
+        /** @var Message[] $messages */
+        $messages = self::$sdk->getMessagingApi()->getAllDecryptedForReceiver($credentials);
+
+        foreach ($messages as $message) {
+            $this->assertInstanceOf(Message::class, $message);
+            $this->assertEquals(DCoreSDKTest::ACCOUNT_ID_2, $message->getReceiver()->getId());
+            $this->assertFalse($message->isEncrypted());
+        }
     }
 
     public function testCreateMessageOperation(): void
@@ -118,10 +115,10 @@ class MessagingApiTest extends DCoreSDKTest
         $from = new ChainObject(DCoreSDKTest::ACCOUNT_ID_1);
         $to = new ChainObject(DCoreSDKTest::ACCOUNT_ID_2);
         $credentials = new Credentials($from, ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
-        $this->sdk->getMessagingApi()->sendUnencrypted($credentials, $to, $msg);
+        self::$sdk->getMessagingApi()->sendUnencrypted($credentials, $to, $msg);
 
         /** @var Message[] $messages */
-        $messages = $this->sdk->getMessagingApi()->getAllDecrypted($credentials, $from, $to);
+        $messages = self::$sdk->getMessagingApi()->getAllDecrypted($credentials, $from, $to);
         $messageFound = false;
         foreach ($messages as $message) {
             if ($message->getMessage() === $msg) {

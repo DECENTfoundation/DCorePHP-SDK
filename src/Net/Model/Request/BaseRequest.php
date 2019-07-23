@@ -14,6 +14,7 @@ abstract class BaseRequest
     public const API_GROUP_HISTORY = 'history_api';
     public const API_GROUP_CRYPTO = 'crypto_api';
     public const API_GROUP_MESSAGING = 'messaging_api';
+    private const CAST_TO_INT_FLAG = '/"CASTTOINT-([^"]+)"/';
 
     /** @var string */
     protected $apiGroup;
@@ -106,7 +107,7 @@ abstract class BaseRequest
 
     public function toJson(): string
     {
-        return json_encode([
+        $json = json_encode([
             'jsonrpc' => $this->jsonrpc,
             'id' => $this->id,
             'method' => 'call',
@@ -116,6 +117,7 @@ abstract class BaseRequest
                 $this->params
             ],
         ]);
+        return preg_replace(self::CAST_TO_INT_FLAG, '${1}', $json);
     }
 
     abstract public static function responseToModel(BaseResponse $response);

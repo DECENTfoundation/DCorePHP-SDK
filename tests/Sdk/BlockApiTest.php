@@ -14,7 +14,7 @@ class BlockApiTest extends DCoreSDKTest
     public function testGet(): void
     {
         $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
-//        $block = $this->sdk->getBlockApi()->get('10');
+//        $block = self::$sdk->getBlockApi()->get('10');
 //
 //        $this->assertEquals('00000009f320dfe4be64b58942b372e02f554c42', $block->getPrevious());
 //        $this->assertEquals('1.4.8', $block->getMiner()->getId());
@@ -23,7 +23,7 @@ class BlockApiTest extends DCoreSDKTest
     public function testGetHeader(): void
     {
         $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
-//        $blockHeader = $this->sdk->getBlockApi()->getHeader('10');
+//        $blockHeader = self::$sdk->getBlockApi()->getHeader('10');
 //
 //        $this->assertEquals('00000009f320dfe4be64b58942b372e02f554c42', $blockHeader->getPrevious());
 //        $this->assertEquals('1.4.8', $blockHeader->getMiner()->getId());
@@ -34,7 +34,7 @@ class BlockApiTest extends DCoreSDKTest
      */
     public function testGetHeadTime(): void
     {
-        $headTime = $this->sdk->getBlockApi()->getHeadTime();
+        $headTime = self::$sdk->getBlockApi()->getHeadTime();
 
         $this->assertInstanceOf(\DateTime::class, $headTime);
     }

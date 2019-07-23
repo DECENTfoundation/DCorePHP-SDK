@@ -28,13 +28,13 @@ class AssetApiTest extends DCoreSDKTest
 
         $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
         $symbol = 'SDK' . time() . 'T';
-        $this->sdk->getAssetApi()->create($credentials, $symbol, 12, 'hello api from PHP');
+        self::$sdk->getAssetApi()->create($credentials, $symbol, 12, 'hello api from PHP');
 
-        $asset = $this->sdk->getAssetApi()->getByName($symbol);
+        $asset = self::$sdk->getAssetApi()->getByName($symbol);
         $this->testAssetId = $asset->getId();
 
-        $this->sdk->getAssetApi()->issue($credentials, clone $this->testAssetId, 200);
-        $this->sdk->getAssetApi()->fund($credentials, clone $this->testAssetId, 100, 1000);
+        self::$sdk->getAssetApi()->issue($credentials, clone $this->testAssetId, 200);
+        self::$sdk->getAssetApi()->fund($credentials, clone $this->testAssetId, 100, 1000);
         sleep(5);
     }
 
@@ -46,7 +46,7 @@ class AssetApiTest extends DCoreSDKTest
      */
     public function testGet(): void
     {
-        $asset = $this->sdk->getAssetApi()->get(new ChainObject('1.3.0'));
+        $asset = self::$sdk->getAssetApi()->get(new ChainObject('1.3.0'));
         $this->assertEquals('DCT', $asset->getSymbol());
     }
 
@@ -58,7 +58,7 @@ class AssetApiTest extends DCoreSDKTest
      */
     public function testGetAll(): void
     {
-        $assets = $this->sdk->getAssetApi()->getAll([new ChainObject('1.3.0')]);
+        $assets = self::$sdk->getAssetApi()->getAll([new ChainObject('1.3.0')]);
 
         $this->assertCount(1, $assets);
 
@@ -74,7 +74,7 @@ class AssetApiTest extends DCoreSDKTest
      */
     public function testGetRealSupply(): void
     {
-        $realSupply = $this->sdk->getAssetApi()->getRealSupply();
+        $realSupply = self::$sdk->getAssetApi()->getRealSupply();
         $this->assertInstanceOf(RealSupply::class, $realSupply);
     }
 
@@ -84,7 +84,7 @@ class AssetApiTest extends DCoreSDKTest
      */
     public function testListAllRelative(): void
     {
-        $assets = $this->sdk->getAssetApi()->listAllRelative('ALX');
+        $assets = self::$sdk->getAssetApi()->listAllRelative('ALX');
         $asset = reset($assets);
 
         $this->assertInstanceOf(Asset::class, $asset);
@@ -96,7 +96,7 @@ class AssetApiTest extends DCoreSDKTest
      */
     public function testGetByName(): void
     {
-        $asset = $this->sdk->getAssetApi()->getByName('DCT');
+        $asset = self::$sdk->getAssetApi()->getByName('DCT');
 
         $this->assertEquals('1.3.0', $asset->getId()->getId());
         $this->assertEquals('DCT', $asset->getSymbol());
@@ -108,7 +108,7 @@ class AssetApiTest extends DCoreSDKTest
      */
     public function testGetAllByName(): void
     {
-        $assets = $this->sdk->getAssetApi()->getAllByName(['DCT']);
+        $assets = self::$sdk->getAssetApi()->getAllByName(['DCT']);
         $asset = reset($assets);
 
         $this->assertEquals('1.3.0', $asset->getId()->getId());
@@ -123,7 +123,7 @@ class AssetApiTest extends DCoreSDKTest
     public function testGetAssetsData(): void
     {
         /** @var AssetData[] $assets */
-        $assets = $this->sdk->getAssetApi()->getAssetsData([new ChainObject('2.3.0')]);
+        $assets = self::$sdk->getAssetApi()->getAssetsData([new ChainObject('2.3.0')]);
         $asset = reset($assets);
 
         $this->assertEquals('2.3.0', $asset->getId()->getId());
@@ -137,7 +137,7 @@ class AssetApiTest extends DCoreSDKTest
      */
     public function testConvertFromDct(): void
     {
-        $assetAmount = $this->sdk->getAssetApi()->convertFromDct(5, new ChainObject('1.3.0'));
+        $assetAmount = self::$sdk->getAssetApi()->convertFromDct(5, new ChainObject('1.3.0'));
 
         $this->expectNotToPerformAssertions();
     }
@@ -150,7 +150,7 @@ class AssetApiTest extends DCoreSDKTest
      */
     public function testConvertToDct(): void
     {
-        $assetAmount = $this->sdk->getAssetApi()->convertToDct(5, new ChainObject('1.3.0'));
+        $assetAmount = self::$sdk->getAssetApi()->convertToDct(5, new ChainObject('1.3.0'));
 
         $this->assertEquals(5, $assetAmount->getAmount());
         $this->assertEquals('1.3.0', $assetAmount->getAssetId());
@@ -164,9 +164,9 @@ class AssetApiTest extends DCoreSDKTest
     {
         $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
         $symbol = 'SDK' . time() . 'T';
-        $this->sdk->getAssetApi()->create($credentials, $symbol, 12, 'hello api from PHP');
+        self::$sdk->getAssetApi()->create($credentials, $symbol, 12, 'hello api from PHP');
 
-        $asset = $this->sdk->getAssetApi()->getByName($symbol);
+        $asset = self::$sdk->getAssetApi()->getByName($symbol);
 
         $this->assertNotNull($asset);
         $this->assertEquals(AssetOptions::MAX_SHARE_SUPPLY, $asset->getOptions()->getMaxSupply());
@@ -187,13 +187,13 @@ class AssetApiTest extends DCoreSDKTest
     {
         $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
         $symbol = 'SDK' . time() . 'T';
-        $this->sdk->getAssetApi()->create($credentials, $symbol, 12, 'hello api from PHP');
+        self::$sdk->getAssetApi()->create($credentials, $symbol, 12, 'hello api from PHP');
 
         sleep(3);
 
-        $old = $this->sdk->getAssetApi()->getByName($symbol);
+        $old = self::$sdk->getAssetApi()->getByName($symbol);
 
-        $this->sdk->getAssetApi()->update(
+        self::$sdk->getAssetApi()->update(
             $credentials,
             $symbol,
             new ExchangeRate((new AssetAmount())->setAmount(1), (new AssetAmount())->setAmount(2)->setAssetId($old->getId())),
@@ -202,7 +202,7 @@ class AssetApiTest extends DCoreSDKTest
             gmp_div($old->getOptions()->getMaxSupply(), 2)
             );
 
-        $new = $this->sdk->getAssetApi()->getByName($symbol);
+        $new = self::$sdk->getAssetApi()->getByName($symbol);
 
         $this->assertEquals($old->getDescription() . ' update from PHP', $new->getDescription());
         $this->assertTrue($new->getOptions()->isExchangeable());
@@ -219,16 +219,16 @@ class AssetApiTest extends DCoreSDKTest
     {
         $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
         $symbol = 'SDK' . time() . 'T';
-        $this->sdk->getAssetApi()->create($credentials, $symbol, 12, 'hello api from PHP');
+        self::$sdk->getAssetApi()->create($credentials, $symbol, 12, 'hello api from PHP');
 
-        $this->sdk->getAssetApi()->updateAdvanced(
+        self::$sdk->getAssetApi()->updateAdvanced(
             $credentials,
             $symbol,
             6,
             false
         );
 
-        $newAsset = $this->sdk->getAssetApi()->getByName($symbol);
+        $newAsset = self::$sdk->getAssetApi()->getByName($symbol);
         $this->assertEquals(6, $newAsset->getPrecision());
     }
 
@@ -240,15 +240,15 @@ class AssetApiTest extends DCoreSDKTest
     public function testIssue(): void
     {
         $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
-        $asset = $this->sdk->getAssetApi()->get(clone $this->testAssetId);
+        $asset = self::$sdk->getAssetApi()->get(clone $this->testAssetId);
         /** @var AssetData[] $oldData */
-        $oldData = $this->sdk->getAssetApi()->getAssetsData([$asset->getDataId()]);
+        $oldData = self::$sdk->getAssetApi()->getAssetsData([$asset->getDataId()]);
         $oldData = reset($oldData);
 
-        $this->sdk->getAssetApi()->issue($credentials, clone $this->testAssetId, 200);
+        self::$sdk->getAssetApi()->issue($credentials, clone $this->testAssetId, 200);
 
         /** @var AssetData[] $newData */
-        $newData = $this->sdk->getAssetApi()->getAssetsData([$asset->getDataId()]);
+        $newData = self::$sdk->getAssetApi()->getAssetsData([$asset->getDataId()]);
         $newData = reset($newData);
 
         $this->assertEquals(200, $newData->getCurrentSupply() - $oldData->getCurrentSupply());
@@ -263,16 +263,16 @@ class AssetApiTest extends DCoreSDKTest
      */
     public function testFund(): void
     {
-        $asset = $this->sdk->getAssetApi()->get(clone $this->testAssetId);
+        $asset = self::$sdk->getAssetApi()->get(clone $this->testAssetId);
         /** @var AssetData[] $oldData */
-        $oldData = $this->sdk->getAssetApi()->getAssetsData([$asset->getDataId()]);
+        $oldData = self::$sdk->getAssetApi()->getAssetsData([$asset->getDataId()]);
         $oldData = reset($oldData);
 
         $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
-        $this->sdk->getAssetApi()->fund($credentials, clone $this->testAssetId, 100, 1000);
+        self::$sdk->getAssetApi()->fund($credentials, clone $this->testAssetId, 100, 1000);
 
         /** @var AssetData[] $newData */
-        $newData = $this->sdk->getAssetApi()->getAssetsData([$asset->getDataId()]);
+        $newData = self::$sdk->getAssetApi()->getAssetsData([$asset->getDataId()]);
         $newData = reset($newData);
         $this->assertEquals(1000, $newData->getCorePool() - $oldData->getCorePool());
     }
@@ -286,16 +286,16 @@ class AssetApiTest extends DCoreSDKTest
      */
     public function testClaim(): void
     {
-        $asset = $this->sdk->getAssetApi()->get(clone $this->testAssetId);
+        $asset = self::$sdk->getAssetApi()->get(clone $this->testAssetId);
         /** @var AssetData[] $oldData */
-        $oldData = $this->sdk->getAssetApi()->getAssetsData([$asset->getDataId()]);
+        $oldData = self::$sdk->getAssetApi()->getAssetsData([$asset->getDataId()]);
         $oldData = reset($oldData);
 
         $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
-        $this->sdk->getAssetApi()->claim($credentials, clone $this->testAssetId, 1, 0);
+        self::$sdk->getAssetApi()->claim($credentials, clone $this->testAssetId, 1, 0);
 
         /** @var AssetData[] $newData */
-        $newData = $this->sdk->getAssetApi()->getAssetsData([$asset->getDataId()]);
+        $newData = self::$sdk->getAssetApi()->getAssetsData([$asset->getDataId()]);
         $newData = reset($newData);
         $this->assertEquals(1, $oldData->getAssetPool() - $newData->getAssetPool());
     }
@@ -310,16 +310,16 @@ class AssetApiTest extends DCoreSDKTest
      */
     public function testReserve(): void
     {
-        $asset = $this->sdk->getAssetApi()->get(clone $this->testAssetId);
+        $asset = self::$sdk->getAssetApi()->get(clone $this->testAssetId);
         /** @var AssetData[] $oldData */
-        $oldData = $this->sdk->getAssetApi()->getAssetsData([$asset->getDataId()]);
+        $oldData = self::$sdk->getAssetApi()->getAssetsData([$asset->getDataId()]);
         $oldData = reset($oldData);
 
         $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
-        $this->sdk->getAssetApi()->reserve($credentials, clone $this->testAssetId, 100);
+        self::$sdk->getAssetApi()->reserve($credentials, clone $this->testAssetId, 100);
 
         /** @var AssetData[] $newData */
-        $newData = $this->sdk->getAssetApi()->getAssetsData([$asset->getDataId()]);
+        $newData = self::$sdk->getAssetApi()->getAssetsData([$asset->getDataId()]);
         $newData = reset($newData);
         $this->assertEquals(100, $oldData->getCurrentSupply() - $newData->getCurrentSupply());
     }

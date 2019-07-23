@@ -21,6 +21,7 @@ use DCorePHP\Sdk\GeneralApi;
 use DCorePHP\Sdk\HistoryApi;
 use DCorePHP\Sdk\MessagingApi;
 use DCorePHP\Sdk\MiningApi;
+use DCorePHP\Sdk\NftApi;
 use DCorePHP\Sdk\ProposalApi;
 use DCorePHP\Sdk\PurchaseApi;
 use DCorePHP\Sdk\SeederApi;
@@ -36,6 +37,7 @@ class DCoreApi extends DCoreSdk
      * after the expiry the transaction is removed from recent pool and will be dismissed if not included in DCore block
      */
     public const TRANSACTION_EXPIRATION = 30;
+    public const REQ_LIMIT_MAX = 100;
 
     /** @var array */
     protected $permissions = [];
@@ -77,6 +79,10 @@ class DCoreApi extends DCoreSdk
     private $broadcastApi;
     /** @var BalanceApi */
     private $balanceApi;
+    /** @var NftApi */
+    private $nftApi;
+
+    private $registeredNfts = [];
 
     public function __construct(string $dcoreApiUrl, string $dcoreWebsocketUrl, bool $debug = false)
     {
@@ -98,6 +104,7 @@ class DCoreApi extends DCoreSdk
         $this->blockApi = new BlockApi($this);
         $this->broadcastApi = new BroadcastApi($this);
         $this->balanceApi = new BalanceApi($this);
+        $this->nftApi = new NftApi($this);
     }
 
     /**
@@ -198,7 +205,7 @@ class DCoreApi extends DCoreSdk
     /**
      * @param SeederApi $seederApi
      */
-    public function setSeedingGroup(SeederApi $seederApi): void
+    public function setSeedingApi(SeederApi $seederApi): void
     {
         $this->seederApi = $seederApi;
     }
@@ -436,6 +443,25 @@ class DCoreApi extends DCoreSdk
     }
 
     /**
+     * @return NftApi
+     */
+    public function getNftApi(): NftApi
+    {
+        return $this->nftApi;
+    }
+
+    /**
+     * @param NftApi $nftApi
+     * @return DCoreApi
+     */
+    public function setNftApi(NftApi $nftApi): DCoreApi
+    {
+        $this->nftApi = $nftApi;
+
+        return $this;
+    }
+
+    /**
      * @param BaseOperation[] $operations
      * @param int $expiration
      * @return Transaction
@@ -464,5 +490,13 @@ class DCoreApi extends DCoreSdk
             ->setChainId($chainId);
 
         return $transaction;
+    }
+
+    public function registerNfts(array $idToClass): void {
+        $this->registeredNfts = array_merge($this->registeredNfts, $idToClass);
+    }
+
+    public function isRegistered(string $nftId) {
+        return $this->registeredNfts[$nftId] ?? null;
     }
 }

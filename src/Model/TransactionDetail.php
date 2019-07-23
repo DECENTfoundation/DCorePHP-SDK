@@ -2,15 +2,18 @@
 
 namespace DCorePHP\Model;
 
+use DateTime;
+use DCorePHP\Exception\ValidationException;
 use DCorePHP\Model\Asset\AssetAmount;
+use Exception;
 
 class TransactionDetail
 {
-    /** @var string */
+    /** @var ChainObject */
     private $id;
-    /** @var string */
+    /** @var ChainObject */
     private $from;
-    /** @var string */
+    /** @var ChainObject */
     private $to;
     /** @var int */
     private $type;
@@ -18,9 +21,11 @@ class TransactionDetail
     private $amount;
     /** @var AssetAmount */
     private $fee;
+    /** @var ChainObject */
+    private $nftDataId;
     /** @var string */
     private $description;
-    /** @var \DateTime */
+    /** @var DateTime */
     private $timestamp;
 
     public function __construct()
@@ -38,11 +43,16 @@ class TransactionDetail
     }
 
     /**
-     * @param string $id
+     * @param ChainObject|string $id
+     *
      * @return TransactionDetail
+     * @throws ValidationException
      */
     public function setId(string $id): TransactionDetail
     {
+        if (is_string($id)) {
+            $id = new ChainObject($id);
+        }
         $this->id = $id;
         return $this;
     }
@@ -56,11 +66,16 @@ class TransactionDetail
     }
 
     /**
-     * @param string $from
+     * @param ChainObject|string $from
+     *
      * @return TransactionDetail
+     * @throws ValidationException
      */
     public function setFrom(string $from): TransactionDetail
     {
+        if (is_string($from)) {
+            $from = new ChainObject($from);
+        }
         $this->from = $from;
         return $this;
     }
@@ -74,11 +89,16 @@ class TransactionDetail
     }
 
     /**
-     * @param string $to
+     * @param ChainObject|string $to
+     *
      * @return TransactionDetail
+     * @throws ValidationException
      */
     public function setTo(string $to): TransactionDetail
     {
+        if (is_string($to)) {
+            $to = new ChainObject($to);
+        }
         $this->to = $to;
         return $this;
     }
@@ -138,6 +158,30 @@ class TransactionDetail
     }
 
     /**
+     * @return ChainObject
+     */
+    public function getNftDataId(): ChainObject
+    {
+        return $this->nftDataId;
+    }
+
+    /**
+     * @param ChainObject|string $nftDataId
+     *
+     * @return TransactionDetail
+     * @throws ValidationException
+     */
+    public function setNftDataId($nftDataId): TransactionDetail
+    {
+        if (is_string($nftDataId)) {
+            $nftDataId = new ChainObject($nftDataId);
+        }
+        $this->nftDataId = $nftDataId;
+
+        return $this;
+    }
+
+    /**
      * @return string
      */
     public function getDescription(): string
@@ -156,20 +200,22 @@ class TransactionDetail
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
-    public function getTimestamp(): \DateTime
+    public function getTimestamp(): DateTime
     {
         return $this->timestamp;
     }
 
     /**
-     * @param \DateTime|string $timestamp
+     * @param DateTime|string $timestamp
+     *
      * @return TransactionDetail
+     * @throws Exception
      */
     public function setTimestamp($timestamp): TransactionDetail
     {
-        $this->timestamp = $timestamp instanceof \DateTime ? $timestamp : new \DateTime($timestamp);
+        $this->timestamp = $timestamp instanceof DateTime ? $timestamp : new DateTime($timestamp);
         return $this;
     }
 }
