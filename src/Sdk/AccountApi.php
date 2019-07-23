@@ -204,7 +204,7 @@ class AccountApi extends BaseApi implements AccountApiInterface
                 ->setFrom($credentials->getAccount())
                 ->setTo(new ChainObject($nameOrId))
                 ->setAmount($amount)
-                ->setMemo(Memo::withMessage($memo))
+                ->setMemo($memo ? Memo::withMessage($memo) : null)
                 ->setFee($fee);
             return $transferOperation;
         }

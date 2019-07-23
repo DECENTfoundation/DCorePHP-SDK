@@ -77,13 +77,12 @@ class ChainObject
     public function toObjectTypeIdBytes(): string
     {
         [$space, $type, $instance] = explode('.', $this->getId());
-
-        return Math::gmpDecHex($instance) . str_pad(
-            Math::getInt8($type) . Math::getInt8($space),
-            16 - strlen(Math::gmpDecHex($instance)),
-            '0',
-            STR_PAD_LEFT
-        );
+        $result = Math::gmpOrOnArray([
+            Math::gmpShiftLeft($space, 56),
+            Math::gmpShiftLeft($type, 48),
+            $instance
+        ]);
+        return Math::getInt64($result);
     }
 
     /**

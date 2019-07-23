@@ -175,10 +175,16 @@ class ECKeyPair
 
         die();
 
+        $hash = hash('sha256', pack('H*', $chainId . $hexData)); // 1cb9ecc48ea039dda1c4626965db67c241486ce886a007903c8d5446465d7c0c
+        $derPrivateKey = $this->getPrivate()->toHex();
+        $derPublicKey = $this->getPublic()->toCompressedPublicKey(); // compressed public key
+        $signaturePoint = (new Secp256k1())->sign($hash, $derPrivateKey); // [98168512353566611467237581092075278762442757234040552549754768745652925038257, 44848356081555762428592265712819773562446994169847499152120711725219453447745]
+        $signatureHex = (new HexSignatureSerializer())->serialize($signaturePoint); // d90968b241bfdce430bc1dfd15039b08429783d3f1380364294311ca86e0feb16327451e425f07be71768a7fe25d60f232cd12eafe036b9f24b600104415ae41
+
         $finalRecId = -1;
         $recId = 31;
         do {
-            $keyPair = self::recoverFromSignature($recId, $signature, $hash);
+            $keyPair = self::recoverFromSignature($recId, $signaturePoint, $hash);
             if ($keyPair instanceof self && $keyPair->getPublic()->toCompressedPublicKey() === $derPublicKey) {
                 $finalRecId = $recId - 4 - 27;
                 break;
@@ -191,20 +197,29 @@ class ECKeyPair
             throw new \Exception('Could not construct a recoverable keyPair. This should never happen.');
         }
 
-        $canonicalSignature = Math::gmpDecHex($finalRecId + 31) . $signatureHex;
-        $sigData = str_split($canonicalSignature, 2);
+        $signature = Math::gmpDecHex($finalRecId + 31) . $signatureHex;
 
-        if ((hexdec($sigData[0]) & 0x80) !== 0 ||
-            hexdec($sigData[0]) === 0 ||
-            (hexdec($sigData[1]) & 0x80) !== 0 ||
-            (hexdec($sigData[32]) & 0x80) !== 0 ||
-            hexdec($sigData[32]) === 0 ||
-            (hexdec($sigData[33]) & 0x80) !== 0
+        return $this->isSignatureCanonical($signature) ? $signature : null;
+    }
+
+    /**
+     * @param string $signature
+     * @return bool
+     */
+    public function isSignatureCanonical(string $signature): bool
+    {
+        $sigData = str_split($signature, 2);
+
+        if (
+            hexdec($sigData[1]) < 0x80 &&
+            !(hexdec($sigData[1]) === 0 && hexdec($sigData[2]) < 0x80) &&
+            hexdec($sigData[33]) < 0x80 &&
+            !(hexdec($sigData[33]) === 0 && hexdec($sigData[34]) < 0x80)
         ) {
-            $canonicalSignature = null;
+            return true;
         }
 
-        return $canonicalSignature;
+        return false;
     }
 
     /**

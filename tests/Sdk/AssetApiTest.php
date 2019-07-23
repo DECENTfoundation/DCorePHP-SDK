@@ -27,14 +27,14 @@ class AssetApiTest extends DCoreSDKTest
         parent::setUp();
 
         $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
-//        $symbol = 'SDK' . time() . 'T';
-//        self::$sdk->getAssetApi()->create($credentials, $symbol, 12, 'hello api from PHP');
-//
-//        $asset = self::$sdk->getAssetApi()->getByName($symbol);
-//        $this->testAssetId = $asset->getId();
-//
-//        self::$sdk->getAssetApi()->issue($credentials, clone $this->testAssetId, 200);
-        self::$sdk->getAssetApi()->fund($credentials, new ChainObject('1.3.82'), 100, 1000);
+        $symbol = 'SDK' . time() . 'T';
+        self::$sdk->getAssetApi()->create($credentials, $symbol, 12, 'hello api from PHP');
+
+        $asset = self::$sdk->getAssetApi()->getByName($symbol);
+        $this->testAssetId = $asset->getId();
+
+        self::$sdk->getAssetApi()->issue($credentials, clone $this->testAssetId, 200);
+        self::$sdk->getAssetApi()->fund($credentials, clone $this->testAssetId, 100, 1000);
         sleep(5);
     }
 

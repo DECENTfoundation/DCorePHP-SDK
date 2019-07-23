@@ -113,4 +113,23 @@ class Math
     {
         return str_pad(self::gmpDecHex(self::reverseBytesLong($number)), 16, '0', STR_PAD_LEFT);
     }
+
+    public static function gmpShiftLeft($number, $shiftBy): string
+    {
+        return gmp_strval(gmp_mul($number, gmp_pow(2, $shiftBy)));
+    }
+
+    public static function gmpShiftRight($number, $shiftBy): string
+    {
+        return gmp_strval(gmp_div($number, gmp_pow(2, $shiftBy)));
+    }
+
+    public static function gmpOrOnArray(array $numbers): string
+    {
+        $res = 0;
+        foreach ($numbers as $number) {
+            $res = gmp_or($res, $number);
+        }
+        return gmp_strval($res);
+    }
 }
