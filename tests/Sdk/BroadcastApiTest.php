@@ -24,17 +24,17 @@ class BroadcastApiTest extends DCoreSDKTest
     public function testBroadcast(): void
     {
         $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
-        $transfer = $this->sdk->getAccountApi()->createTransfer(
+        $transfer = self::$sdk->getAccountApi()->createTransfer(
             $credentials,
             DCoreSDKTest::ACCOUNT_ID_2,
             (new AssetAmount())->setAmount(mt_rand()),
             'Ahoy PHP',
             false);
 
-        $transaction = $this->sdk->getTransactionApi()->createTransaction([$transfer]);
+        $transaction = self::$sdk->getTransactionApi()->createTransaction([$transfer]);
         $transaction->sign($credentials->getKeyPair()->getPrivate()->toWif());
 
-        $this->sdk->getBroadcastApi()->broadcast($transaction);
+        self::$sdk->getBroadcastApi()->broadcast($transaction);
 
         $this->expectNotToPerformAssertions();
     }
@@ -45,14 +45,14 @@ class BroadcastApiTest extends DCoreSDKTest
     public function testBroadcastOperationsWithECKeyPair(): void
     {
         $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_2), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_2));
-        $transfer = $this->sdk->getAccountApi()->createTransfer(
+        $transfer = self::$sdk->getAccountApi()->createTransfer(
             $credentials,
             DCoreSDKTest::ACCOUNT_ID_1,
             (new AssetAmount())->setAmount(mt_rand()),
             'Ahoy PHP',
             false);
 
-        $this->sdk->getBroadcastApi()->broadcastOperationsWithECKeyPair($credentials->getKeyPair(), [$transfer]);
+        self::$sdk->getBroadcastApi()->broadcastOperationsWithECKeyPair($credentials->getKeyPair(), [$transfer]);
 
         $this->expectNotToPerformAssertions();
     }
@@ -64,14 +64,14 @@ class BroadcastApiTest extends DCoreSDKTest
     public function testBroadcastOperationWithECKeyPair(): void
     {
         $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
-        $transfer = $this->sdk->getAccountApi()->createTransfer(
+        $transfer = self::$sdk->getAccountApi()->createTransfer(
             $credentials,
             DCoreSDKTest::ACCOUNT_ID_2,
             (new AssetAmount())->setAmount(mt_rand()),
             'Ahoy PHP',
             false);
 
-        $this->sdk->getBroadcastApi()->broadcastOperationWithECKeyPair($credentials->getKeyPair(), $transfer);
+        self::$sdk->getBroadcastApi()->broadcastOperationWithECKeyPair($credentials->getKeyPair(), $transfer);
 
         $this->expectNotToPerformAssertions();
     }
@@ -83,14 +83,14 @@ class BroadcastApiTest extends DCoreSDKTest
     public function testBroadcastOperationsWithPrivateKey(): void
     {
         $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_2), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_2));
-        $transfer = $this->sdk->getAccountApi()->createTransfer(
+        $transfer = self::$sdk->getAccountApi()->createTransfer(
             $credentials,
             DCoreSDKTest::ACCOUNT_ID_1,
             (new AssetAmount())->setAmount(mt_rand()),
             'Ahoy PHP',
             false);
 
-        $this->sdk->getBroadcastApi()->broadcastOperationsWithPrivateKey($credentials->getKeyPair()->getPrivate()->toWif(), [$transfer]);
+        self::$sdk->getBroadcastApi()->broadcastOperationsWithPrivateKey($credentials->getKeyPair()->getPrivate()->toWif(), [$transfer]);
 
         $this->expectNotToPerformAssertions();
     }
@@ -102,14 +102,14 @@ class BroadcastApiTest extends DCoreSDKTest
     public function testBroadcastOperationWithPrivateKey(): void
     {
         $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
-        $transfer = $this->sdk->getAccountApi()->createTransfer(
+        $transfer = self::$sdk->getAccountApi()->createTransfer(
             $credentials,
             DCoreSDKTest::ACCOUNT_ID_2,
             (new AssetAmount())->setAmount(mt_rand()),
             'Ahoy PHP',
             false);
 
-        $this->sdk->getBroadcastApi()->broadcastOperationWithPrivateKey($credentials->getKeyPair()->getPrivate()->toWif(), $transfer);
+        self::$sdk->getBroadcastApi()->broadcastOperationWithPrivateKey($credentials->getKeyPair()->getPrivate()->toWif(), $transfer);
 
         $this->expectNotToPerformAssertions();
     }

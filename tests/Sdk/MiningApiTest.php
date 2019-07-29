@@ -31,7 +31,7 @@ class MiningApiTest extends DCoreSDKTest
 {
     public function testGetActualVotes(): void
     {
-        $votes = $this->sdk->getMiningApi()->getActualVotes();
+        $votes = self::$sdk->getMiningApi()->getActualVotes();
         foreach ($votes as $vote) {
             $this->assertInstanceOf(MinerVotes::class, $vote);
         }
@@ -39,7 +39,7 @@ class MiningApiTest extends DCoreSDKTest
 
     public function testGetAssetPerBlock(): void
     {
-        $asset = $this->sdk->getMiningApi()->getAssetPerBlock('100');
+        $asset = self::$sdk->getMiningApi()->getAssetPerBlock('100');
         $this->assertEquals('0', $asset);
     }
 
@@ -48,7 +48,7 @@ class MiningApiTest extends DCoreSDKTest
      */
     public function testGetFeedsByMiner(): void
     {
-        $feeds = $this->sdk->getMiningApi()->getFeedsByMiner(new ChainObject('1.2.4'));
+        $feeds = self::$sdk->getMiningApi()->getFeedsByMiner(new ChainObject('1.2.4'));
         $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
     }
 
@@ -57,13 +57,13 @@ class MiningApiTest extends DCoreSDKTest
      */
     public function testGetMinerByAccount(): void
     {
-        $miner = $this->sdk->getMiningApi()->getMinerByAccount(new ChainObject('1.2.4'));
+        $miner = self::$sdk->getMiningApi()->getMinerByAccount(new ChainObject('1.2.4'));
         $this->assertEquals('1.2.4', $miner->getMinerAccount()->getId());
     }
 
     public function testGetMinerCount(): void
     {
-        $count = $this->sdk->getMiningApi()->getMinerCount();
+        $count = self::$sdk->getMiningApi()->getMinerCount();
         $this->assertRegExp('/^[0-9]+$/', $count);
     }
 
@@ -72,9 +72,9 @@ class MiningApiTest extends DCoreSDKTest
      */
     public function testGetMiners(): void
     {
-        $minersRelative = $this->sdk->getMiningApi()->listMinersRelative('', 2);
+        $minersRelative = self::$sdk->getMiningApi()->listMinersRelative('', 2);
         $minersChainObjects = array_map(function ($minerId) { return $minerId->getId();}, $minersRelative);
-        $miners = $this->sdk->getMiningApi()->getMiners($minersChainObjects);
+        $miners = self::$sdk->getMiningApi()->getMiners($minersChainObjects);
 
         $this->assertEquals(2, sizeof($miners));
         foreach ($miners as $miner) {
@@ -87,7 +87,7 @@ class MiningApiTest extends DCoreSDKTest
      */
     public function testGetMinersWithName(): void
     {
-        $miners = $this->sdk->getMiningApi()->getMinersWithName();
+        $miners = self::$sdk->getMiningApi()->getMinersWithName();
         foreach ($miners as $name => $miner) {
             $this->assertIsString($name);
             $this->assertInstanceOf(Miner::class, $miner);
@@ -96,7 +96,7 @@ class MiningApiTest extends DCoreSDKTest
 
     public function testGetNewAssetPerBlock(): void
     {
-        $assetPerBlock = $this->sdk->getMiningApi()->getNewAssetPerBlock();
+        $assetPerBlock = self::$sdk->getMiningApi()->getNewAssetPerBlock();
         $this->assertIsString($assetPerBlock);
     }
 
@@ -105,7 +105,7 @@ class MiningApiTest extends DCoreSDKTest
      */
     public function testListMinersRelative(): void
     {
-        $minerIds = $this->sdk->getMiningApi()->listMinersRelative();
+        $minerIds = self::$sdk->getMiningApi()->listMinersRelative();
         foreach ($minerIds as $minerId) {
             $this->assertInstanceOf(MinerId::class, $minerId);
         }
@@ -114,7 +114,7 @@ class MiningApiTest extends DCoreSDKTest
     public function testFindVotedMiners(): void
     {
         /** @var Miner[] $miners */
-        $miners = $this->sdk->getMiningApi()->findVotedMiners(['0:0', '0:1']);
+        $miners = self::$sdk->getMiningApi()->findVotedMiners(['0:0', '0:1']);
         $this->assertEquals('DCT82MTCQVa9TDFmz3ZwaLzsFAmCLoJzrtFugpF72vsbuE1CpCwKy', $miners[0]->getSigningKey());
         $this->assertEquals('1.2.5', $miners[1]->getMinerAccount()->getId());
     }
@@ -122,7 +122,7 @@ class MiningApiTest extends DCoreSDKTest
     public function testFindAllVotingInfo(): void
     {
         /** @var MinerVotingInfo[] $minersInfo */
-        $minersInfo = $this->sdk->getMiningApi()->findAllVotingInfo('init', SearchMinerVoting::NAME_DESC, null, DCoreSDKTest::ACCOUNT_NAME_1, true);
+        $minersInfo = self::$sdk->getMiningApi()->findAllVotingInfo('init', SearchMinerVoting::NAME_DESC, null, DCoreSDKTest::ACCOUNT_NAME_1, true);
         $this->assertTrue($minersInfo[0]->isVoted());
     }
 
@@ -135,11 +135,11 @@ class MiningApiTest extends DCoreSDKTest
     public function testCreateVoteOperation(): void
     {
         $minerId = new ChainObject('1.4.4');
-        $miners = $this->sdk->getMiningApi()->getMiners([$minerId]);
+        $miners = self::$sdk->getMiningApi()->getMiners([$minerId]);
         /** @var Miner $miner */
         $miner = reset($miners);
 
-        $voteOperation = $this->sdk->getMiningApi()->createVoteOperation(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), [$minerId]);
+        $voteOperation = self::$sdk->getMiningApi()->createVoteOperation(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), [$minerId]);
 
         $this->assertContains($miner->getVoteId(), $voteOperation->getOptions()->getVotes());
     }
@@ -156,7 +156,7 @@ class MiningApiTest extends DCoreSDKTest
         $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
 //        $accountId = new ChainObject(DCoreSDKTest::ACCOUNT_ID_1);
 //        $credentials = new Credentials($accountId, ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
-//        $this->sdk->getMiningApi()->vote($credentials, [new ChainObject('1.4.4')]);
+//        self::$sdk->getMiningApi()->vote($credentials, [new ChainObject('1.4.4')]);
     }
 
     public function testCreateMiner(): void

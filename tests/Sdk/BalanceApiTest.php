@@ -13,7 +13,7 @@ class BalanceApiTest extends DCoreSDKTest
      */
     public function testGet(): void
     {
-        $asset = $this->sdk->getBalanceApi()->get(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), new ChainObject('1.3.56576'));
+        $asset = self::$sdk->getBalanceApi()->get(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), new ChainObject('1.3.56576'));
 
         $this->assertEquals('1.3.56576', $asset->getAssetId()->getId());
         $this->assertEquals(0, $asset->getAmount());
@@ -25,7 +25,7 @@ class BalanceApiTest extends DCoreSDKTest
     public function testGetAll(): void
     {
         /** @var AssetAmount[] $balances */
-        $balances = $this->sdk->getBalanceApi()->getAll(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1));
+        $balances = self::$sdk->getBalanceApi()->getAll(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1));
 
         $this->assertInternalType('array', $balances);
 
@@ -40,7 +40,7 @@ class BalanceApiTest extends DCoreSDKTest
      */
     public function testGetByName(): void
     {
-        $asset = $this->sdk->getBalanceApi()->getByName(DCoreSDKTest::ACCOUNT_NAME_1, new ChainObject('1.3.0'));
+        $asset = self::$sdk->getBalanceApi()->getByName(DCoreSDKTest::ACCOUNT_NAME_1, new ChainObject('1.3.0'));
 
         $this->assertEquals('1.3.0', $asset->getAssetId()->getId());
     }
@@ -51,7 +51,7 @@ class BalanceApiTest extends DCoreSDKTest
     public function testGetAllByName(): void
     {
         /** @var AssetAmount[] $assets */
-        $assets = $this->sdk->getBalanceApi()->getAllByName(DCoreSDKTest::ACCOUNT_NAME_1, [new ChainObject('1.3.0')]);
+        $assets = self::$sdk->getBalanceApi()->getAllByName(DCoreSDKTest::ACCOUNT_NAME_1, [new ChainObject('1.3.0')]);
 
         $this->assertEquals('1.3.0', $assets[0]->getAssetId()->getId());
     }
@@ -61,7 +61,7 @@ class BalanceApiTest extends DCoreSDKTest
      */
     public function testGetWithAsset(): void
     {
-        [$asset, $assetAmount] = $this->sdk->getBalanceApi()->getWithAsset(new ChainObject('1.2.34'));
+        [$asset, $assetAmount] = self::$sdk->getBalanceApi()->getWithAsset(new ChainObject('1.2.34'));
 
         $this->assertEquals('DCT', $asset->getSymbol());
         $this->assertEquals('1.3.0', $asset->getId()->getId());
@@ -70,7 +70,7 @@ class BalanceApiTest extends DCoreSDKTest
 
     public function testGetAllWithAsset(): void
     {
-        $assetPairs = $this->sdk->getBalanceApi()->getAllWithAsset(new ChainObject('1.2.34'), ['DCT', 'DCT']);
+        $assetPairs = self::$sdk->getBalanceApi()->getAllWithAsset(new ChainObject('1.2.34'), ['DCT', 'DCT']);
 
         foreach ($assetPairs as [$asset, $assetAmount]) {
             $this->assertEquals('DCT', $asset->getSymbol());
@@ -81,7 +81,7 @@ class BalanceApiTest extends DCoreSDKTest
 
     public function testGetWithAssetByName(): void
     {
-        [$asset, $assetAmount] = $this->sdk->getBalanceApi()->getWithAssetByName(DCoreSDKTest::ACCOUNT_NAME_1);
+        [$asset, $assetAmount] = self::$sdk->getBalanceApi()->getWithAssetByName(DCoreSDKTest::ACCOUNT_NAME_1);
 
         $this->assertEquals('DCT', $asset->getSymbol());
         $this->assertEquals('1.3.0', $asset->getId()->getId());
@@ -90,7 +90,7 @@ class BalanceApiTest extends DCoreSDKTest
 
     public function testGetAllWithAssetByName(): void
     {
-        $assetPairs = $this->sdk->getBalanceApi()->getAllWithAssetByName(DCoreSDKTest::ACCOUNT_NAME_1, ['DCT', 'DCT']);
+        $assetPairs = self::$sdk->getBalanceApi()->getAllWithAssetByName(DCoreSDKTest::ACCOUNT_NAME_1, ['DCT', 'DCT']);
 
         foreach ($assetPairs as [$asset, $assetAmount]) {
             $this->assertEquals('DCT', $asset->getSymbol());

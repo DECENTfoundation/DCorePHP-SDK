@@ -19,14 +19,14 @@ class SeederApiTest extends DCoreSDKTest
     public function testGetSeeder(): void
     {
         $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
-//        $seeder = $this->sdk->getSeederApi()->get(new ChainObject('1.2.17'));
+//        $seeder = self::$sdk->getSeederApi()->get(new ChainObject('1.2.17'));
 //        $this->assertEquals('1.2.17', $seeder->getSeeder()->getId());
     }
 
     public function testListSeedersByPrice(): void
     {
         $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
-//        $seeders = $this->sdk->getSeederApi()->listByPrice();
+//        $seeders = self::$sdk->getSeederApi()->listByPrice();
 //        foreach ($seeders as $seeder) {
 //            $this->assertInstanceOf(Seeder::class, $seeder);
 //        }
@@ -35,7 +35,7 @@ class SeederApiTest extends DCoreSDKTest
     public function testListSeedersByUpload(): void
     {
         $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
-//        $seeders = $this->sdk->getSeederApi()->listByUpload();
+//        $seeders = self::$sdk->getSeederApi()->listByUpload();
 //
 //        foreach ($seeders as $seeder) {
 //            $this->assertInstanceOf(Seeder::class, $seeder);
@@ -45,14 +45,14 @@ class SeederApiTest extends DCoreSDKTest
     public function testListSeedersByRegion(): void
     {
         $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
-//        $seeders = $this->sdk->getSeederApi()->listByRegion();
+//        $seeders = self::$sdk->getSeederApi()->listByRegion();
 //        $this->markTestIncomplete('This test has not been implemented yet.');
     }
 
     public function testListSeedersByRating(): void
     {
         $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
-//        $seeders = $this->sdk->getSeederApi()->listByRating();
+//        $seeders = self::$sdk->getSeederApi()->listByRating();
 //
 //        foreach ($seeders as $seeder) {
 //            $this->assertInstanceOf(Seeder::class, $seeder);

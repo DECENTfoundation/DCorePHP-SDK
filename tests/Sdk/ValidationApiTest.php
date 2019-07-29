@@ -31,13 +31,13 @@ class ValidationApiTest extends DCoreSDKTest
             ->setFrom(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1))
             ->setTo(new ChainObject(DCoreSDKTest::ACCOUNT_ID_2))
             ->setAmount((new AssetAmount())->setAmount(10));
-        $oldTrx = $this->sdk->getTransactionApi()->createTransaction([$operation]);
+        $oldTrx = self::$sdk->getTransactionApi()->createTransaction([$operation]);
 
         $blockData = new BlockData($oldTrx->getBlockData()->getRefBlockNum(), $oldTrx->getBlockData()->getRefBlockPrefix(), $oldTrx->getBlockData()->getExpiration());
         $trx = new Transaction();
         $trx->setBlockData($blockData)->setOperations($oldTrx->getOperations());
 
-        $sigs = $this->sdk->getValidationApi()->getRequiredSignatures($trx, [Address::decode(DCoreSDKTest::PUBLIC_KEY_1), Address::decode(DCoreSDKTest::PUBLIC_KEY_2)]);
+        $sigs = self::$sdk->getValidationApi()->getRequiredSignatures($trx, [Address::decode(DCoreSDKTest::PUBLIC_KEY_1), Address::decode(DCoreSDKTest::PUBLIC_KEY_2)]);
         $this->assertContains('DCT82MTCQVa9TDFmz3ZwaLzsFAmCLoJzrtFugpF72vsbuE1CpCwKy', $sigs);
     }
 
@@ -51,13 +51,13 @@ class ValidationApiTest extends DCoreSDKTest
             ->setFrom(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1))
             ->setTo(new ChainObject(DCoreSDKTest::ACCOUNT_ID_2))
             ->setAmount((new AssetAmount())->setAmount(10));
-        $oldTrx = $this->sdk->getTransactionApi()->createTransaction([$operation]);
+        $oldTrx = self::$sdk->getTransactionApi()->createTransaction([$operation]);
 
         $blockData = new BlockData($oldTrx->getBlockData()->getRefBlockNum(), $oldTrx->getBlockData()->getRefBlockPrefix(), $oldTrx->getBlockData()->getExpiration());
         $trx = new Transaction();
         $trx->setBlockData($blockData)->setOperations($oldTrx->getOperations());
 
-        $sigs = $this->sdk->getValidationApi()->getPotentialSignatures($trx);
+        $sigs = self::$sdk->getValidationApi()->getPotentialSignatures($trx);
         $this->assertContains('DCT82MTCQVa9TDFmz3ZwaLzsFAmCLoJzrtFugpF72vsbuE1CpCwKy', $sigs);
     }
 
@@ -71,10 +71,10 @@ class ValidationApiTest extends DCoreSDKTest
             ->setFrom(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1))
             ->setTo(new ChainObject(DCoreSDKTest::ACCOUNT_ID_2))
             ->setAmount((new AssetAmount())->setAmount(10));
-        $trx = $this->sdk->getTransactionApi()->createTransaction([$operation]);
+        $trx = self::$sdk->getTransactionApi()->createTransaction([$operation]);
         $trx->sign(DCoreSDKTest::PRIVATE_KEY_1);
 
-        $this->assertTrue($this->sdk->getValidationApi()->verifyAuthority($trx));
+        $this->assertTrue(self::$sdk->getValidationApi()->verifyAuthority($trx));
     }
 
     /**
@@ -88,15 +88,15 @@ class ValidationApiTest extends DCoreSDKTest
 //            ->setFrom(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1))
 //            ->setTo(new ChainObject(DCoreSDKTest::ACCOUNT_ID_2))
 //            ->setAmount((new AssetAmount())->setAmount(10));
-//        $trx = $this->sdk->getTransactionApi()->createTransaction([$operation]);
+//        $trx = self::$sdk->getTransactionApi()->createTransaction([$operation]);
 //        $trx->sign(DCoreSDKTest::PRIVATE_KEY_2);
 //
-//        $this->assertFalse($this->sdk->getValidationApi()->verifyAuthority($trx));
+//        $this->assertFalse(self::$sdk->getValidationApi()->verifyAuthority($trx));
     }
 
     public function testVerifyAccountAuthority(): void
     {
-        $this->assertTrue($this->sdk->getValidationApi()->verifyAccountAuthority(DCoreSDKTest::ACCOUNT_NAME_2, [Address::decode(DCoreSDKTest::PUBLIC_KEY_2)]));
+        $this->assertTrue(self::$sdk->getValidationApi()->verifyAccountAuthority(DCoreSDKTest::ACCOUNT_NAME_2, [Address::decode(DCoreSDKTest::PUBLIC_KEY_2)]));
     }
 
     /**
@@ -111,10 +111,10 @@ class ValidationApiTest extends DCoreSDKTest
             ->setFrom(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1))
             ->setTo(new ChainObject(DCoreSDKTest::ACCOUNT_ID_2))
             ->setAmount((new AssetAmount())->setAmount(10));
-        $trx = $this->sdk->getTransactionApi()->createTransaction([$operation]);
+        $trx = self::$sdk->getTransactionApi()->createTransaction([$operation]);
         $trx->sign(DCoreSDKTest::PRIVATE_KEY_1);
 
-        $this->sdk->getValidationApi()->validateTransaction($trx);
+        self::$sdk->getValidationApi()->validateTransaction($trx);
 
         $this->expectNotToPerformAssertions();
     }
@@ -130,7 +130,7 @@ class ValidationApiTest extends DCoreSDKTest
             ->setTo(new ChainObject(DCoreSDKTest::ACCOUNT_ID_2))
             ->setAmount((new AssetAmount())->setAmount(10));
 
-        $fees = $this->sdk->getValidationApi()->getFees([$operation]);
+        $fees = self::$sdk->getValidationApi()->getFees([$operation]);
         /** @var AssetAmount $fee */
         $fee = reset($fees);
 
@@ -149,7 +149,7 @@ class ValidationApiTest extends DCoreSDKTest
             ->setTo(new ChainObject(DCoreSDKTest::ACCOUNT_ID_2))
             ->setAmount((new AssetAmount())->setAmount(10));
 
-        $fee = $this->sdk->getValidationApi()->getFee($operation);
+        $fee = self::$sdk->getValidationApi()->getFee($operation);
 
         $this->assertEquals(100000, $fee->getAmount());
         $this->assertEquals('1.3.0', $fee->getAssetId()->getId());
@@ -157,7 +157,7 @@ class ValidationApiTest extends DCoreSDKTest
 
     public function testGetFeeByType(): void
     {
-        $fee = $this->sdk->getValidationApi()->getFeeByType(Transfer2::OPERATION_TYPE);
+        $fee = self::$sdk->getValidationApi()->getFeeByType(Transfer2::OPERATION_TYPE);
 
         $this->assertEquals(100000, $fee->getAmount());
         $this->assertEquals('1.3.0', $fee->getAssetId()->getId());

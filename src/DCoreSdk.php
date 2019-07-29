@@ -2,6 +2,8 @@
 
 namespace DCorePHP;
 
+use Doctrine\Common\Annotations\AnnotationRegistry;
+
 abstract class DCoreSdk
 {
     public const DCT_CHAIN_ID = '17401602b201b3c45a3ad98afc6fb458f91f519bd30d1058adf6f2bed66376bc';
@@ -18,6 +20,11 @@ abstract class DCoreSdk
         $this->dcoreApiUrl = $dcoreApiUrl;
         $this->dcoreWebsocketUrl = $dcoreWebsocketUrl;
         $this->debug = $debug;
+
+        // Loading Custom Annotation classes
+        AnnotationRegistry::registerLoader(static function($name){
+            return class_exists($name);
+        });
     }
 
     /**

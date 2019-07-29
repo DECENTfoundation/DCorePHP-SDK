@@ -17,23 +17,7 @@ use DCorePHP\Model\ElGamalKeys;
 use DCorePHP\Model\FullAccount;
 use DCorePHP\Model\InvalidOperationTypeException;
 use DCorePHP\Model\TransactionDetail;
-use DCorePHP\Net\Model\Request\BaseRequest;
-use DCorePHP\Net\Model\Request\BroadcastTransactionWithCallback;
-use DCorePHP\Net\Model\Request\GetAccountById;
-use DCorePHP\Net\Model\Request\GetAccountByName;
-use DCorePHP\Net\Model\Request\GetAccountCount;
-use DCorePHP\Net\Model\Request\GetAccountReferences;
-use DCorePHP\Net\Model\Request\GetAccountsById;
-use DCorePHP\Net\Model\Request\GetChainId;
-use DCorePHP\Net\Model\Request\GetDynamicGlobalProperties;
-use DCorePHP\Net\Model\Request\GetFullAccounts;
-use DCorePHP\Net\Model\Request\GetKeyReferences;
-use DCorePHP\Net\Model\Request\GetRequiredFees;
-use DCorePHP\Net\Model\Request\ListAccounts;
-use DCorePHP\Net\Model\Request\LookupAccountNames;
 use DCorePHP\Net\Model\Request\SearchAccountHistory;
-use DCorePHP\Net\Model\Request\SearchAccounts;
-use DCorePHP\Net\Model\Response\BaseResponse;
 use DCorePHP\Sdk\AccountApi;
 use DCorePHPTests\DCoreSDKTest;
 use WebSocket\BadOpcodeException;
@@ -45,12 +29,12 @@ class AccountApiTest extends DCoreSDKTest
      */
     public function testExist(): void
     {
-        $this->assertTrue($this->sdk->getAccountApi()->exist(new ChainObject('1.2.27')));
+        $this->assertTrue(self::$sdk->getAccountApi()->exist(new ChainObject('1.2.27')));
     }
 
     public function testGet(): void
     {
-        $account = $this->sdk->getAccountApi()->get(new ChainObject('1.2.27'));
+        $account = self::$sdk->getAccountApi()->get(new ChainObject('1.2.27'));
 
         $this->assertInstanceOf(Account::class, $account);
         $this->assertEquals('1.2.27', $account->getId());
@@ -58,7 +42,7 @@ class AccountApiTest extends DCoreSDKTest
 
     public function testGetByName(): void
     {
-        $account = $this->sdk->getAccountApi()->getByName(DCoreSDKTest::ACCOUNT_NAME_1);
+        $account = self::$sdk->getAccountApi()->getByName(DCoreSDKTest::ACCOUNT_NAME_1);
 
         $this->assertInstanceOf(Account::class, $account);
         $this->assertEquals(DCoreSDKTest::ACCOUNT_NAME_1, $account->getName());
@@ -68,7 +52,7 @@ class AccountApiTest extends DCoreSDKTest
     {
         $this->expectException(ObjectNotFoundException::class);
 
-        $this->sdk->getAccountApi()->getByName('non-existent');
+        self::$sdk->getAccountApi()->getByName('non-existent');
     }
 
     public function testGetByNameOrId()
@@ -118,7 +102,7 @@ class AccountApiTest extends DCoreSDKTest
 
     public function testGetCountAll(): void
     {
-        $count = $this->sdk->getAccountApi()->countAll();
+        $count = self::$sdk->getAccountApi()->countAll();
 
         $this->assertInternalType('integer', $count);
         $this->assertGreaterThanOrEqual(0, $count);
@@ -129,7 +113,7 @@ class AccountApiTest extends DCoreSDKTest
      */
     public function testFindAllReferencesByKeys(): void
     {
-        $references = $this->sdk->getAccountApi()->findAllReferencesByKeys([self::PUBLIC_KEY_1]);
+        $references = self::$sdk->getAccountApi()->findAllReferencesByKeys([self::PUBLIC_KEY_1]);
 
         $this->assertContainsOnlyInstancesOf(ChainObject::class, $references);
     }
@@ -139,7 +123,7 @@ class AccountApiTest extends DCoreSDKTest
      */
     public function testFindAllReferencesByAccount(): void
     {
-        $references = $this->sdk->getAccountApi()->findAllReferencesByAccount(new ChainObject('1.2.85'));
+        $references = self::$sdk->getAccountApi()->findAllReferencesByAccount(new ChainObject('1.2.85'));
 
         $this->assertContainsOnlyInstancesOf(ChainObject::class, $references);
     }
@@ -150,7 +134,7 @@ class AccountApiTest extends DCoreSDKTest
     public function testGetAll(): void
     {
         /** @var Account[] $accounts */
-        $accounts = $this->sdk->getAccountApi()->getAll([new ChainObject(DCoreSDKTest::ACCOUNT_ID_1)]);
+        $accounts = self::$sdk->getAccountApi()->getAll([new ChainObject(DCoreSDKTest::ACCOUNT_ID_1)]);
         $this->assertEquals(DCoreSDKTest::ACCOUNT_ID_1, $accounts[0]->getId());
         $this->assertEquals(DCoreSDKTest::ACCOUNT_NAME_1, $accounts[0]->getName());
     }
@@ -161,7 +145,7 @@ class AccountApiTest extends DCoreSDKTest
     public function testGetFullAccounts(): void
     {
         /** @var FullAccount[] $accounts */
-        $accounts = $this->sdk->getAccountApi()->getFullAccounts([DCoreSDKTest::ACCOUNT_NAME_2, new ChainObject(DCoreSDKTest::ACCOUNT_ID_1)]);
+        $accounts = self::$sdk->getAccountApi()->getFullAccounts([DCoreSDKTest::ACCOUNT_NAME_2, new ChainObject(DCoreSDKTest::ACCOUNT_ID_1)]);
         $this->assertEquals(DCoreSDKTest::ACCOUNT_ID_1, $accounts[DCoreSDKTest::ACCOUNT_ID_1]->getAccount()->getId());
         $this->assertEquals(DCoreSDKTest::ACCOUNT_NAME_1, $accounts[DCoreSDKTest::ACCOUNT_ID_1]->getAccount()->getName());
         $this->assertEquals(DCoreSDKTest::ACCOUNT_NAME_2, $accounts[DCoreSDKTest::ACCOUNT_NAME_2]->getAccount()->getName());
@@ -170,7 +154,7 @@ class AccountApiTest extends DCoreSDKTest
     public function testGetAllByNames(): void
     {
         /** @var Account[] $accounts */
-        $accounts = $this->sdk->getAccountApi()->getAllByNames([DCoreSDKTest::ACCOUNT_NAME_1, DCoreSDKTest::ACCOUNT_NAME_2]);
+        $accounts = self::$sdk->getAccountApi()->getAllByNames([DCoreSDKTest::ACCOUNT_NAME_1, DCoreSDKTest::ACCOUNT_NAME_2]);
         foreach ($accounts as $account) {
             $this->assertInstanceOf(Account::class, $account);
         }
@@ -181,7 +165,7 @@ class AccountApiTest extends DCoreSDKTest
     public function testListAllRelative(): void
     {
         /** @var Account[] $accounts */
-        $accounts = $this->sdk->getAccountApi()->listAllRelative();
+        $accounts = self::$sdk->getAccountApi()->listAllRelative();
 
         foreach ($accounts as $account) {
             $this->assertInstanceOf(Account::class, $account);
@@ -192,7 +176,7 @@ class AccountApiTest extends DCoreSDKTest
 
     public function testFindAll(): void
     {
-        $accounts = $this->sdk->getAccountApi()->findAll(DCoreSDKTest::ACCOUNT_NAME_1, '', DCoreSDKTest::ACCOUNT_ID_1, 1);
+        $accounts = self::$sdk->getAccountApi()->findAll(DCoreSDKTest::ACCOUNT_NAME_1, '', DCoreSDKTest::ACCOUNT_ID_1, 1);
 
         $this->assertInternalType('array', $accounts);
         $this->assertCount(1, $accounts);
@@ -205,7 +189,7 @@ class AccountApiTest extends DCoreSDKTest
 
     public function testSearchAccountHistory(): void
     {
-        $transactions = $this->sdk->getAccountApi()->searchAccountHistory(new ChainObject('1.2.27'), '0.0.0', SearchAccountHistory::ORDER_TIME_DESC, 1);
+        $transactions = self::$sdk->getAccountApi()->searchAccountHistory(new ChainObject('1.2.27'), '0.0.0', SearchAccountHistory::ORDER_TIME_DESC, 1);
 
         $this->assertInternalType('array', $transactions);
 
@@ -232,7 +216,7 @@ class AccountApiTest extends DCoreSDKTest
      */
     public function testTransfer(): void
     {
-        $this->sdk->getAccountApi()->transfer(
+        self::$sdk->getAccountApi()->transfer(
             new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1)),
             DCoreSDKTest::ACCOUNT_ID_2,
             (new AssetAmount())->setAmount(1500000),
@@ -241,7 +225,7 @@ class AccountApiTest extends DCoreSDKTest
         );
 
         /** @var TransactionDetail[] $transactions */
-        $transactions = $this->sdk->getAccountApi()->searchAccountHistory(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), '0.0.0', SearchAccountHistory::ORDER_TIME_DESC, 1);
+        $transactions = self::$sdk->getAccountApi()->searchAccountHistory(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), '0.0.0', SearchAccountHistory::ORDER_TIME_DESC, 1);
         $lastTransaction = reset($transactions);
         $this->assertInstanceOf(TransactionDetail::class, $lastTransaction);
         $this->assertEquals(DCoreSDKTest::ACCOUNT_ID_1, $lastTransaction->getFrom());
@@ -252,7 +236,7 @@ class AccountApiTest extends DCoreSDKTest
 
     public function testDerivePrivateKey()
     {
-        $privateKey = $this->sdk->getAccountApi()->derivePrivateKey(DCoreSDKTest::PRIVATE_KEY_1);
+        $privateKey = self::$sdk->getAccountApi()->derivePrivateKey(DCoreSDKTest::PRIVATE_KEY_1);
 
         $this->assertInstanceOf(PrivateKey::class, $privateKey);
         $this->assertEquals('5956ee8e521a78e0cc6f6c8f65ed0a3a4be3fbe326d4d1e611fbd6454177bda4', $privateKey->toHex());
@@ -260,14 +244,14 @@ class AccountApiTest extends DCoreSDKTest
 
     public function testSuggestBrainKey(): void
     {
-        $brainKey = $this->sdk->getAccountApi()->suggestBrainKey();
+        $brainKey = self::$sdk->getAccountApi()->suggestBrainKey();
 
         $this->assertCount(16, explode(' ', $brainKey));
     }
 
     public function testGenerateBrainKeyElGamalKey(): void
     {
-        $brainKey = $this->sdk->getAccountApi()->generateBrainKeyElGamalKey();
+        $brainKey = self::$sdk->getAccountApi()->generateBrainKeyElGamalKey();
 
         $this->assertNotEmpty($brainKey[0]);
         $this->assertNotEmpty($brainKey[1]);
@@ -277,7 +261,7 @@ class AccountApiTest extends DCoreSDKTest
 
     public function testGetBrainKeyInfo(): void
     {
-        $brainKeyInfo = $this->sdk->getAccountApi()->getBrainKeyInfo('FAILING AHIMSA INFLECT RETOUR OVERWEB PODIUM UNPILED DEVELIN BATED PUDGILY EXUDATE PASTEL ISOTOPY OSOPHY SELLAR SWAYING');
+        $brainKeyInfo = self::$sdk->getAccountApi()->getBrainKeyInfo('FAILING AHIMSA INFLECT RETOUR OVERWEB PODIUM UNPILED DEVELIN BATED PUDGILY EXUDATE PASTEL ISOTOPY OSOPHY SELLAR SWAYING');
 
         $this->assertEquals('FAILING AHIMSA INFLECT RETOUR OVERWEB PODIUM UNPILED DEVELIN BATED PUDGILY EXUDATE PASTEL ISOTOPY OSOPHY SELLAR SWAYING', $brainKeyInfo->getBrainPrivateKey());
         $this->assertEquals('5K5uAt9rPndBfEWth2fgBjDQx4gtEX9jRBB9unbo4VdVAx8jems', $brainKeyInfo->getWifPrivateKey());
@@ -286,14 +270,14 @@ class AccountApiTest extends DCoreSDKTest
 
     public function testNormalizeBrainKey(): void
     {
-        $brainKey = $this->sdk->getAccountApi()->normalizeBrainKey('failing   ahimsa inflect retour overweb podium unpiled develin bated  pudgily EXUDATE pastel isotopy osophy sellar swaying ');
+        $brainKey = self::$sdk->getAccountApi()->normalizeBrainKey('failing   ahimsa inflect retour overweb podium unpiled develin bated  pudgily EXUDATE pastel isotopy osophy sellar swaying ');
 
         $this->assertEquals('FAILING AHIMSA INFLECT RETOUR OVERWEB PODIUM UNPILED DEVELIN BATED PUDGILY EXUDATE PASTEL ISOTOPY OSOPHY SELLAR SWAYING', $brainKey);
     }
 
     public function testGenerateElGamalKeys()
     {
-        $elGamalKeys = $this->sdk->getAccountApi()->generateElGamalKeys();
+        $elGamalKeys = self::$sdk->getAccountApi()->generateElGamalKeys();
 
         $this->assertInstanceOf(ElGamalKeys::class, $elGamalKeys);
     }
@@ -302,7 +286,7 @@ class AccountApiTest extends DCoreSDKTest
     {
         $accountName = 'ttibensky1' . date('U');
 
-        $this->sdk->getAccountApi()->registerAccount(
+        self::$sdk->getAccountApi()->registerAccount(
             $accountName,
             DCoreSDKTest::PUBLIC_KEY_1,
             DCoreSDKTest::PUBLIC_KEY_1,
@@ -311,7 +295,7 @@ class AccountApiTest extends DCoreSDKTest
             DCoreSDKTest::PRIVATE_KEY_1
         );
 
-        $account = $this->sdk->getAccountApi()->getByName($accountName);
+        $account = self::$sdk->getAccountApi()->getByName($accountName);
 
         $this->assertEquals($accountName, $account->getName());
     }
@@ -320,14 +304,14 @@ class AccountApiTest extends DCoreSDKTest
     {
         $accountName = 'ttibensky2' . date('U');
 
-        $this->sdk->getAccountApi()->createAccountWithBrainKey(
+        self::$sdk->getAccountApi()->createAccountWithBrainKey(
             'FAILING AHIMSA INFLECT RETOUR OVERWEB PODIUM UNPILED DEVELIN BATED PUDGILY EXUDATE PASTEL ISOTOPY OSOPHY SELLAR SWAYING',
             $accountName,
             new ChainObject(DCoreSDKTest::ACCOUNT_ID_1),
             DCoreSDKTest::PRIVATE_KEY_1
         );
 
-        $account = $this->sdk->getAccountApi()->getByName($accountName);
+        $account = self::$sdk->getAccountApi()->getByName($accountName);
 
         $this->assertEquals($accountName, $account->getName());
     }
@@ -341,7 +325,7 @@ class AccountApiTest extends DCoreSDKTest
      */
     public function testUpdateAccount(): void
     {
-        $account = $this->sdk->getAccountApi()->get(new ChainObject(self::ACCOUNT_ID_1));
+        $account = self::$sdk->getAccountApi()->get(new ChainObject(self::ACCOUNT_ID_1));
 
         $oldOptions = $account->getOptions();
         $newOptions =
@@ -352,7 +336,7 @@ class AccountApiTest extends DCoreSDKTest
                 ->setExtensions([])
                 ->setSubscriptionPeriod(0);
 
-        $this->sdk->getAccountApi()->updateAccount(
+        self::$sdk->getAccountApi()->updateAccount(
             new ChainObject(DCoreSDKTest::ACCOUNT_ID_1),
             $newOptions,
             DCoreSDKTest::PRIVATE_KEY_1
