@@ -6,5 +6,6 @@ var searchData=
   ['transactionconfirmation',['TransactionConfirmation',['../classDCorePHP_1_1Model_1_1TransactionConfirmation.html',1,'DCorePHP::Model']]],
   ['transactiondetail',['TransactionDetail',['../classDCorePHP_1_1Model_1_1TransactionDetail.html',1,'DCorePHP::Model']]],
   ['transfer',['Transfer',['../classDCorePHP_1_1Model_1_1Operation_1_1Transfer.html',1,'DCorePHP::Model::Operation']]],
-  ['transfer2',['Transfer2',['../classDCorePHP_1_1Model_1_1Operation_1_1Transfer2.html',1,'DCorePHP::Model::Operation']]]
+  ['transfer2',['Transfer2',['../classDCorePHP_1_1Model_1_1Operation_1_1Transfer2.html',1,'DCorePHP::Model::Operation']]],
+  ['type',['Type',['../classDCorePHP_1_1Model_1_1Annotation_1_1Type.html',1,'DCorePHP::Model::Annotation']]]
 ];

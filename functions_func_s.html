@@ -68,6 +68,10 @@ $(function() {
 : <a class="el" href="classDCorePHP_1_1Sdk_1_1AccountApi.html#a30cf429d17a3124061e2ed1912b2f18a">DCorePHP\Sdk\AccountApi</a>
 , <a class="el" href="interfaceDCorePHP_1_1Sdk_1_1AccountApiInterface.html#a6a79cbdfc20421f123c2522fa761812c">DCorePHP\Sdk\AccountApiInterface</a>
 </li>
+<li>searchNftHistory()
+: <a class="el" href="classDCorePHP_1_1Sdk_1_1NftApi.html#a1a7b239ae1d622409f4977ee2b59d26e">DCorePHP\Sdk\NftApi</a>
+, <a class="el" href="interfaceDCorePHP_1_1Sdk_1_1NftApiInterface.html#a1da872fc86209e50cfb14c803b17b3f6">DCorePHP\Sdk\NftApiInterface</a>
+</li>
 <li>searchUserContent()
 : <a class="el" href="classDCorePHP_1_1Sdk_1_1ContentApi.html#aec1073badaef29fdda9cbe9fc0bb3f8e">DCorePHP\Sdk\ContentApi</a>
 , <a class="el" href="interfaceDCorePHP_1_1Sdk_1_1ContentApiInterface.html#a0ea748e87b84e531ceb4f501ef49235f">DCorePHP\Sdk\ContentApiInterface</a>
@@ -364,6 +368,7 @@ $(function() {
 </li>
 <li>setCurrentSupply()
 : <a class="el" href="classDCorePHP_1_1Model_1_1Asset_1_1AssetData.html#a8af788a323e0a7a349e68fc9cacf65c0">DCorePHP\Model\Asset\AssetData</a>
+, <a class="el" href="classDCorePHP_1_1Model_1_1Nft.html#a5c9582f34fd8734e78c9abce635e08aa">DCorePHP\Model\Nft</a>
 </li>
 <li>setCustodyData()
 : <a class="el" href="classDCorePHP_1_1Model_1_1Content_1_1SubmitContent.html#a309250c3053227ca89c216e6c36a864e">DCorePHP\Model\Content\SubmitContent</a>
@@ -374,7 +379,10 @@ $(function() {
 <li>setData()
 : <a class="el" href="classDCorePHP_1_1Model_1_1Messaging_1_1MessagePayloadReceiver.html#a5f2d15b1e19ac2bd298212e07364367a">DCorePHP\Model\Messaging\MessagePayloadReceiver</a>
 , <a class="el" href="classDCorePHP_1_1Model_1_1Messaging_1_1MessageReceiver.html#a8a038dd87c3520dd50cc07c78ec013d1">DCorePHP\Model\Messaging\MessageReceiver</a>
+, <a class="el" href="classDCorePHP_1_1Model_1_1NftData.html#aa1860fb23f5228b673964d49e484dde5">DCorePHP\Model\NftData</a>
 , <a class="el" href="classDCorePHP_1_1Model_1_1Operation_1_1CustomOperation.html#a763e2f16aa92997a71d1c2e71b6a366f">DCorePHP\Model\Operation\CustomOperation</a>
+, <a class="el" href="classDCorePHP_1_1Model_1_1Operation_1_1NftIssueOperation.html#a8533dda25451556297651883d2818fd8">DCorePHP\Model\Operation\NftIssueOperation</a>
+, <a class="el" href="classDCorePHP_1_1Model_1_1Operation_1_1NftUpdateDataOperation.html#aa5a3fddc44fad85df152ee1dcf810cea">DCorePHP\Model\Operation\NftUpdateDataOperation</a>
 , <a class="el" href="classDCorePHP_1_1Net_1_1Model_1_1Response_1_1Error.html#aea0f4f4650f9962a0c2634507300d61d">DCorePHP\Net\Model\Response\Error</a>
 </li>
 <li>setDataId()
@@ -393,6 +401,10 @@ $(function() {
 <li>setDebug()
 : <a class="el" href="classDCorePHP_1_1DCoreSdk.html#a057948521c7a45a4cf09e4ac8b256a84">DCorePHP\DCoreSdk</a>
 </li>
+<li>setDefinitions()
+: <a class="el" href="classDCorePHP_1_1Model_1_1Nft.html#a124ae053586f0f7843a7926603dbde93">DCorePHP\Model\Nft</a>
+, <a class="el" href="classDCorePHP_1_1Model_1_1Operation_1_1NftCreateOperation.html#a0113b5837709d585082bd2f77fcdf235">DCorePHP\Model\Operation\NftCreateOperation</a>
+</li>
 <li>setDelivered()
 : <a class="el" href="classDCorePHP_1_1Model_1_1Content_1_1Purchase.html#a61a1bfdc03f90f388a5a1d524eb5b99f">DCorePHP\Model\Content\Purchase</a>
 </li>
@@ -402,6 +414,7 @@ $(function() {
 <li>setDescription()
 : <a class="el" href="classDCorePHP_1_1Model_1_1Asset_1_1Asset.html#a06d0cbe7360a7061cb0be4cd7a9d99b5">DCorePHP\Model\Asset\Asset</a>
 , <a class="el" href="classDCorePHP_1_1Model_1_1Content_1_1Synopsis.html#afedaf98feeffd44f85a47276b015274c">DCorePHP\Model\Content\Synopsis</a>
+, <a class="el" href="classDCorePHP_1_1Model_1_1NftOptions.html#a0950d0c12ff52dad60cc1da9c767e75c">DCorePHP\Model\NftOptions</a>
 , <a class="el" href="classDCorePHP_1_1Model_1_1Operation_1_1AssetCreateOperation.html#a82c8835cecc5c319b01ec24b9f1c8e3f">DCorePHP\Model\Operation\AssetCreateOperation</a>
 , <a class="el" href="classDCorePHP_1_1Model_1_1TransactionDetail.html#a296eae54e752a2c53550403b38168047">DCorePHP\Model\TransactionDetail</a>
 </li>
@@ -498,7 +511,9 @@ $(function() {
 : <a class="el" href="classDCorePHP_1_1Model_1_1Proposal_1_1FeesParameters.html#a6db079173e80fa28ad57094620ba4d8d">DCorePHP\Model\Proposal\FeesParameters</a>
 </li>
 <li>setFixedMaxSupply()
-: <a class="el" href="classDCorePHP_1_1Model_1_1Operation_1_1AssetUpdateAdvancedOperation.html#a4041fedb197d7e2f43f106768dd4b917">DCorePHP\Model\Operation\AssetUpdateAdvancedOperation</a>
+: <a class="el" href="classDCorePHP_1_1Model_1_1Nft.html#a16a462a0874e70f1ecb7f28068a362a5">DCorePHP\Model\Nft</a>
+, <a class="el" href="classDCorePHP_1_1Model_1_1NftOptions.html#af7e41214e284625e2da562e6b47d4f3f">DCorePHP\Model\NftOptions</a>
+, <a class="el" href="classDCorePHP_1_1Model_1_1Operation_1_1AssetUpdateAdvancedOperation.html#a4041fedb197d7e2f43f106768dd4b917">DCorePHP\Model\Operation\AssetUpdateAdvancedOperation</a>
 </li>
 <li>setFreeSpace()
 : <a class="el" href="classDCorePHP_1_1Model_1_1Content_1_1Seeder.html#a1680d2025b7693cc38d05f9178dca4d8">DCorePHP\Model\Content\Seeder</a>
@@ -507,6 +522,7 @@ $(function() {
 : <a class="el" href="classDCorePHP_1_1Model_1_1Memo.html#ace0c4256063365f3c7fefd00e82ced7f">DCorePHP\Model\Memo</a>
 , <a class="el" href="classDCorePHP_1_1Model_1_1Messaging_1_1MessagePayload.html#a0c7fdce77433e0b5841ccb8167690495">DCorePHP\Model\Messaging\MessagePayload</a>
 , <a class="el" href="classDCorePHP_1_1Model_1_1Operation_1_1AssetFundPoolsOperation.html#a31618839f707a2edd2b18a72a75da059">DCorePHP\Model\Operation\AssetFundPoolsOperation</a>
+, <a class="el" href="classDCorePHP_1_1Model_1_1Operation_1_1NftTransferOperation.html#a20ce9bca37f360a6a1345e9c078283e3">DCorePHP\Model\Operation\NftTransferOperation</a>
 , <a class="el" href="classDCorePHP_1_1Model_1_1Operation_1_1Subscribe.html#a7d67a14299299539d60e58a1bc8a0877">DCorePHP\Model\Operation\Subscribe</a>
 , <a class="el" href="classDCorePHP_1_1Model_1_1Operation_1_1Transfer2.html#a6d5f084e4f3c21509da001161d78eda7">DCorePHP\Model\Operation\Transfer2</a>
 , <a class="el" href="classDCorePHP_1_1Model_1_1Operation_1_1Transfer.html#aa8ba20ca4ce17c91c687ba0e50580ef0">DCorePHP\Model\Operation\Transfer</a>
@@ -769,7 +785,13 @@ $(function() {
 , <a class="el" href="classDCorePHP_1_1Model_1_1Messaging_1_1MessageResponse.html#a2bd37c9718c2462754f24ca79a2bc898">DCorePHP\Model\Messaging\MessageResponse</a>
 , <a class="el" href="classDCorePHP_1_1Model_1_1Mining_1_1MinerId.html#a6a3cbbff38852f41656a536eae8d21a3">DCorePHP\Model\Mining\MinerId</a>
 , <a class="el" href="classDCorePHP_1_1Model_1_1Mining_1_1MinerVotingInfo.html#a1ee6bf21fe9f1bb5fbf1f68441eeee65">DCorePHP\Model\Mining\MinerVotingInfo</a>
+, <a class="el" href="classDCorePHP_1_1Model_1_1Nft.html#ae5f42f5d6fc3030fcb030126d65e4b48">DCorePHP\Model\Nft</a>
+, <a class="el" href="classDCorePHP_1_1Model_1_1NftData.html#a73ce7ebf806d12a943d3275fb6e72c61">DCorePHP\Model\NftData</a>
 , <a class="el" href="classDCorePHP_1_1Model_1_1Operation_1_1CustomOperation.html#a9e249a243e7c4b69a98685cd143c2b3b">DCorePHP\Model\Operation\CustomOperation</a>
+, <a class="el" href="classDCorePHP_1_1Model_1_1Operation_1_1NftIssueOperation.html#a4d0f58376b7540187f72efd5f3d4f4cd">DCorePHP\Model\Operation\NftIssueOperation</a>
+, <a class="el" href="classDCorePHP_1_1Model_1_1Operation_1_1NftTransferOperation.html#a3f5fe575ffe185a6df3dc8b90025136d">DCorePHP\Model\Operation\NftTransferOperation</a>
+, <a class="el" href="classDCorePHP_1_1Model_1_1Operation_1_1NftUpdateDataOperation.html#a835ecfe8b28061db6204e0fb4f11b7a8">DCorePHP\Model\Operation\NftUpdateDataOperation</a>
+, <a class="el" href="classDCorePHP_1_1Model_1_1Operation_1_1NftUpdateOperation.html#aacf2fb6245f558496cb0dca938bd12bd">DCorePHP\Model\Operation\NftUpdateOperation</a>
 , <a class="el" href="classDCorePHP_1_1Model_1_1OperationHistory.html#ad99cdae3f078108c31d52ae562096c5c">DCorePHP\Model\OperationHistory</a>
 , <a class="el" href="classDCorePHP_1_1Model_1_1Subscription_1_1Subscription.html#a1f5f3aa6d72b2d8947c1d15affb69233">DCorePHP\Model\Subscription\Subscription</a>
 , <a class="el" href="classDCorePHP_1_1Model_1_1TransactionConfirmation.html#a3c73138be91ed137bb34e3ea830027f1">DCorePHP\Model\TransactionConfirmation</a>
@@ -789,11 +811,14 @@ $(function() {
 </li>
 <li>setIssuer()
 : <a class="el" href="classDCorePHP_1_1Model_1_1Asset_1_1Asset.html#a3b559ccdd5c7859d4f7d8d5ef6ca8be7">DCorePHP\Model\Asset\Asset</a>
+, <a class="el" href="classDCorePHP_1_1Model_1_1NftOptions.html#a3c0e38d9227eaf4ca38af09e8823de7e">DCorePHP\Model\NftOptions</a>
 , <a class="el" href="classDCorePHP_1_1Model_1_1Operation_1_1AssetClaimFeesOperation.html#a6e9dd3ebd41985e1f51c1fc71da141ed">DCorePHP\Model\Operation\AssetClaimFeesOperation</a>
 , <a class="el" href="classDCorePHP_1_1Model_1_1Operation_1_1AssetCreateOperation.html#a1566f5a7b49c3c4556f92daca3b07a32">DCorePHP\Model\Operation\AssetCreateOperation</a>
 , <a class="el" href="classDCorePHP_1_1Model_1_1Operation_1_1AssetIssueOperation.html#af8e678b14856d7c5184c6dfe8a0b7db8">DCorePHP\Model\Operation\AssetIssueOperation</a>
 , <a class="el" href="classDCorePHP_1_1Model_1_1Operation_1_1AssetUpdateAdvancedOperation.html#aa201ed82ef6f798b48e3ccdf111d3413">DCorePHP\Model\Operation\AssetUpdateAdvancedOperation</a>
 , <a class="el" href="classDCorePHP_1_1Model_1_1Operation_1_1AssetUpdateOperation.html#a1a56e6f533ff185ad0665f14584e6ee6">DCorePHP\Model\Operation\AssetUpdateOperation</a>
+, <a class="el" href="classDCorePHP_1_1Model_1_1Operation_1_1NftIssueOperation.html#a5eb415aa1a1dcbe9c3db6d57dd0ae9e4">DCorePHP\Model\Operation\NftIssueOperation</a>
+, <a class="el" href="classDCorePHP_1_1Model_1_1Operation_1_1NftUpdateOperation.html#a8d121061539e3566446577313397a681">DCorePHP\Model\Operation\NftUpdateOperation</a>
 </li>
 <li>setIssueToAccount()
 : <a class="el" href="classDCorePHP_1_1Model_1_1Operation_1_1AssetIssueOperation.html#aa623c3e266ede2cac1f5cd3edcfc10d2">DCorePHP\Model\Operation\AssetIssueOperation</a>
@@ -885,11 +910,14 @@ $(function() {
 </li>
 <li>setMaxSupply()
 : <a class="el" href="classDCorePHP_1_1Model_1_1Asset_1_1AssetOptions.html#a381af9ffd7fb8255884c4f9ea52af1e1">DCorePHP\Model\Asset\AssetOptions</a>
+, <a class="el" href="classDCorePHP_1_1Model_1_1NftOptions.html#ac9163f18140e89b2eee94a13abca29d6">DCorePHP\Model\NftOptions</a>
 , <a class="el" href="classDCorePHP_1_1Model_1_1Operation_1_1AssetUpdateOperation.html#a773677e08aa8b030058dfa5edc3bedf0">DCorePHP\Model\Operation\AssetUpdateOperation</a>
 </li>
 <li>setMemo()
 : <a class="el" href="classDCorePHP_1_1Model_1_1Operation_1_1AssetIssueOperation.html#a34f0ef661426dbc7ccebed3a81c3693d">DCorePHP\Model\Operation\AssetIssueOperation</a>
-, <a class="el" href="classDCorePHP_1_1Model_1_1Operation_1_1Transfer2.html#a1f674f0191d174c9456ea42ab0846d84">DCorePHP\Model\Operation\Transfer2</a>
+, <a class="el" href="classDCorePHP_1_1Model_1_1Operation_1_1NftIssueOperation.html#ade90ea0956a86662bdc442ab7d41d32c">DCorePHP\Model\Operation\NftIssueOperation</a>
+, <a class="el" href="classDCorePHP_1_1Model_1_1Operation_1_1NftTransferOperation.html#a835228746e83c10089fc410dc20b6561">DCorePHP\Model\Operation\NftTransferOperation</a>
+, <a class="el" href="classDCorePHP_1_1Model_1_1Operation_1_1Transfer2.html#a9eb0e74f1ca1d5d34566ba6ba0e20e74">DCorePHP\Model\Operation\Transfer2</a>
 , <a class="el" href="classDCorePHP_1_1Model_1_1Operation_1_1Transfer.html#a55cb1dca21e4871bc8a7879bd01a8073">DCorePHP\Model\Operation\Transfer</a>
 </li>
 <li>setMemoKey()
@@ -947,6 +975,12 @@ $(function() {
 <li>setMinMinerCount()
 : <a class="el" href="classDCorePHP_1_1Model_1_1General_1_1ChainParameters.html#a9e7dc4f0844b3d9a3d78feb7ad734135">DCorePHP\Model\General\ChainParameters</a>
 </li>
+<li>setModifiable()
+: <a class="el" href="classDCorePHP_1_1Model_1_1NftDataType.html#aa2daa120a8aad2dbb8259969f9e46fec">DCorePHP\Model\NftDataType</a>
+</li>
+<li>setModifier()
+: <a class="el" href="classDCorePHP_1_1Model_1_1Operation_1_1NftUpdateDataOperation.html#a9039353a59c7de4b7393e1891a88a865">DCorePHP\Model\Operation\NftUpdateDataOperation</a>
+</li>
 <li>setMonitoredOptions()
 : <a class="el" href="classDCorePHP_1_1Model_1_1Operation_1_1AssetCreateOperation.html#af1eee2b0208ce3e4b745944c91ffe60a">DCorePHP\Model\Operation\AssetCreateOperation</a>
 </li>
@@ -964,6 +998,7 @@ $(function() {
 , <a class="el" href="classDCorePHP_1_1Model_1_1BaseOperation.html#af80756f1731a8e7571c61ae75da24de5">DCorePHP\Model\BaseOperation</a>
 , <a class="el" href="classDCorePHP_1_1Model_1_1Mining_1_1MinerId.html#a842b35a533cc3b0a77f3ae455b161f17">DCorePHP\Model\Mining\MinerId</a>
 , <a class="el" href="classDCorePHP_1_1Model_1_1Mining_1_1MinerVotingInfo.html#a1596fbee365d91f10a7e098ea15b8353">DCorePHP\Model\Mining\MinerVotingInfo</a>
+, <a class="el" href="classDCorePHP_1_1Model_1_1NftDataType.html#ad10252216152573ec502c6af86d7a578">DCorePHP\Model\NftDataType</a>
 </li>
 <li>setNewDescription()
 : <a class="el" href="classDCorePHP_1_1Model_1_1Operation_1_1AssetUpdateOperation.html#a0217f62ab24598f4378159a4ee754f5e">DCorePHP\Model\Operation\AssetUpdateOperation</a>
@@ -976,6 +1011,15 @@ $(function() {
 </li>
 <li>setNextMaintenanceTime()
 : <a class="el" href="classDCorePHP_1_1Model_1_1DynamicGlobalProps.html#a6f687cb2df75ba78328eb8b2859357ce">DCorePHP\Model\DynamicGlobalProps</a>
+</li>
+<li>setNftApi()
+: <a class="el" href="classDCorePHP_1_1DCoreApi.html#a9d5b02c369ede03398b792ae2eb0d7d2">DCorePHP\DCoreApi</a>
+</li>
+<li>setNftDataId()
+: <a class="el" href="classDCorePHP_1_1Model_1_1TransactionDetail.html#aaa02c8f3d8aa6b51b48339029f9d7d02">DCorePHP\Model\TransactionDetail</a>
+</li>
+<li>setNftId()
+: <a class="el" href="classDCorePHP_1_1Model_1_1NftData.html#ab38aaeeffdf8385923fb475131187aef">DCorePHP\Model\NftData</a>
 </li>
 <li>setNonce()
 : <a class="el" href="classDCorePHP_1_1Model_1_1Memo.html#a715a0c0b37229015c4ed4d3e3b6969e3">DCorePHP\Model\Memo</a>
@@ -1013,8 +1057,11 @@ $(function() {
 <li>setOptions()
 : <a class="el" href="classDCorePHP_1_1Model_1_1Account.html#aea37def8e835be882a82c839c1914774">DCorePHP\Model\Account</a>
 , <a class="el" href="classDCorePHP_1_1Model_1_1Asset_1_1Asset.html#ae16a31659f017de164e6b22c92d32b2a">DCorePHP\Model\Asset\Asset</a>
+, <a class="el" href="classDCorePHP_1_1Model_1_1Nft.html#acf530be12b9909ad41bda622923c34f7">DCorePHP\Model\Nft</a>
 , <a class="el" href="classDCorePHP_1_1Model_1_1Operation_1_1AssetCreateOperation.html#a80edcb44dbfce3b516dede66a3b302fc">DCorePHP\Model\Operation\AssetCreateOperation</a>
 , <a class="el" href="classDCorePHP_1_1Model_1_1Operation_1_1CreateAccountOperation.html#ae667669b0ebe20fb471934c218f6a005">DCorePHP\Model\Operation\CreateAccountOperation</a>
+, <a class="el" href="classDCorePHP_1_1Model_1_1Operation_1_1NftCreateOperation.html#a17c1838259b9563123304a08f48e04ee">DCorePHP\Model\Operation\NftCreateOperation</a>
+, <a class="el" href="classDCorePHP_1_1Model_1_1Operation_1_1NftUpdateOperation.html#a0854612ca3634d96d8396235cfd18bda">DCorePHP\Model\Operation\NftUpdateOperation</a>
 , <a class="el" href="classDCorePHP_1_1Model_1_1Operation_1_1UpdateAccountOperation.html#a02fc9af16ce4e12291f8ecc2072c43d2">DCorePHP\Model\Operation\UpdateAccountOperation</a>
 </li>
 <li>setOwner()
@@ -1022,6 +1069,7 @@ $(function() {
 , <a class="el" href="classDCorePHP_1_1Model_1_1AccountBalance.html#a41f9ad0509dfbcc34bfbe3d0e53a56d0">DCorePHP\Model\AccountBalance</a>
 , <a class="el" href="classDCorePHP_1_1Model_1_1AccountStatistics.html#a24961361e91abffa806e722c2880aa18">DCorePHP\Model\AccountStatistics</a>
 , <a class="el" href="classDCorePHP_1_1Model_1_1Explorer_1_1VestingBalance.html#a3506c41185ef40de20c3ad4fa03b4a24">DCorePHP\Model\Explorer\VestingBalance</a>
+, <a class="el" href="classDCorePHP_1_1Model_1_1NftData.html#a3fd768b9f9874eb019a982b584bb6f2e">DCorePHP\Model\NftData</a>
 , <a class="el" href="classDCorePHP_1_1Model_1_1Operation_1_1CreateAccountOperation.html#a4d9b9f94c2ccb649adfede100c18329a">DCorePHP\Model\Operation\CreateAccountOperation</a>
 , <a class="el" href="classDCorePHP_1_1Model_1_1Operation_1_1UpdateAccountOperation.html#ab1a4237927a7eca389aa78827e5e2618">DCorePHP\Model\Operation\UpdateAccountOperation</a>
 , <a class="el" href="classDCorePHP_1_1Model_1_1Operation_1_1VestingBalanceCreate.html#a731977b662e743dc0e5701f2bc2a7a3d">DCorePHP\Model\Operation\VestingBalanceCreate</a>
@@ -1314,8 +1362,8 @@ $(function() {
 <li>setSeedersAnswered()
 : <a class="el" href="classDCorePHP_1_1Model_1_1Content_1_1Purchase.html#a36d0941ceba98e12fc2775725965850f">DCorePHP\Model\Content\Purchase</a>
 </li>
-<li>setSeedingGroup()
-: <a class="el" href="classDCorePHP_1_1DCoreApi.html#a74953dc4f5efa907e566e7fd754eb27c">DCorePHP\DCoreApi</a>
+<li>setSeedingApi()
+: <a class="el" href="classDCorePHP_1_1DCoreApi.html#a42bf25dd059231513b48af2074d9ce46">DCorePHP\DCoreApi</a>
 </li>
 <li>setSender()
 : <a class="el" href="classDCorePHP_1_1Model_1_1Messaging_1_1Message.html#a22eac4bf4b5547da1a3629d9cb1bd70f">DCorePHP\Model\Messaging\Message</a>
@@ -1393,7 +1441,9 @@ $(function() {
 </li>
 <li>setSymbol()
 : <a class="el" href="classDCorePHP_1_1Model_1_1Asset_1_1Asset.html#ac44ba7e70806020b8af7ba63a617b4c5">DCorePHP\Model\Asset\Asset</a>
+, <a class="el" href="classDCorePHP_1_1Model_1_1Nft.html#a5a68c33977f23f512b2e6d45a6136117">DCorePHP\Model\Nft</a>
 , <a class="el" href="classDCorePHP_1_1Model_1_1Operation_1_1AssetCreateOperation.html#a86651eebd884d770bb4edbb11f8379a3">DCorePHP\Model\Operation\AssetCreateOperation</a>
+, <a class="el" href="classDCorePHP_1_1Model_1_1Operation_1_1NftCreateOperation.html#ae4b32ec1dd78041eda0a6f001d63583d">DCorePHP\Model\Operation\NftCreateOperation</a>
 </li>
 <li>setSynopsis()
 : <a class="el" href="classDCorePHP_1_1Model_1_1Content_1_1Content.html#a6c4813303428bad4a176c2d281ea83b3">DCorePHP\Model\Content\Content</a>
@@ -1426,6 +1476,8 @@ $(function() {
 <li>setTo()
 : <a class="el" href="classDCorePHP_1_1Model_1_1Memo.html#ad8dc21c618e0edf36c1df4debbc4a3ff">DCorePHP\Model\Memo</a>
 , <a class="el" href="classDCorePHP_1_1Model_1_1Messaging_1_1MessagePayloadReceiver.html#a1a2834c41ad6b077cc5040149aa8e655">DCorePHP\Model\Messaging\MessagePayloadReceiver</a>
+, <a class="el" href="classDCorePHP_1_1Model_1_1Operation_1_1NftIssueOperation.html#aaf85f302df6173302624f2e583fb4dde">DCorePHP\Model\Operation\NftIssueOperation</a>
+, <a class="el" href="classDCorePHP_1_1Model_1_1Operation_1_1NftTransferOperation.html#ad4f6055eb490910f9ef2a9b814cd51e2">DCorePHP\Model\Operation\NftTransferOperation</a>
 , <a class="el" href="classDCorePHP_1_1Model_1_1Operation_1_1Subscribe.html#a2d13a5971e8530a30e99e1be3b31c097">DCorePHP\Model\Operation\Subscribe</a>
 , <a class="el" href="classDCorePHP_1_1Model_1_1Operation_1_1Transfer2.html#a55424e05a89c674541018335cb4f3218">DCorePHP\Model\Operation\Transfer2</a>
 , <a class="el" href="classDCorePHP_1_1Model_1_1Operation_1_1Transfer.html#af218bea970de1644d5b93b7a8560f369">DCorePHP\Model\Operation\Transfer</a>
@@ -1470,6 +1522,10 @@ $(function() {
 <li>setTransfer2()
 : <a class="el" href="classDCorePHP_1_1Model_1_1Proposal_1_1FeesParameters.html#ad3fb84e8bd1886a1a594f157f978d4f9">DCorePHP\Model\Proposal\FeesParameters</a>
 </li>
+<li>setTransferable()
+: <a class="el" href="classDCorePHP_1_1Model_1_1Nft.html#a175b5cfc051d70b54a8eaceb9932dc9a">DCorePHP\Model\Nft</a>
+, <a class="el" href="classDCorePHP_1_1Model_1_1Operation_1_1NftCreateOperation.html#a9b1c56d14d211044cd98b8bad473bee6">DCorePHP\Model\Operation\NftCreateOperation</a>
+</li>
 <li>setTrxInBlock()
 : <a class="el" href="classDCorePHP_1_1Model_1_1OperationHistory.html#ac198db9eb6a43fd602efb330097d0e24">DCorePHP\Model\OperationHistory</a>
 </li>
@@ -1478,11 +1534,15 @@ $(function() {
 </li>
 <li>setType()
 : <a class="el" href="classDCorePHP_1_1Model_1_1BaseOperation.html#a39ca9eadd2bb8bac421ac78585244d98">DCorePHP\Model\BaseOperation</a>
+, <a class="el" href="classDCorePHP_1_1Model_1_1NftDataType.html#a05e911865c92870f91349b44350a0f77">DCorePHP\Model\NftDataType</a>
 , <a class="el" href="classDCorePHP_1_1Model_1_1TransactionDetail.html#ac50ac5acf1e5c0ab1f1e97863e0d513f">DCorePHP\Model\TransactionDetail</a>
 </li>
 <li>setUia()
 : <a class="el" href="classDCorePHP_1_1Model_1_1Operation_1_1AssetClaimFeesOperation.html#a9d415768be51e0853ebf032e32eea7c2">DCorePHP\Model\Operation\AssetClaimFeesOperation</a>
 , <a class="el" href="classDCorePHP_1_1Model_1_1Operation_1_1AssetFundPoolsOperation.html#a18ad3975927fc8be44e55a9c92c167b4">DCorePHP\Model\Operation\AssetFundPoolsOperation</a>
+</li>
+<li>setUnique()
+: <a class="el" href="classDCorePHP_1_1Model_1_1NftDataType.html#aea543c4f778f553121a44cd1d53375a9">DCorePHP\Model\NftDataType</a>
 </li>
 <li>setUnspentFeeBudget()
 : <a class="el" href="classDCorePHP_1_1Model_1_1DynamicGlobalProps.html#a7e0318845c3d3f95bf11485664254dd2">DCorePHP\Model\DynamicGlobalProps</a>

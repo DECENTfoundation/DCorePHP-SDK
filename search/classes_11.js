@@ -7,6 +7,7 @@ var searchData=
   ['searchcontent',['SearchContent',['../classDCorePHP_1_1Net_1_1Model_1_1Request_1_1SearchContent.html',1,'DCorePHP::Net::Model::Request']]],
   ['searchfeedback',['SearchFeedback',['../classDCorePHP_1_1Net_1_1Model_1_1Request_1_1SearchFeedback.html',1,'DCorePHP::Net::Model::Request']]],
   ['searchminervoting',['SearchMinerVoting',['../classDCorePHP_1_1Net_1_1Model_1_1Request_1_1SearchMinerVoting.html',1,'DCorePHP::Net::Model::Request']]],
+  ['searchnfthistory',['SearchNftHistory',['../classDCorePHP_1_1Net_1_1Model_1_1Request_1_1SearchNftHistory.html',1,'DCorePHP::Net::Model::Request']]],
   ['seeder',['Seeder',['../classDCorePHP_1_1Model_1_1Content_1_1Seeder.html',1,'DCorePHP::Model::Content']]],
   ['seederapi',['SeederApi',['../classDCorePHP_1_1Sdk_1_1SeederApi.html',1,'DCorePHP::Sdk']]],
   ['seederapiinterface',['SeederApiInterface',['../interfaceDCorePHP_1_1Sdk_1_1SeederApiInterface.html',1,'DCorePHP::Sdk']]],

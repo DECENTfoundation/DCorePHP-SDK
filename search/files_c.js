@@ -20,5 +20,6 @@ var searchData=
   ['minervotinginfo_2ephp',['MinerVotingInfo.php',['../MinerVotingInfo_8php.html',1,'']]],
   ['miningapi_2ephp',['MiningApi.php',['../MiningApi_8php.html',1,'']]],
   ['miningapiinterface_2ephp',['MiningApiInterface.php',['../MiningApiInterface_8php.html',1,'']]],
+  ['modifiable_2ephp',['Modifiable.php',['../Modifiable_8php.html',1,'']]],
   ['monitoredassetoptions_2ephp',['MonitoredAssetOptions.php',['../MonitoredAssetOptions_8php.html',1,'']]]
 ];

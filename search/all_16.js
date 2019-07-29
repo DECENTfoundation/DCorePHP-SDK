@@ -1,6 +1,7 @@
 var searchData=
 [
-  ['validatemaxsupply',['validateMaxSupply',['../classDCorePHP_1_1Model_1_1Asset_1_1AssetOptions.html#a2309e4aa0dc456e80349de2fddfc2834',1,'DCorePHP::Model::Asset::AssetOptions']]],
+  ['validate',['validate',['../classDCorePHP_1_1Model_1_1NftDataType.html#a0d9e2797dc035bbb47c5666c3911bb90',1,'DCorePHP::Model::NftDataType']]],
+  ['validatemaxsupply',['validateMaxSupply',['../classDCorePHP_1_1Model_1_1Asset_1_1AssetOptions.html#a2309e4aa0dc456e80349de2fddfc2834',1,'DCorePHP\Model\Asset\AssetOptions\validateMaxSupply()'],['../classDCorePHP_1_1Model_1_1NftOptions.html#a48a00e93e0a7eba8079223307cc33d92',1,'DCorePHP\Model\NftOptions\validateMaxSupply()']]],
   ['validatetransaction',['ValidateTransaction',['../classDCorePHP_1_1Net_1_1Model_1_1Request_1_1ValidateTransaction.html',1,'DCorePHP\Net\Model\Request\ValidateTransaction'],['../classDCorePHP_1_1Sdk_1_1ValidationApi.html#a949402d4421eb38e731b11b3ba26f513',1,'DCorePHP\Sdk\ValidationApi\validateTransaction()'],['../interfaceDCorePHP_1_1Sdk_1_1ValidationApiInterface.html#a8250238639b1e2740b7488926177ac6b',1,'DCorePHP\Sdk\ValidationApiInterface\validateTransaction()']]],
   ['validatetransaction_2ephp',['ValidateTransaction.php',['../ValidateTransaction_8php.html',1,'']]],
   ['validationapi',['ValidationApi',['../classDCorePHP_1_1Sdk_1_1ValidationApi.html',1,'DCorePHP::Sdk']]],
@@ -9,6 +10,9 @@ var searchData=
   ['validationapiinterface_2ephp',['ValidationApiInterface.php',['../ValidationApiInterface_8php.html',1,'']]],
   ['validationexception',['ValidationException',['../classDCorePHP_1_1Exception_1_1ValidationException.html',1,'DCorePHP::Exception']]],
   ['validationexception_2ephp',['ValidationException.php',['../ValidationException_8php.html',1,'']]],
+  ['values',['values',['../classDCorePHP_1_1Model_1_1NftModel.html#a9b0ca8a801fe386bb0507352ecd060cb',1,'DCorePHP::Model::NftModel']]],
+  ['variant',['Variant',['../classDCorePHP_1_1Model_1_1Variant.html',1,'DCorePHP::Model']]],
+  ['variant_2ephp',['Variant.php',['../Variant_8php.html',1,'']]],
   ['varint',['VarInt',['../classDCorePHP_1_1Utils_1_1VarInt.html',1,'DCorePHP::Utils']]],
   ['varint_2ephp',['VarInt.php',['../VarInt_8php.html',1,'']]],
   ['verifyaccountauthority',['VerifyAccountAuthority',['../classDCorePHP_1_1Net_1_1Model_1_1Request_1_1VerifyAccountAuthority.html',1,'DCorePHP\Net\Model\Request\VerifyAccountAuthority'],['../classDCorePHP_1_1Sdk_1_1ValidationApi.html#adea172b4f085e24edb561c9cfe85df0e',1,'DCorePHP\Sdk\ValidationApi\verifyAccountAuthority()'],['../interfaceDCorePHP_1_1Sdk_1_1ValidationApiInterface.html#ac76bda5fb7eece975e2be427016789c1',1,'DCorePHP\Sdk\ValidationApiInterface\verifyAccountAuthority()']]],

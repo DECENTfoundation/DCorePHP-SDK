@@ -5,6 +5,8 @@ var searchData=
   ['listactivesubscriptionsbyauthor_2ephp',['ListActiveSubscriptionsByAuthor.php',['../ListActiveSubscriptionsByAuthor_8php.html',1,'']]],
   ['listactivesubscriptionsbyconsumer_2ephp',['ListActiveSubscriptionsByConsumer.php',['../ListActiveSubscriptionsByConsumer_8php.html',1,'']]],
   ['listassets_2ephp',['ListAssets.php',['../ListAssets_8php.html',1,'']]],
+  ['listnftdata_2ephp',['ListNftData.php',['../ListNftData_8php.html',1,'']]],
+  ['listnfts_2ephp',['ListNfts.php',['../ListNfts_8php.html',1,'']]],
   ['listpublishingmanagers_2ephp',['ListPublishingManagers.php',['../ListPublishingManagers_8php.html',1,'']]],
   ['listseedersbyprice_2ephp',['ListSeedersByPrice.php',['../ListSeedersByPrice_8php.html',1,'']]],
   ['listseedersbyrating_2ephp',['ListSeedersByRating.php',['../ListSeedersByRating_8php.html',1,'']]],

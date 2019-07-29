@@ -7,6 +7,7 @@ var searchData=
   ['searchcontent_2ephp',['SearchContent.php',['../SearchContent_8php.html',1,'']]],
   ['searchfeedback_2ephp',['SearchFeedback.php',['../SearchFeedback_8php.html',1,'']]],
   ['searchminervoting_2ephp',['SearchMinerVoting.php',['../SearchMinerVoting_8php.html',1,'']]],
+  ['searchnfthistory_2ephp',['SearchNftHistory.php',['../SearchNftHistory_8php.html',1,'']]],
   ['seeder_2ephp',['Seeder.php',['../Seeder_8php.html',1,'']]],
   ['seederapi_2ephp',['SeederApi.php',['../SeederApi_8php.html',1,'']]],
   ['seederapiinterface_2ephp',['SeederApiInterface.php',['../SeederApiInterface_8php.html',1,'']]],

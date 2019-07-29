@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['make',['make',['../classDCorePHP_1_1Model_1_1NftModel.html#a7fca2030ca47efbb1bace70bc7c03a1a',1,'DCorePHP::Model::NftModel']]],
   ['math',['Math',['../classDCorePHP_1_1Utils_1_1Math.html',1,'DCorePHP::Utils']]],
   ['math_2ephp',['Math.php',['../Math_8php.html',1,'']]],
   ['max_5fshare_5fsupply',['MAX_SHARE_SUPPLY',['../classDCorePHP_1_1Model_1_1Asset_1_1AssetOptions.html#afaab4521cc3b50fb776e8d73961b9061',1,'DCorePHP::Model::Asset::AssetOptions']]],
@@ -41,6 +42,8 @@ var searchData=
   ['miningapi_2ephp',['MiningApi.php',['../MiningApi_8php.html',1,'']]],
   ['miningapiinterface',['MiningApiInterface',['../interfaceDCorePHP_1_1Sdk_1_1MiningApiInterface.html',1,'DCorePHP::Sdk']]],
   ['miningapiinterface_2ephp',['MiningApiInterface.php',['../MiningApiInterface_8php.html',1,'']]],
+  ['modifiable',['Modifiable',['../classDCorePHP_1_1Model_1_1Annotation_1_1Modifiable.html',1,'DCorePHP::Model::Annotation']]],
+  ['modifiable_2ephp',['Modifiable.php',['../Modifiable_8php.html',1,'']]],
   ['monitoredassetoptions',['MonitoredAssetOptions',['../classDCorePHP_1_1Model_1_1Asset_1_1MonitoredAssetOptions.html',1,'DCorePHP::Model::Asset']]],
   ['monitoredassetoptions_2ephp',['MonitoredAssetOptions.php',['../MonitoredAssetOptions_8php.html',1,'']]]
 ];

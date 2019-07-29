@@ -20,5 +20,6 @@ var searchData=
   ['minervotinginfo',['MinerVotingInfo',['../classDCorePHP_1_1Model_1_1Mining_1_1MinerVotingInfo.html',1,'DCorePHP::Model::Mining']]],
   ['miningapi',['MiningApi',['../classDCorePHP_1_1Sdk_1_1MiningApi.html',1,'DCorePHP::Sdk']]],
   ['miningapiinterface',['MiningApiInterface',['../interfaceDCorePHP_1_1Sdk_1_1MiningApiInterface.html',1,'DCorePHP::Sdk']]],
+  ['modifiable',['Modifiable',['../classDCorePHP_1_1Model_1_1Annotation_1_1Modifiable.html',1,'DCorePHP::Model::Annotation']]],
   ['monitoredassetoptions',['MonitoredAssetOptions',['../classDCorePHP_1_1Model_1_1Asset_1_1MonitoredAssetOptions.html',1,'DCorePHP::Model::Asset']]]
 ];

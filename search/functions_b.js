@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['normalizebrainkey',['normalizeBrainKey',['../classDCorePHP_1_1Sdk_1_1AccountApi.html#a15d02f2e63c0684bc1984ba4441e803a',1,'DCorePHP::Sdk::AccountApi']]]
+  ['make',['make',['../classDCorePHP_1_1Model_1_1NftModel.html#a7fca2030ca47efbb1bace70bc7c03a1a',1,'DCorePHP::Model::NftModel']]]
 ];

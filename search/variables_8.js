@@ -1,9 +1,8 @@
 var searchData=
 [
-  ['price_5fasc',['PRICE_ASC',['../classDCorePHP_1_1Net_1_1Model_1_1Request_1_1SearchBuyings.html#a1b943fcc6fd25e1e7b20d26a4b269965',1,'DCorePHP\Net\Model\Request\SearchBuyings\PRICE_ASC()'],['../classDCorePHP_1_1Net_1_1Model_1_1Request_1_1SearchContent.html#abe9f5b159abfff8b892391a3f72485bb',1,'DCorePHP\Net\Model\Request\SearchContent\PRICE_ASC()']]],
-  ['price_5fdesc',['PRICE_DESC',['../classDCorePHP_1_1Net_1_1Model_1_1Request_1_1SearchBuyings.html#a55458ebd48bd723fd7214b76720714cf',1,'DCorePHP\Net\Model\Request\SearchBuyings\PRICE_DESC()'],['../classDCorePHP_1_1Net_1_1Model_1_1Request_1_1SearchContent.html#a1472e93b56da38eadd32a3d022ca27c1',1,'DCorePHP\Net\Model\Request\SearchContent\PRICE_DESC()']]],
-  ['public_5fkey_5feven',['PUBLIC_KEY_EVEN',['../classDCorePHP_1_1Crypto_1_1PublicKey.html#a0eeac9f515c0145fefe3b1b98309e498',1,'DCorePHP::Crypto::PublicKey']]],
-  ['public_5fkey_5fodd',['PUBLIC_KEY_ODD',['../classDCorePHP_1_1Crypto_1_1PublicKey.html#a08bdd58f82e50b04d09f6af021889ee7',1,'DCorePHP::Crypto::PublicKey']]],
-  ['purchased_5fasc',['PURCHASED_ASC',['../classDCorePHP_1_1Net_1_1Model_1_1Request_1_1SearchBuyings.html#a825aa7878e5215977b9df6a23314a578',1,'DCorePHP::Net::Model::Request::SearchBuyings']]],
-  ['purchased_5fdesc',['PURCHASED_DESC',['../classDCorePHP_1_1Net_1_1Model_1_1Request_1_1SearchBuyings.html#a4853a78564a6a6cf5884e4ba32b1a886',1,'DCorePHP::Net::Model::Request::SearchBuyings']]]
+  ['name_5fasc',['NAME_ASC',['../classDCorePHP_1_1Net_1_1Model_1_1Request_1_1SearchMinerVoting.html#a0fd09e00a18e4a36e3af605999d1ff1c',1,'DCorePHP::Net::Model::Request::SearchMinerVoting']]],
+  ['name_5fdesc',['NAME_DESC',['../classDCorePHP_1_1Net_1_1Model_1_1Request_1_1SearchMinerVoting.html#aa5474f5a6e1b31fe1acbd174837da5bc',1,'DCorePHP::Net::Model::Request::SearchMinerVoting']]],
+  ['nft_5fname_5fmax_5fchars',['NFT_NAME_MAX_CHARS',['../classDCorePHP_1_1DCoreConstants.html#a4ea1d6f67ca44ba68a69efbfe0cf3d50',1,'DCorePHP::DCoreConstants']]],
+  ['nobody',['NOBODY',['../classDCorePHP_1_1Model_1_1NftDataType.html#a8ee0c490e6f4626d54c7de48d6ec4a63',1,'DCorePHP::Model::NftDataType']]],
+  ['null_5fobject',['NULL_OBJECT',['../classDCorePHP_1_1Model_1_1ChainObject.html#ab790eadfacd54124ec91dfccbcc2810e',1,'DCorePHP::Model::ChainObject']]]
 ];

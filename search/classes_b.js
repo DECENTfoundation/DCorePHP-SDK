@@ -5,6 +5,8 @@ var searchData=
   ['listactivesubscriptionsbyauthor',['ListActiveSubscriptionsByAuthor',['../classDCorePHP_1_1Net_1_1Model_1_1Request_1_1ListActiveSubscriptionsByAuthor.html',1,'DCorePHP::Net::Model::Request']]],
   ['listactivesubscriptionsbyconsumer',['ListActiveSubscriptionsByConsumer',['../classDCorePHP_1_1Net_1_1Model_1_1Request_1_1ListActiveSubscriptionsByConsumer.html',1,'DCorePHP::Net::Model::Request']]],
   ['listassets',['ListAssets',['../classDCorePHP_1_1Net_1_1Model_1_1Request_1_1ListAssets.html',1,'DCorePHP::Net::Model::Request']]],
+  ['listnftdata',['ListNftData',['../classDCorePHP_1_1Net_1_1Model_1_1Request_1_1ListNftData.html',1,'DCorePHP::Net::Model::Request']]],
+  ['listnfts',['ListNfts',['../classDCorePHP_1_1Net_1_1Model_1_1Request_1_1ListNfts.html',1,'DCorePHP::Net::Model::Request']]],
   ['listpublishingmanagers',['ListPublishingManagers',['../classDCorePHP_1_1Net_1_1Model_1_1Request_1_1ListPublishingManagers.html',1,'DCorePHP::Net::Model::Request']]],
   ['listseedersbyprice',['ListSeedersByPrice',['../classDCorePHP_1_1Net_1_1Model_1_1Request_1_1ListSeedersByPrice.html',1,'DCorePHP::Net::Model::Request']]],
   ['listseedersbyrating',['ListSeedersByRating',['../classDCorePHP_1_1Net_1_1Model_1_1Request_1_1ListSeedersByRating.html',1,'DCorePHP::Net::Model::Request']]],
