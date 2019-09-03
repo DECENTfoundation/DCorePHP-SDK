@@ -150,7 +150,6 @@ class AssetApi extends BaseApi implements AssetApiInterface
      */
     public function createMonitoredAsset(Credentials $credentials, string $symbol, int $precision, string $description, MonitoredAssetOptions $options = null, $fee = null): ?TransactionConfirmation
     {
-        // TODO: Max supply 0 ? Implementation in TS
         $assetOptions = (new AssetOptions())->setExchangeRate(ExchangeRate::empty())->setMaxSupply(0);
         $options = $options ?? new MonitoredAssetOptions();
         return $this->dcoreApi->getBroadcastApi()->broadcastOperationWithECKeyPairWithCallback(
@@ -293,6 +292,9 @@ class AssetApi extends BaseApi implements AssetApiInterface
         );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function createReserveOperation($assetRef, $amount, $fee = null): AssetReserveOperation {
         $asset = $this->get($assetRef);
         $operation = new AssetReserveOperation();
@@ -303,7 +305,10 @@ class AssetApi extends BaseApi implements AssetApiInterface
         return $operation;
     }
 
-    public function reserve(Credentials $credentials, $assetRef, $amount, $fee = null): ?TransactionConfirmation {
+    /**
+     * @inheritDoc
+     */
+    public function reserve(Credentials $credentials, $assetRef, $amount, $fee = null): TransactionConfirmation {
         $fee = $fee ?: new AssetAmount();
         return $this->dcoreApi->getBroadcastApi()->broadcastOperationWithECKeyPairWithCallback(
             $credentials->getKeyPair(),

@@ -2,7 +2,7 @@
 
 namespace DCorePHP\Sdk;
 
-use DCorePHP\Model\BaseOperation;
+use DCorePHP\Exception\ObjectNotFoundException;
 use DCorePHP\Model\ChainObject;
 use DCorePHP\Model\Subscription\Subscription;
 use DCorePHP\Net\Model\Request\GetSubscription;
@@ -18,7 +18,11 @@ class SubscriptionApi extends BaseApi implements SubscriptionApiInterface
      */
     public function get(ChainObject $id): Subscription
     {
-        return $this->dcoreApi->requestWebsocket(new GetSubscription($id));
+        $subscription = $this->dcoreApi->requestWebsocket(new GetSubscription($id));
+        if ($subscription instanceof Subscription) {
+            return $subscription;
+        }
+        throw new ObjectNotFoundException("Subscription with id $id not found!");
     }
 
     /**
@@ -51,55 +55,5 @@ class SubscriptionApi extends BaseApi implements SubscriptionApiInterface
     public function getAllByAuthor(ChainObject $author, int $count = 100): array
     {
         return $this->dcoreApi->requestWebsocket(new ListSubscriptionsByAuthor($author, $count));
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function subscribeToAuthor(
-        string $from,
-        string $to,
-        string $priceAmount,
-        string $priceAssetSymbol,
-        bool $broadcast = true
-    ): BaseOperation
-    {
-        // TODO: Implement subscribeToAuthor() method.
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function subscribeByAuthor(string $from, string $to, bool $broadcast = true): BaseOperation
-    {
-        // TODO: Implement subscribeByAuthor() method.
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function setSubscription(
-        string $account,
-        bool $allowSubscription,
-        int $subscriptionPeriod,
-        string $priceAmount,
-        string $priceAssetSymbol,
-        bool $broadcast = true
-    ): BaseOperation
-    {
-        // TODO: Implement setSubscription() method.
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function setAutomaticRenewalOfSubscription(
-        string $account,
-        string $subscriptionId,
-        bool $automaticRenewal,
-        bool $broadcast = true
-    ): BaseOperation
-    {
-        // TODO: Implement setAutomaticRenewalOfSubscription() method.
     }
 }

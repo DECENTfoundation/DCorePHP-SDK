@@ -3,161 +3,103 @@
 namespace DCorePHPTests\Sdk;
 
 use DCorePHP\Crypto\Address;
+use DCorePHP\Exception\InvalidApiCallException;
+use DCorePHP\Exception\ValidationException;
 use DCorePHP\Model\Asset\AssetAmount;
-use DCorePHP\Model\BlockData;
 use DCorePHP\Model\ChainObject;
-use DCorePHP\Model\Operation\Transfer2;
+use DCorePHP\Model\Operation\TransferOperation;
 use DCorePHP\Model\Transaction;
-use DCorePHP\Net\Model\Request\BaseRequest;
-use DCorePHP\Net\Model\Request\GetChainId;
-use DCorePHP\Net\Model\Request\GetDynamicGlobalProperties;
-use DCorePHP\Net\Model\Request\GetRequiredFees;
-use DCorePHP\Net\Model\Request\GetRequiredSignatures;
-use DCorePHP\Net\Model\Request\ValidateTransaction;
-use DCorePHP\Net\Model\Request\VerifyAccountAuthority;
-use DCorePHP\Net\Model\Request\VerifyAuthority;
-use DCorePHP\Net\Model\Response\BaseResponse;
 use DCorePHPTests\DCoreSDKTest;
+use Exception;
+use WebSocket\BadOpcodeException;
 
 class ValidationApiTest extends DCoreSDKTest
 {
+
+    /** @var Transaction */
+    private static $trx;
+
     /**
-     * @throws \Exception
+     * @throws InvalidApiCallException
+     * @throws ValidationException
+     * @throws BadOpcodeException
+     */
+    public static function setUpBeforeClass()
+    {
+        parent::setUpBeforeClass();
+
+        $op = new TransferOperation();
+        $op
+            ->setFrom(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1))
+            ->setTo(new ChainObject(DCoreSDKTest::ACCOUNT_ID_2))
+            ->setAmount((new AssetAmount())->setAmount(1));
+        self::$trx = self::$sdk->getTransactionApi()->createTransactionSingleOperation($op);
+    }
+
+    /**
+     * @throws Exception
      */
     public function testGetRequiredSignatures(): void
     {
-        $operation = new Transfer2();
-        $operation
-            ->setFrom(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1))
-            ->setTo(new ChainObject(DCoreSDKTest::ACCOUNT_ID_2))
-            ->setAmount((new AssetAmount())->setAmount(10));
-        $oldTrx = self::$sdk->getTransactionApi()->createTransaction([$operation]);
-
-        $blockData = new BlockData($oldTrx->getBlockData()->getRefBlockNum(), $oldTrx->getBlockData()->getRefBlockPrefix(), $oldTrx->getBlockData()->getExpiration());
-        $trx = new Transaction();
-        $trx->setBlockData($blockData)->setOperations($oldTrx->getOperations());
-
-        $sigs = self::$sdk->getValidationApi()->getRequiredSignatures($trx, [Address::decode(DCoreSDKTest::PUBLIC_KEY_1), Address::decode(DCoreSDKTest::PUBLIC_KEY_2)]);
+        $sigs = self::$sdk->getValidationApi()->getRequiredSignatures(self::$trx, [Address::decode(DCoreSDKTest::PUBLIC_KEY_1), Address::decode(DCoreSDKTest::PUBLIC_KEY_2)]);
         $this->assertContains('DCT82MTCQVa9TDFmz3ZwaLzsFAmCLoJzrtFugpF72vsbuE1CpCwKy', $sigs);
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function testGetPotentialSignatures(): void
     {
-        $operation = new Transfer2();
-        $operation
-            ->setFrom(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1))
-            ->setTo(new ChainObject(DCoreSDKTest::ACCOUNT_ID_2))
-            ->setAmount((new AssetAmount())->setAmount(10));
-        $oldTrx = self::$sdk->getTransactionApi()->createTransaction([$operation]);
-
-        $blockData = new BlockData($oldTrx->getBlockData()->getRefBlockNum(), $oldTrx->getBlockData()->getRefBlockPrefix(), $oldTrx->getBlockData()->getExpiration());
-        $trx = new Transaction();
-        $trx->setBlockData($blockData)->setOperations($oldTrx->getOperations());
-
-        $sigs = self::$sdk->getValidationApi()->getPotentialSignatures($trx);
+        $sigs = self::$sdk->getValidationApi()->getPotentialSignatures(self::$trx);
         $this->assertContains('DCT82MTCQVa9TDFmz3ZwaLzsFAmCLoJzrtFugpF72vsbuE1CpCwKy', $sigs);
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function testVerifyAuthorityTrue(): void
     {
-        $operation = new Transfer2();
-        $operation
-            ->setFrom(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1))
-            ->setTo(new ChainObject(DCoreSDKTest::ACCOUNT_ID_2))
-            ->setAmount((new AssetAmount())->setAmount(10));
-        $trx = self::$sdk->getTransactionApi()->createTransaction([$operation]);
-        $trx->sign(DCoreSDKTest::PRIVATE_KEY_1);
-
-        $this->assertTrue(self::$sdk->getValidationApi()->verifyAuthority($trx));
+        self::$trx->sign(DCoreSDKTest::PRIVATE_KEY_1);
+        $this->assertTrue(self::$sdk->getValidationApi()->verifyAuthority(self::$trx));
     }
 
     /**
-     * @throws \Exception
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
+     * @throws Exception
      */
-    public function testVerifyAuthorityFalse(): void
-    {
-        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
-//        $operation = new Transfer2();
-//        $operation
-//            ->setFrom(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1))
-//            ->setTo(new ChainObject(DCoreSDKTest::ACCOUNT_ID_2))
-//            ->setAmount((new AssetAmount())->setAmount(10));
-//        $trx = self::$sdk->getTransactionApi()->createTransaction([$operation]);
-//        $trx->sign(DCoreSDKTest::PRIVATE_KEY_2);
-//
-//        $this->assertFalse(self::$sdk->getValidationApi()->verifyAuthority($trx));
-    }
-
     public function testVerifyAccountAuthority(): void
     {
-        $this->assertTrue(self::$sdk->getValidationApi()->verifyAccountAuthority(DCoreSDKTest::ACCOUNT_NAME_2, [Address::decode(DCoreSDKTest::PUBLIC_KEY_2)]));
+        $this->assertTrue(self::$sdk->getValidationApi()->verifyAccountAuthority(
+            DCoreSDKTest::ACCOUNT_NAME_2,
+            [Address::decode(DCoreSDKTest::PUBLIC_KEY_2)]
+        ));
     }
 
     /**
-     * @throws \DCorePHP\Exception\InvalidApiCallException
-     * @throws \WebSocket\BadOpcodeException
-     * @throws \Exception
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
+     * @throws Exception
      */
     public function testValidateTransaction(): void
     {
-        $operation = new Transfer2();
-        $operation
-            ->setFrom(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1))
-            ->setTo(new ChainObject(DCoreSDKTest::ACCOUNT_ID_2))
-            ->setAmount((new AssetAmount())->setAmount(10));
-        $trx = self::$sdk->getTransactionApi()->createTransaction([$operation]);
-        $trx->sign(DCoreSDKTest::PRIVATE_KEY_1);
+        self::$trx->sign(DCoreSDKTest::PRIVATE_KEY_1);
+        $pt = self::$sdk->getValidationApi()->validateTransaction(self::$trx);
 
-        self::$sdk->getValidationApi()->validateTransaction($trx);
-
-        $this->expectNotToPerformAssertions();
+        $ops = $pt->getOperations();
+        /** @var TransferOperation $op */
+        $op = reset($ops);
+        $this->assertEquals(DCoreSDKTest::ACCOUNT_ID_1, $op->getFrom()->getId());
     }
 
     /**
-     * @throws \DCorePHP\Exception\ValidationException
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
+     * @throws ValidationException
      */
-    public function testGetFees(): void
+    public function testGetFeeForType(): void
     {
-        $operation = new Transfer2();
-        $operation
-            ->setFrom(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1))
-            ->setTo(new ChainObject(DCoreSDKTest::ACCOUNT_ID_2))
-            ->setAmount((new AssetAmount())->setAmount(10));
-
-        $fees = self::$sdk->getValidationApi()->getFees([$operation]);
-        /** @var AssetAmount $fee */
-        $fee = reset($fees);
-
-        $this->assertEquals(100000, $fee->getAmount());
-        $this->assertEquals('1.3.0', $fee->getAssetId()->getId());
-    }
-
-    /**
-     * @throws \DCorePHP\Exception\ValidationException
-     */
-    public function testGetFee(): void
-    {
-        $operation = new Transfer2();
-        $operation
-            ->setFrom(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1))
-            ->setTo(new ChainObject(DCoreSDKTest::ACCOUNT_ID_2))
-            ->setAmount((new AssetAmount())->setAmount(10));
-
-        $fee = self::$sdk->getValidationApi()->getFee($operation);
-
-        $this->assertEquals(100000, $fee->getAmount());
-        $this->assertEquals('1.3.0', $fee->getAssetId()->getId());
-    }
-
-    public function testGetFeeByType(): void
-    {
-        $fee = self::$sdk->getValidationApi()->getFeeByType(Transfer2::OPERATION_TYPE);
+        $fee = self::$sdk->getValidationApi()->getFeeForType(TransferOperation::OPERATION_TYPE);
 
         $this->assertEquals(100000, $fee->getAmount());
         $this->assertEquals('1.3.0', $fee->getAssetId()->getId());

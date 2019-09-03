@@ -2,10 +2,9 @@
 
 namespace DCorePHP\Net\Model\Request;
 
-use DCorePHP\Model\Content\Content;
 use DCorePHP\Net\Model\Response\BaseResponse;
 
-class SearchContent extends BaseRequest
+class SearchContent extends GetContent
 {
 
     public const ORDER_NONE = '';
@@ -31,37 +30,12 @@ class SearchContent extends BaseRequest
         );
     }
 
-    public static function responseToModel(BaseResponse $response): array
+    public static function responseToModel(BaseResponse $response)
     {
         $contents = [];
         foreach ($response->getResult() as $rawContent) {
-            $content = new Content();
-
-            foreach (
-                [
-                    '[id]' => 'id',
-                    '[author]' => 'author',
-                    '[expiration]' => 'expiration',
-                    '[created]' => 'created',
-                    '[price][amount]' => 'price.amount',
-                    '[price][asset_id]' => 'price.assetId',
-                    '[status]' => 'status',
-                    '[size]' => 'size',
-                    '[URI]' => 'uri',
-                    '[_hash]' => 'hash',
-                    '[AVG_rating]' => 'AVGRating',
-                    '[times_bought]' => 'timesBought',
-                    '[synopsis]' => 'synopsis'
-                ] as $path => $modelPath
-            ) {
-                $value = self::getPropertyAccessor()->getValue($rawContent, $path);
-                self::getPropertyAccessor()->setValue($content, $modelPath, $value);
-            }
-
-            $contents[] = $content;
-
+            $contents[] = parent::resultToModel($rawContent);
         }
-
         return $contents;
     }
 }

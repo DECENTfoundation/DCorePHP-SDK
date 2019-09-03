@@ -7,9 +7,16 @@ use DCorePHP\Utils\Math;
 
 class RegionalPrice
 {
+    public const REGIONS_NULL_CODE = 0;
+    public const REGIONS_NONE_CODE = 1;
+    public const REGIONS_ALL_CODE = 2;
+
+    public const REGIONS_NULL = 'null';
+    public const REGIONS_NONE = '';
+    public const REGIONS_ALL = 'default';
 
     /** @var string */
-    private $region;
+    private $region = self::REGIONS_ALL_CODE;
 
     /** @var AssetAmount */
     private $price;

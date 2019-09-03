@@ -5,10 +5,12 @@ namespace DCorePHP\Model\Messaging;
 use DCorePHP\Crypto\Credentials;
 use DCorePHP\Crypto\ECKeyPair;
 use DCorePHP\Crypto\PublicKey;
+use DCorePHP\Exception\ValidationException;
 use DCorePHP\Model\ChainObject;
 use DCorePHP\Crypto\Address;
 use DCorePHP\Utils\Crypto;
 use DCorePHP\Utils\Math;
+use Exception;
 use InvalidArgumentException;
 
 class Message
@@ -38,7 +40,7 @@ class Message
             $crypto = Crypto::getInstance();
 
             return $crypto->decryptWithChecksum($this->message, $keyPair->getPrivate(), PublicKey::fromPoint($address->getPublicKeyPoint()), $this->getNonce());
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return null;
         }
     }
@@ -56,7 +58,7 @@ class Message
     }
 
     public static function create(MessageResponse $response): array {
-        return array_map(function (MessageReceiver $receiverData) use ($response){
+        return array_map(static function (MessageReceiver $receiverData) use ($response){
             $createdMessage = (new Message())
                 ->setOperationId($response->getId())
                 ->setTimestamp($response->getCreated())
@@ -82,7 +84,7 @@ class Message
     /**
      * @param ChainObject|string $operationId
      * @return Message
-     * @throws \DCorePHP\Exception\ValidationException
+     * @throws ValidationException
      */
     public function setOperationId($operationId): Message
     {
@@ -124,7 +126,7 @@ class Message
     /**
      * @param ChainObject|string $sender
      * @return Message
-     * @throws \DCorePHP\Exception\ValidationException
+     * @throws ValidationException
      */
     public function setSender($sender): Message
     {
@@ -168,7 +170,7 @@ class Message
     /**
      * @param ChainObject|string $receiver
      * @return Message
-     * @throws \DCorePHP\Exception\ValidationException
+     * @throws ValidationException
      */
     public function setReceiver($receiver): Message
     {

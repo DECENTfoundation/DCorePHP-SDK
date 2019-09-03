@@ -2,133 +2,142 @@
 
 namespace DCorePHPTests\Sdk;
 
+use DateTime;
 use DCorePHP\Crypto\Credentials;
 use DCorePHP\Crypto\ECKeyPair;
+use DCorePHP\Exception\InvalidApiCallException;
+use DCorePHP\Exception\ObjectNotFoundException;
+use DCorePHP\Exception\ValidationException;
 use DCorePHP\Model\Asset\AssetAmount;
 use DCorePHP\Model\ChainObject;
+use DCorePHP\Model\CoAuthors;
 use DCorePHP\Model\Content\Purchase;
-use DCorePHP\Model\Content\SubmitContent;
 use DCorePHP\Model\RegionalPrice;
 use DCorePHPTests\DCoreSDKTest;
+use Exception;
+use WebSocket\BadOpcodeException;
 
 class PurchaseApiTest extends DCoreSDKTest
 {
+    /** @var string */
+    private static $uri;
+    /** @var ChainObject */
+    private static $id;
 
+    public static function setUpBeforeClass()
+    {
+        parent::setUpBeforeClass();
+        self::testRateAndComment();
+    }
+
+    /**
+     * @throws InvalidApiCallException
+     * @throws ObjectNotFoundException
+     * @throws ValidationException
+     * @throws BadOpcodeException
+     * @throws Exception
+     */
+    public static function testRateAndComment(): void
+    {
+        self::addAndPurchaseContent();
+
+        $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
+        self::$sdk->getPurchaseApi()->rateAndComment($credentials, self::$uri, 5, 'PHP Rating Comment');
+
+        $contentAfter = self::$sdk->getContentApi()->getByURI(self::$uri);
+        self::assertEquals(5000, $contentAfter->getAVGRating());
+    }
+
+    /**
+     * @throws InvalidApiCallException
+     * @throws ValidationException
+     * @throws BadOpcodeException
+     */
     public function testGetAllHistory(): void
     {
-        $purchases = self::$sdk->getPurchaseApi()->getAllHistory(new ChainObject('1.2.34'));
+        $purchases = self::$sdk->getPurchaseApi()->getAllHistory(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1));
 
         foreach ($purchases as $purchase) {
             $this->assertInstanceOf(Purchase::class, $purchase);
         }
-
-        $this->assertInternalType('array', $purchases);
     }
 
     public function testGetAllOpen(): void
     {
-        $purchases = self::$sdk->getPurchaseApi()->getAllOpen();
-
-        foreach ($purchases as $purchase) {
-            $this->assertInstanceOf(Purchase::class, $purchase);
-        }
-
-        $this->assertInternalType('array', $purchases);
+        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
     }
 
     public function testGetAllOpenByUri(): void
     {
-
-        $purchases = self::$sdk->getPurchaseApi()->getAllOpenByUri('http://some.uri');
-
-        foreach ($purchases as $purchase) {
-            $this->assertInstanceOf(Purchase::class, $purchase);
-        }
-
-        $this->assertInternalType('array', $purchases);
+        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
     }
 
     public function testGetAllOpenByAccount(): void
     {
-        $purchases = self::$sdk->getPurchaseApi()->getAllOpenByAccount(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1));
-
-        foreach ($purchases as $purchase) {
-            $this->assertInstanceOf(Purchase::class, $purchase);
-        }
-
-        $this->assertInternalType('array', $purchases);
+        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
     }
 
     /**
-     * @throws \DCorePHP\Exception\ValidationException
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
+     * @throws ValidationException
      */
     public function testGet(): void
     {
-        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
-//        $purchase = self::$sdk->getPurchaseApi()->get(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), 'ipfs:QmWBoRBYuxzH5a8d3gssRbMS5scs6fqLKgapBfqVNUFUtZ');
-//
-//        $this->assertEquals(DCoreSDKTest::ACCOUNT_ID_1, $purchase->getConsumer()->getId());
-//        $this->assertEquals('ipfs:QmWBoRBYuxzH5a8d3gssRbMS5scs6fqLKgapBfqVNUFUtZ', $purchase->getUri());
+        $purchase = self::$sdk->getPurchaseApi()->get(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), self::$uri);
+
+        $this->assertEquals(DCoreSDKTest::ACCOUNT_ID_1, $purchase->getConsumer()->getId());
+        $this->assertEquals(self::$uri, $purchase->getUri());
     }
 
+    /**
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
+     * @throws ValidationException
+     */
     public function testFindAll(): void
     {
-        $purchases = self::$sdk->getPurchaseApi()->findAll(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), 'new');
+        $purchases = self::$sdk->getPurchaseApi()->findAll(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1));
 
         foreach ($purchases as $purchase) {
             $this->assertInstanceOf(Purchase::class, $purchase);
         }
-
-        $this->assertInternalType('array', $purchases);
-    }
-
-    public function testFindAllForFeedback(): void
-    {
-        $purchases = self::$sdk->getPurchaseApi()->findAllForFeedback('');
-
-        $this->assertInternalType('array', $purchases);
     }
 
     /**
-     * @throws \DCorePHP\Exception\InvalidApiCallException
-     * @throws \DCorePHP\Exception\ObjectNotFoundException
-     * @throws \DCorePHP\Exception\ValidationException
-     * @throws \WebSocket\BadOpcodeException
-     * @throws \Exception
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
      */
-    public function testRateAndComment(): void
+    public function testFindAllForFeedback(): void
     {
-        $randomUri = 'http://decent.ch?PHP&testtime=' . time();
-        $content = new SubmitContent();
-        $content
-            ->setUri($randomUri)
-            ->setCoauthors([])
-            ->setCustodyData(null)
-            ->setHash('2222222222222222222222222222222222222222')
-            ->setKeyParts([])
-            ->setSeeders([])
-            ->setQuorum(0)
-            ->setSize(10000)
-            ->setSynopsis(json_encode(['title' => 'Game Title', 'description' => 'Description', 'content_type_id' => '1.2.3']))
-            ->setExpiration((new \DateTime())->modify('+1 month'))
-            ->setPrice([(new RegionalPrice)->setPrice((new AssetAmount())->setAmount(1000))->setRegion(1)]);
+        $purchases = self::$sdk->getPurchaseApi()->findAllForFeedback(self::$uri);
 
-        $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
-
-        self::$sdk->getContentApi()->create(
-            $content,
-            $credentials,
-            (new AssetAmount())->setAmount(1000000)->setAssetId('1.3.0'),
-            (new AssetAmount())->setAmount(1000000)->setAssetId('1.3.0'));
-
-        $content = self::$sdk->getContentApi()->getByURI($randomUri);
-
-        self::$sdk->getContentApi()->purchase($credentials, $content->getId());
-
-        self::$sdk->getPurchaseApi()->rateAndComment($credentials, $content->getURI(), 5, 'PHP Rating Comment');
-
-        $contentAfter = self::$sdk->getContentApi()->getByURI($randomUri);
-        $this->assertEquals(5000, $contentAfter->getAVGRating());
+        $purchase = reset($purchases);
+        $this->assertEquals(DCoreSDKTest::ACCOUNT_ID_1, $purchase->getConsumer()->getId());
+        $this->assertEquals(self::$uri, $purchase->getUri());
     }
 
+    /**
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
+     * @throws ObjectNotFoundException
+     * @throws ValidationException
+     * @throws Exception
+     */
+    private static function addAndPurchaseContent(): void
+    {
+        self::$uri = 'http://decent.ch?testtime=' . time();
+        $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
+
+        $price = (new RegionalPrice())->setPrice((new AssetAmount())->setAmount(20));
+        $synopsis = json_encode(['title' => 'hello', 'description' => 'world', 'content_type_id' => '0.0.0']);
+        $expiration = (new DateTime())->modify('+10 days');
+
+        self::$sdk->getContentApi()->add($credentials, new CoAuthors(), self::$uri, [$price], $expiration, $synopsis);
+
+        $content = self::$sdk->getContentApi()->getByURI(self::$uri);
+        self::$id = $content->getId();
+
+        self::$sdk->getContentApi()->purchase($credentials, self::$id);
+    }
 }

@@ -3,11 +3,14 @@
 namespace DCorePHP\Sdk;
 
 use DCorePHP\Crypto\Address;
+use DCorePHP\Exception\InvalidApiCallException;
+use DCorePHP\Exception\ValidationException;
 use DCorePHP\Model\Asset\AssetAmount;
 use DCorePHP\Model\BaseOperation;
 use DCorePHP\Model\ChainObject;
 use DCorePHP\Model\ProcessedTransaction;
 use DCorePHP\Model\Transaction;
+use WebSocket\BadOpcodeException;
 
 interface ValidationApiInterface
 {
@@ -19,6 +22,9 @@ interface ValidationApiInterface
      * @param Address[] $keys available owner public keys
      *
      * @return Address[] of public keys that should add signatures
+     *
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
      */
     public function getRequiredSignatures(Transaction $transaction, array $keys): array;
 
@@ -29,6 +35,9 @@ interface ValidationApiInterface
      * @param Transaction $transaction unsigned transaction
      *
      * @return Address[] of public keys that can sign transaction
+     *
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
      */
     public function getPotentialSignatures(Transaction $transaction): array;
 
@@ -38,6 +47,9 @@ interface ValidationApiInterface
      * @param Transaction $transaction signed transaction to verify
      *
      * @return bool if the transaction has all of the required signatures
+     *
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
      */
     public function verifyAuthority(Transaction $transaction): bool;
 
@@ -48,6 +60,9 @@ interface ValidationApiInterface
      * @param Address[] $keys signer keys
      *
      * @return bool if the signers have enough authority
+     *
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
      */
     public function verifyAccountAuthority(string $nameOrId, array $keys): bool;
 
@@ -57,6 +72,9 @@ interface ValidationApiInterface
      * @param Transaction $transaction signed transaction
      *
      * @return ProcessedTransaction
+     *
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
      */
     public function validateTransaction(Transaction $transaction): ProcessedTransaction;
 
@@ -64,9 +82,12 @@ interface ValidationApiInterface
      * Returns fees for operation.
      *
      * @param BaseOperation[] $op of operations
-     *
      * @param ChainObject $assetId
+     *
      * @return AssetAmount[] of fee asset amounts
+     *
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
      */
     public function getFees(array $op, ChainObject $assetId = null): array;
 
@@ -74,19 +95,56 @@ interface ValidationApiInterface
      * Returns fee for operation.
      *
      * @param BaseOperation $op
-     *
      * @param ChainObject $assetId
+     *
      * @return AssetAmount
+     *
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
      */
     public function getFee(BaseOperation $op, ChainObject $assetId = null): AssetAmount;
 
     /**
+     * Returns fees for operation type, not valid for operation per size fees:
+     * AssetCreateOperation
+     * AssetIssueOperation
+     * ProposalCreate
+     * ProposalUpdate
+     * WithdrawPermissionClaim
+     * CustomOperation
+     * AssertOperation
+     * AddOrUpdateContentOperation
+     *
+     * @param array $types
+     * @param ChainObject|null $assetId
+     *
+     * @return AssetAmount[]
+     *
+     * @throws InvalidApiCallException
+     * @throws ValidationException
+     * @throws BadOpcodeException
+     */
+    public function getFeesForType(array $types, ChainObject$assetId = null): array;
+
+    /**
      * Returns fee for operation type, not valid for operation per size fees:
+     * AssetCreateOperation
+     * AssetIssueOperation
+     * ProposalCreate
+     * ProposalUpdate
+     * WithdrawPermissionClaim
+     * CustomOperation
+     * AssertOperation
+     * AddOrUpdateContentOperation
      *
      * @param $type
-     *
      * @param ChainObject|null $assetId
+     *
      * @return AssetAmount
+     *
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
+     * @throws ValidationException
      */
-    public function getFeeByType($type, ChainObject $assetId = null): AssetAmount;
+    public function getFeeForType($type, ChainObject $assetId = null): AssetAmount;
 }

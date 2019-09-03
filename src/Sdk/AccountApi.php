@@ -4,21 +4,16 @@ namespace DCorePHP\Sdk;
 
 use DCorePHP\Crypto\Credentials;
 use DCorePHP\Crypto\ECKeyPair;
-use DCorePHP\Crypto\PrivateKey;
-use DCorePHP\Crypto\PublicKey;
 use DCorePHP\Exception\ObjectNotFoundException;
 use DCorePHP\Exception\ValidationException;
 use DCorePHP\Model\Account;
-use DCorePHP\Model\Asset;
 use DCorePHP\Model\Asset\AssetAmount;
 use DCorePHP\Model\Authority;
-use DCorePHP\Model\BrainKeyInfo;
 use DCorePHP\Model\ChainObject;
-use DCorePHP\Model\ElGamalKeys;
 use DCorePHP\Model\Memo;
-use DCorePHP\Model\Operation\CreateAccountOperation;
-use DCorePHP\Model\Operation\Transfer2;
-use DCorePHP\Model\Operation\UpdateAccountOperation;
+use DCorePHP\Model\Operation\AccountCreateOperation;
+use DCorePHP\Model\Operation\AccountUpdateOperation;
+use DCorePHP\Model\Operation\TransferOperation;
 use DCorePHP\Model\Options;
 use DCorePHP\Model\Subscription\AuthMap;
 use DCorePHP\Model\TransactionConfirmation;
@@ -33,8 +28,8 @@ use DCorePHP\Net\Model\Request\ListAccounts;
 use DCorePHP\Net\Model\Request\LookupAccountNames;
 use DCorePHP\Net\Model\Request\SearchAccountHistory;
 use DCorePHP\Net\Model\Request\SearchAccounts;
-use DCorePHP\Resources\BrainKeyDictionary;
 use DCorePHP\Crypto\Address;
+use Exception;
 
 class AccountApi extends BaseApi implements AccountApiInterface
 {
@@ -125,7 +120,7 @@ class AccountApi extends BaseApi implements AccountApiInterface
      */
     public function getFullAccounts(array $namesOrIds, bool $subscribe = false): array
     {
-        $inputArray = array_map(function ($nameOrId) {
+        $inputArray = array_map(static function ($nameOrId) {
             if ($nameOrId instanceof ChainObject) {
                 return $nameOrId->getId();
             }
@@ -195,11 +190,11 @@ class AccountApi extends BaseApi implements AccountApiInterface
         string $memo = null,
         bool $encrypted = true,
         AssetAmount $fee = null
-    ): Transfer2 {
+    ): TransferOperation {
         $fee = $fee ?: new AssetAmount();
 
         if ((($memo === '' || $memo === null) || !$encrypted) && ChainObject::isValid($nameOrId)) {
-            $transferOperation = new Transfer2();
+            $transferOperation = new TransferOperation();
             $transferOperation
                 ->setFrom($credentials->getAccount())
                 ->setTo(new ChainObject($nameOrId))
@@ -218,7 +213,7 @@ class AccountApi extends BaseApi implements AccountApiInterface
                 $msg = Memo::withMessage($memo);
             }
         }
-        $transferOperation = new Transfer2();
+        $transferOperation = new TransferOperation();
         $transferOperation
             ->setFrom($credentials->getAccount())
             ->setTo($receiver->getId())
@@ -249,199 +244,78 @@ class AccountApi extends BaseApi implements AccountApiInterface
     }
 
     /**
-     * @inheritdoc
+     * @param ChainObject $registrar
+     * @param string $name
+     * @param Address $address
+     * @param $fee
+     *
+     * @return AccountCreateOperation
+     * @throws ValidationException
+     * @throws Exception
      */
-    public function derivePrivateKey(string $brainKey, int $sequenceNumber = 0): PrivateKey
-    {
-        return PrivateKey::fromBrainKey($brainKey, $sequenceNumber);
+    public function createAccountOperation(ChainObject $registrar, string $name, Address $address, $fee): AccountCreateOperation {
+        $operation = new AccountCreateOperation();
+        $operation->setRegistrar($registrar);
+        $operation->setAccountName($name);
+        $operation->setOwner((new Authority())->setKeyAuths([(new AuthMap())->setValue($address)]));
+        $operation->setActive((new Authority())->setKeyAuths([(new AuthMap())->setValue($address)]));
+        $operation->setOptions((new Options())->setMemoKey($address));
+        $operation->setFee($fee);
+
+        return $operation;
     }
 
     /**
-     * @inheritdoc
+     * @param Credentials $registrar
+     * @param string $name
+     * @param Address $address
+     * @param null $fee
+     *
+     * @return TransactionConfirmation
+     * @throws ValidationException
+     * @throws Exception
      */
-    public function suggestBrainKey(): string
+    public function create(Credentials $registrar, string $name, Address $address, $fee = null): TransactionConfirmation
     {
-        $dictionary = BrainKeyDictionary::getDictionary()['en'];
-        $count = count($dictionary);
-        if ($count !== 49744) {
-            throw new \Exception("Expecting 49744 words in dictionary, got {$count}");
-        }
-
-        $brainKey = [];
-        do {
-            $randomNumber = random_int(0, count($dictionary) - 1);
-            $brainKey[] = $dictionary[$randomNumber];
-            unset($dictionary[$randomNumber]);
-        } while (count($brainKey) < 16);
-
-        $brainKey = implode(' ', $brainKey);
-        $brainKey = $this->normalizeBrainKey($brainKey);
-
-        return $brainKey;
+        $fee = $fee ?: new AssetAmount();
+        return $this->dcoreApi->getBroadcastApi()->broadcastOperationWithECKeyPairWithCallback(
+            $registrar->getKeyPair(),
+            $this->createAccountOperation($registrar->getAccount(), $name, $address, $fee)
+        );
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
-    public function generateBrainKeyElGamalKey(): array
+    public function createUpdateOperation(string $nameOrId, $fee): AccountUpdateOperation
     {
-        $brainKey = $this->suggestBrainKey();
-        $privateKey = PrivateKey::fromBrainKey($brainKey);
-        $publicKey = PublicKey::fromPrivateKey($privateKey);
+        $account = $this->getByNameOrId($nameOrId);
 
-        $elGamalKeys = new ElGamalKeys();
-        $elGamalKeys->setPrivateKey($privateKey->toElGamalPrivateKey());
-        $elGamalKeys->setPublicKey($privateKey->toElGamalPublicKey());
+        $operation = new AccountUpdateOperation();
+        $operation->setAccountId($account->getId());
+        $operation->setOwner($account->getOwner());
+        $operation->setActive($account->getActive());
+        $operation->setOptions($account->getOptions());
+        $operation->setFee($fee);
 
-        $brainKeyInfo = new BrainKeyInfo();
-        $brainKeyInfo
-            ->setBrainPrivateKey($brainKey)
-            ->setPublicKey($publicKey->toAddress())
-            ->setWifPrivateKey($privateKey->toWif());
-
-        return [
-            $brainKeyInfo,
-            $elGamalKeys
-        ];
+        return $operation;
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
-    public function getBrainKeyInfo(string $brainKey): BrainKeyInfo
+    public function update(Credentials $credentials, Options $options = null, Authority $active = null, Authority $owner = null, $fee = null): TransactionConfirmation
     {
-        $brainKey = $this->normalizeBrainKey($brainKey);
-        $privateKey = PrivateKey::fromBrainKey($brainKey);
-        $publicKey = PublicKey::fromPrivateKey($privateKey);
+        $fee = $fee ?: new AssetAmount();
 
-        $brainKeyInfo = new BrainKeyInfo();
-        $brainKeyInfo
-            ->setBrainPrivateKey($brainKey)
-            ->setPublicKey($publicKey->toAddress())
-            ->setWifPrivateKey($privateKey->toWif());
+        $operation = $this->createUpdateOperation($credentials->getAccount()->getId(), $fee);
+        $operation->setOptions($options ?: $operation->getOptions());
+        $operation->setActive($active ?: $operation->getActive());
+        $operation->setOwner($owner ?: $operation->getOwner());
 
-        return $brainKeyInfo;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function normalizeBrainKey(string $brainKey): string
-    {
-        $brainKey = preg_replace('/[\t\n\v\f\r ]+/', ' ', $brainKey);
-        $brainKey = trim($brainKey);
-        $brainKey = strtoupper($brainKey);
-
-        return $brainKey;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function registerAccount(
-        string $name,
-        string $publicOwnerKeyWif,
-        string $publicActiveKeyWif,
-        string $publicMemoKeyWif,
-        ChainObject $registrarAccountId,
-        string $registrarPrivateKeyWif,
-        bool $broadcast = true
-    ): void {
-        $options = new Options();
-        $options
-            ->setMemoKey(Address::decode($publicMemoKeyWif))
-            ->setVotingAccount(new ChainObject('1.2.3'))
-            ->setAllowSubscription(false)
-            ->setPricePerSubscribe((new Asset\AssetAmount())->setAmount(0)->setAssetId(new ChainObject('1.3.0')))
-            ->setNumMiner(0)
-            ->setVotes([])
-            ->setExtensions([])
-            ->setSubscriptionPeriod(0);
-
-        $operation = new CreateAccountOperation();
-        $operation
-            ->setAccountName($name)
-            ->setOwner((new Authority())->setKeyAuths([(new AuthMap())->setValue($publicOwnerKeyWif)]))
-            ->setActive((new Authority())->setKeyAuths([(new AuthMap())->setValue($publicActiveKeyWif)]))
-            ->setRegistrar($registrarAccountId)
-            ->setOptions($options)
-            ->setName(CreateAccountOperation::OPERATION_NAME)
-            ->setType(CreateAccountOperation::OPERATION_TYPE)
-            ->setFee(new AssetAmount());
-
-        $this->dcoreApi->getBroadcastApi()->broadcastOperationWithECKeyPairWithCallback(
-            ECKeyPair::fromBase58($registrarPrivateKeyWif),
+        return $this->dcoreApi->getBroadcastApi()->broadcastOperationWithECKeyPairWithCallback(
+            $credentials->getKeyPair(),
             $operation
         );
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function createAccountWithBrainKey(
-        string $brainKey,
-        string $accountName,
-        ChainObject $registrarAccountId,
-        string $registrarPrivateKeyWif,
-        bool $broadcast = true
-    ): void {
-        $brainKeyInfo = $this->getBrainKeyInfo($brainKey);
-
-        $this->registerAccount(
-            $accountName,
-            $brainKeyInfo->getPublicKey(),
-            $brainKeyInfo->getPublicKey(),
-            $brainKeyInfo->getPublicKey(),
-            $registrarAccountId,
-            $registrarPrivateKeyWif,
-            $broadcast
-        );
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function updateAccount(
-        ChainObject $accountId,
-        Options $options,
-        string $privateKeyWif,
-        bool $broadcast = true
-    ): ?TransactionConfirmation {
-        $account = $this->get($accountId);
-        $accountOptions = $account->getOptions();
-
-        $newOptions = new Options();
-        $newOptions
-            ->setMemoKey($options->getMemoKey() ?: $accountOptions->getMemoKey()->encode())
-            ->setVotingAccount($options->getVotingAccount() ?: $accountOptions->getVotingAccount())
-            ->setAllowSubscription($options->getAllowSubscription() ?: $accountOptions->getAllowSubscription())
-            ->setPricePerSubscribe($options->getPricePerSubscribe() ?: $accountOptions->getPricePerSubscribe())
-            ->setNumMiner($options->getNumMiner() ?: $accountOptions->getNumMiner())
-            ->setVotes($options->getVotes() ?: $accountOptions->getVotes())
-            ->setExtensions($options->getExtensions() ?: $accountOptions->getExtensions())
-            ->setSubscriptionPeriod($options->getSubscriptionPeriod() ?: $accountOptions->getSubscriptionPeriod());
-
-        $operation = new UpdateAccountOperation();
-        $operation
-            ->setAccountId($accountId)
-            ->setOptions($newOptions);
-
-        return $this->dcoreApi->getBroadcastApi()->broadcastOperationWithECKeyPairWithCallback(ECKeyPair::fromBase58($privateKeyWif), $operation);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function generateElGamalKeys(): ElGamalKeys
-    {
-        return $this->generateBrainKeyElGamalKey()[1];
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getElGammalKey(string $consumer): ElGamalKeys
-    {
-        // TODO: Implement getElGammalKey() method.
     }
 }

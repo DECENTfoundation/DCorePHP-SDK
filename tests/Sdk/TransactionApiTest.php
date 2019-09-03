@@ -2,131 +2,132 @@
 
 namespace DCorePHPTests\Sdk;
 
+use DCorePHP\Exception\InvalidApiCallException;
+use DCorePHP\Exception\ObjectNotFoundException;
+use DCorePHP\Exception\ValidationException;
 use DCorePHP\Model\Asset\AssetAmount;
 use DCorePHP\Model\ChainObject;
-use DCorePHP\Model\Operation\Transfer2;
-use DCorePHP\Model\Transaction;
+use DCorePHP\Model\Operation\AddOrUpdateContentOperation;
+use DCorePHP\Model\Operation\TransferOperation;
+use DCorePHP\Model\OperationHistory;
+use DCorePHP\Model\ProcessedTransaction;
 use DCorePHP\Model\TransactionConfirmation;
-use DCorePHP\Net\Model\Request\BaseRequest;
-use DCorePHP\Net\Model\Request\GetAccountHistory;
-use DCorePHP\Net\Model\Request\GetChainId;
-use DCorePHP\Net\Model\Request\GetDynamicGlobalProperties;
-use DCorePHP\Net\Model\Request\GetRecentTransactionById;
-use DCorePHP\Net\Model\Request\GetRequiredFees;
-use DCorePHP\Net\Model\Request\GetTransaction;
-use DCorePHP\Net\Model\Request\GetTransactionById;
-use DCorePHP\Net\Model\Request\GetTransactionHex;
-use DCorePHP\Net\Model\Response\BaseResponse;
 use DCorePHPTests\DCoreSDKTest;
+use Exception;
+use WebSocket\BadOpcodeException;
 
 class TransactionApiTest extends DCoreSDKTest
 {
+    /** @var OperationHistory */
+    private static $op;
+    /** @var ProcessedTransaction */
+    private static $trx;
 
     /**
-     * @throws \DCorePHP\Exception\InvalidApiCallException
-     * @throws \DCorePHP\Exception\ValidationException
-     * @throws \WebSocket\BadOpcodeException
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
+     * @throws ValidationException
+     * @throws ObjectNotFoundException
+     * @throws Exception
+     */
+    public static function setUpBeforeClass()
+    {
+        parent::setUpBeforeClass();
+
+        ContentApiTest::testAdd();
+        $balanceChange = self::$sdk->getHistoryApi()->getOperation(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), new ChainObject('1.7.0'));
+        self::$op = $balanceChange->getOperation();
+        self::$trx = self::$sdk->getTransactionApi()->getByBlockNum(self::$op->getBlockNum(), 0);
+    }
+
+    /**
+     * @throws InvalidApiCallException
+     * @throws ValidationException
+     * @throws BadOpcodeException
+     *
+     * @doesNotPerformAssertions
      */
     public function testCreateTransaction(): void
     {
-        $operation = new Transfer2();
+        $operation = new TransferOperation();
         $operation
             ->setFrom(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1))
             ->setTo(new ChainObject(DCoreSDKTest::ACCOUNT_ID_2))
-            ->setAmount((new AssetAmount())->setAmount(10));
-        $transaction = self::$sdk->getTransactionApi()->createTransaction([$operation]);
-        $this->assertInstanceOf(Transaction::class, $transaction);
+            ->setAmount((new AssetAmount())->setAmount(1));
+        self::$sdk->getTransactionApi()->createTransactionSingleOperation($operation);
     }
 
-    /**
-     * @throws \DCorePHP\Exception\InvalidApiCallException
-     * @throws \DCorePHP\Exception\ValidationException
-     * @throws \WebSocket\BadOpcodeException
-     */
-    public function testCreateTransactionSingleOperation(): void
-    {
-        $operation = new Transfer2();
-        $operation
-            ->setFrom(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1))
-            ->setTo(new ChainObject(DCoreSDKTest::ACCOUNT_ID_2))
-            ->setAmount((new AssetAmount())->setAmount(10));
-        $transaction = self::$sdk->getTransactionApi()->createTransactionSingleOperation($operation);
-        $this->assertInstanceOf(Transaction::class, $transaction);
-    }
-
-    /**
-     * @throws \DCorePHP\Exception\ValidationException
-     */
     public function testGetAllProposed(): void
     {
-//        self::$sdk->getTransactionApi()->getAllProposed(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1));
         $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
+//        self::$sdk->getTransactionApi()->getAllProposed(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1));
     }
 
+    /**
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
+     * @throws Exception
+     */
     public function testGetRecent(): void
     {
-        // TODO: Test response
-//        $transaction = self::$sdk->getTransactionApi()->getRecent('abb2c83679c2217bd20bed723f3a9ffa8653a953');
-        $this->markTestIncomplete('This test has not been implemented yet.');
+        $transaction = self::$sdk->getTransactionApi()->getRecent(self::$trx->getId());
+
+        $operations = $transaction->getOperations();
+        /** @var AddOrUpdateContentOperation $operation */
+        $operation = reset($operations);
+        $this->assertEquals(DCoreSDKTest::ACCOUNT_ID_1, $operation->getAuthor());
     }
 
     /**
-     * @throws \DCorePHP\Model\InvalidOperationTypeException
-     */
-    public function testGetById(): void
-    {
-        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
-//        $transaction = self::$sdk->getTransactionApi()->getById('abb2c83679c2217bd20bed723f3a9ffa8653a953');
-//        $this->assertEquals(53315, $transaction->getRefBlockNum());
-//        $this->assertEquals('1f6083f0939790223832e806e1bbc04612eee8d592061029b6c5ea40fbe712777c1ddfc46db934b17cd6b585f38d183d3d9b274d44371901d7f43ee7ce03e67a20', $transaction->getSignatures()[0]);
-    }
-
-    /**
-     * @throws \DCorePHP\Model\InvalidOperationTypeException
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
      */
     public function testGetByBlockNum(): void
     {
-        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
-//        $transaction = self::$sdk->getTransactionApi()->getByBlockNum(446532, 0);
-//        $this->assertEquals('1f6083f0939790223832e806e1bbc04612eee8d592061029b6c5ea40fbe712777c1ddfc46db934b17cd6b585f38d183d3d9b274d44371901d7f43ee7ce03e67a20', $transaction->getSignatures()[0]);
-//        $this->assertEquals('1.2.27', $transaction->getOperations()[0]->getFrom()->getId());
+        $transaction = self::$sdk->getTransactionApi()->getByBlockNum(self::$op->getBlockNum(), 0);
+
+        $operations = $transaction->getOperations();
+        /** @var AddOrUpdateContentOperation $operation */
+        $operation = reset($operations);
+        $this->assertEquals(DCoreSDKTest::ACCOUNT_ID_1, $operation->getAuthor());
     }
 
 
     /**
-     * @throws \DCorePHP\Model\InvalidOperationTypeException
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
      */
     public function testGetByConfirmation(): void
     {
-        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
-//        $transaction = self::$sdk->getTransactionApi()->getByBlockNum(446532, 0);
-//        $transactionConfirmation = new TransactionConfirmation();
-//        $transactionConfirmation
-//            ->setId('abb2c83679c2217bd20bed723f3a9ffa8653a953')
-//            ->setBlockNum('446532')
-//            ->setTransaction($transaction)
-//            ->setTrxNum('0');
-//        $trxByConfirmation = self::$sdk->getTransactionApi()->getByConfirmation($transactionConfirmation);
-//
-//        $this->assertEquals('1f6083f0939790223832e806e1bbc04612eee8d592061029b6c5ea40fbe712777c1ddfc46db934b17cd6b585f38d183d3d9b274d44371901d7f43ee7ce03e67a20', $trxByConfirmation->getSignatures()[0]);
-//        $this->assertEquals(53315, $trxByConfirmation->getRefBlockNum());
+        $transactionConfirmation = new TransactionConfirmation();
+        $transactionConfirmation
+            ->setId(self::$op->getId())
+            ->setBlockNum(self::$op->getBlockNum())
+            ->setTransaction(self::$trx)
+            ->setTrxNum('0');
+        $transaction = self::$sdk->getTransactionApi()->getByConfirmation($transactionConfirmation);
+
+        $operations = $transaction->getOperations();
+        /** @var AddOrUpdateContentOperation $operation */
+        $operation = reset($operations);
+        $this->assertEquals(DCoreSDKTest::ACCOUNT_ID_1, $operation->getAuthor());
 
     }
 
 
     /**
-     * @throws \DCorePHP\Exception\InvalidApiCallException
-     * @throws \DCorePHP\Exception\ValidationException
-     * @throws \WebSocket\BadOpcodeException
+     * @throws InvalidApiCallException
+     * @throws ValidationException
+     * @throws BadOpcodeException
      */
     public function testGetHexDump(): void
     {
-        $operation = new Transfer2();
+        $operation = new TransferOperation();
         $operation
             ->setFrom(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1))
             ->setTo(new ChainObject(DCoreSDKTest::ACCOUNT_ID_2))
-            ->setAmount((new AssetAmount())->setAmount(10));
-        $transaction = self::$sdk->getTransactionApi()->createTransaction([$operation]);
+            ->setAmount((new AssetAmount())->setAmount(1));
+        $transaction = self::$sdk->getTransactionApi()->createTransactionSingleOperation($operation);
         $res = self::$sdk->getTransactionApi()->getHexDump($transaction);
 
         $this->assertEquals('00000000000000000000000000', $res);

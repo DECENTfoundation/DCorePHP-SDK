@@ -2,6 +2,7 @@
 
 namespace DCorePHPTests\Utils;
 
+use DCorePHP\Crypto\ECKeyPair;
 use DCorePHP\Utils\Crypto;
 use DCorePHP\Crypto\PrivateKey;
 use DCorePHP\Crypto\PublicKey;
@@ -98,5 +99,18 @@ class CryptoTest extends TestCase
             [$message, $private, $public, $nonce, $expected] = $item;
             $this->assertEquals($expected, $this->crypto->decryptWithChecksum($message, PrivateKey::fromWif($private), PublicKey::fromWif($public), $nonce));
         }
+    }
+
+    public function testEncryptAndDecrypt(): void
+    {
+        $encrypted = 'b23f6afb8eb463704d3d752b1fd8fb804c0ce32ba8d18eeffc20a2312e7c60fa';
+        $plain = 'hello memo here i am';
+        $nonce = '10872523688190906880';
+        $to = PublicKey::fromWif('DCT6bVmimtYSvWQtwdrkVVQGHkVsTJZVKtBiUqf4YmJnrJPnk89QP');
+        $key = ECKeyPair::fromBase58('5Jd7zdvxXYNdUfnEXt5XokrE3zwJSs734yQ36a1YaqioRTGGLtn');
+        $encryptedMessage = $this->crypto->encryptWithChecksum($plain, $key->getPrivate(), $to, $nonce);
+        $this->assertEquals($encrypted, $encryptedMessage);
+        $decryptedMessage = $this->crypto->decryptWithChecksum($encrypted, $key->getPrivate(), $to, $nonce);
+        $this->assertEquals($plain, $decryptedMessage);
     }
 }

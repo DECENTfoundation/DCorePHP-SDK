@@ -2,11 +2,11 @@
 
 namespace DCorePHP\Model\Operation;
 
+use DCorePHP\Exception\ValidationException;
 use DCorePHP\Model\BaseOperation;
 use DCorePHP\Model\ChainObject;
-use DCorePHP\Utils\Math;
 
-class ContentCancellationOperation extends BaseOperation
+class RemoveContentOperation extends BaseOperation
 {
     public const OPERATION_TYPE = 32;
     public const OPERATION_NAME = 'content_cancellation';
@@ -27,10 +27,11 @@ class ContentCancellationOperation extends BaseOperation
 
     /**
      * @param ChainObject|string $author
-     * @return ContentCancellationOperation
-     * @throws \DCorePHP\Exception\ValidationException
+     *
+     * @return RemoveContentOperation
+     * @throws ValidationException
      */
-    public function setAuthor($author): ContentCancellationOperation
+    public function setAuthor($author): RemoveContentOperation
     {
         if (is_string($author)) {
             $author = new ChainObject($author);
@@ -50,9 +51,10 @@ class ContentCancellationOperation extends BaseOperation
 
     /**
      * @param string $uri
-     * @return ContentCancellationOperation
+     *
+     * @return RemoveContentOperation
      */
-    public function setUri(string $uri): ContentCancellationOperation
+    public function setUri(string $uri): RemoveContentOperation
     {
         $this->uri = $uri;
 

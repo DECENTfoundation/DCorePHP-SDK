@@ -12,9 +12,9 @@ use DCorePHP\Model\Asset\AssetAmount;
 use DCorePHP\Model\Asset\AssetData;
 use DCorePHP\Model\Asset\AssetOptions;
 use DCorePHP\Model\Asset\ExchangeRate;
-use DCorePHP\Model\Asset\RealSupply;
 use DCorePHP\Model\ChainObject;
 use DCorePHPTests\DCoreSDKTest;
+use Exception;
 use WebSocket\BadOpcodeException;
 
 class AssetApiTest extends DCoreSDKTest
@@ -22,6 +22,13 @@ class AssetApiTest extends DCoreSDKTest
     /** @var ChainObject */
     private $testAssetId;
 
+    /**
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
+     * @throws ObjectNotFoundException
+     * @throws ValidationException
+     * @throws Exception
+     */
     public function setUp()
     {
         parent::setUp();
@@ -74,8 +81,8 @@ class AssetApiTest extends DCoreSDKTest
      */
     public function testGetRealSupply(): void
     {
-        $realSupply = self::$sdk->getAssetApi()->getRealSupply();
-        $this->assertInstanceOf(RealSupply::class, $realSupply);
+        self::$sdk->getAssetApi()->getRealSupply();
+        $this->expectNotToPerformAssertions();
     }
 
     /**
@@ -137,7 +144,7 @@ class AssetApiTest extends DCoreSDKTest
      */
     public function testConvertFromDct(): void
     {
-        $assetAmount = self::$sdk->getAssetApi()->convertFromDct(5, new ChainObject('1.3.0'));
+        self::$sdk->getAssetApi()->convertFromDct(5, new ChainObject('1.3.0'));
 
         $this->expectNotToPerformAssertions();
     }
@@ -158,7 +165,7 @@ class AssetApiTest extends DCoreSDKTest
 
     /**
      * @throws ValidationException
-     * @throws \Exception
+     * @throws Exception
      */
     public function testCreate(): void
     {
@@ -173,15 +180,10 @@ class AssetApiTest extends DCoreSDKTest
         $this->assertTrue($asset->getOptions()->isExchangeable());
     }
 
-    public function testCreateMonitored(): void
-    {
-        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
-    }
-
     /**
      * @depends testCreate
      * @throws ValidationException
-     * @throws \Exception
+     * @throws Exception
      */
     public function testUpdate(): void
     {
@@ -213,7 +215,7 @@ class AssetApiTest extends DCoreSDKTest
      * @throws InvalidApiCallException
      * @throws ObjectNotFoundException
      * @throws ValidationException
-     * @throws \Exception
+     * @throws Exception
      */
     public function testUpdateAdvanced(): void
     {
@@ -235,7 +237,7 @@ class AssetApiTest extends DCoreSDKTest
     /**
      * @depends testCreate
      * @throws ValidationException
-     * @throws \Exception
+     * @throws Exception
      */
     public function testIssue(): void
     {
@@ -259,7 +261,7 @@ class AssetApiTest extends DCoreSDKTest
      * @throws ValidationException
      * @throws InvalidApiCallException
      * @throws ObjectNotFoundException
-     * @throws \Exception
+     * @throws Exception
      */
     public function testFund(): void
     {
@@ -282,7 +284,7 @@ class AssetApiTest extends DCoreSDKTest
      * @throws InvalidApiCallException
      * @throws ObjectNotFoundException
      * @throws ValidationException
-     * @throws \Exception
+     * @throws Exception
      */
     public function testClaim(): void
     {
@@ -306,7 +308,7 @@ class AssetApiTest extends DCoreSDKTest
      * @throws InvalidApiCallException
      * @throws ObjectNotFoundException
      * @throws ValidationException
-     * @throws \DCorePHP\Model\InvalidOperationTypeException
+     * @throws Exception
      */
     public function testReserve(): void
     {

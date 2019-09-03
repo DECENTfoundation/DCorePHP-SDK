@@ -9,7 +9,7 @@ abstract class GetSubscriptionAbstract extends BaseRequest
 {
     public static function responseToModel(BaseResponse $response)
     {
-        return self::resultToModel($response->getResult());
+        return $response->getResult() ? self::resultToModel($response->getResult()) : null;
     }
 
     protected static function resultToModel(array $result): Subscription

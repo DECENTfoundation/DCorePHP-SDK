@@ -2,10 +2,11 @@
 
 namespace DCorePHP\Sdk;
 
+use DCorePHP\Exception\ObjectNotFoundException;
 use DCorePHP\Model\BalanceChange;
 use DCorePHP\Model\ChainObject;
 use DCorePHP\Model\DynamicGlobalProps;
-use DCorePHP\Model\Operation\Transfer2;
+use DCorePHP\Model\Operation\TransferOperation;
 use DCorePHP\Model\OperationHistory;
 use DCorePHP\Model\OperationHistoryComposed;
 use DCorePHP\Net\Model\Request\GetAccountBalanceForTransaction;
@@ -20,7 +21,12 @@ class HistoryApi extends BaseApi implements HistoryApiInterface
      */
     public function getOperation(ChainObject $accountId, ChainObject $operationId): BalanceChange
     {
-        return $this->dcoreApi->requestWebsocket(new GetAccountBalanceForTransaction($accountId, $operationId));
+        $balance = $this->dcoreApi->requestWebsocket(new GetAccountBalanceForTransaction($accountId, $operationId));
+        if ($balance instanceof BalanceChange) {
+            return $balance;
+        }
+
+        throw new ObjectNotFoundException("Balance with accountId $accountId and operation id $operationId doesn't exist.");
     }
 
     /**
@@ -52,13 +58,13 @@ class HistoryApi extends BaseApi implements HistoryApiInterface
         $account = $this->dcoreApi->getAccountApi()->get($accountId);
 
         // Get all accounts
-        $objectIds = array_map(function (OperationHistory $operation) {return $operation->getOperation()->getTo();}, $operations);
-        $accountIds = array_filter($objectIds, function (ChainObject $chainObject) {return explode('.', $chainObject->getId())[0] === '1';});
+        $objectIds = array_map(static function (OperationHistory $operation) {return $operation->getOperation()->getTo();}, $operations);
+        $accountIds = array_filter($objectIds, static function (ChainObject $chainObject) {return explode('.', $chainObject->getId())[0] === '1';});
         $accounts = $this->dcoreApi->getAccountApi()->getAll(array_values(array_unique($accountIds)));
         $accounts = $this->formatObjects($accounts);
 
         // Get all contents
-        $contentIds = array_filter($objectIds, function (ChainObject $chainObject) {return explode('.', $chainObject->getId())[0] === '2';});
+        $contentIds = array_filter($objectIds, static function (ChainObject $chainObject) {return explode('.', $chainObject->getId())[0] === '2';});
         $contents = $this->dcoreApi->getContentApi()->getAll(array_values(array_unique($contentIds)));
         $contents = $this->formatObjects($contents);
 
@@ -66,7 +72,7 @@ class HistoryApi extends BaseApi implements HistoryApiInterface
         $objects = array_merge($accounts, $contents);
 
         // Get all assets
-        $assetIds = array_map(function (OperationHistory $operation) {return $operation->getOperation()->getAmount()->getAssetId();}, $operations);
+        $assetIds = array_map(static function (OperationHistory $operation) {return $operation->getOperation()->getAmount()->getAssetId();}, $operations);
         $assets = $this->dcoreApi->getAssetApi()->getAll(array_values(array_unique($assetIds)));
         $assets = $this->formatObjects($assets);
 
@@ -106,9 +112,13 @@ class HistoryApi extends BaseApi implements HistoryApiInterface
     ): array {
         /** @var OperationHistory[] $operations */
         $operations = $this->listOperations($accountId, $startId, $endId);
-        $operations = array_filter($operations, function (OperationHistory $operation) { return $operation->getOperation() instanceof Transfer2; });
+        $operations = array_filter($operations, static function (OperationHistory $operation) { return $operation->getOperation() instanceof TransferOperation; });
         $operations = array_merge($result, $operations);
         $count = count($operations);
+
+        if ($count === 0) {
+            return [];
+        }
 
         if ($count >= $limit) {
             return array_slice($operations, 0, $limit);

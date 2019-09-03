@@ -4,7 +4,7 @@ namespace DCorePHP\Net\Model\Request;
 
 use DCorePHP\Net\Model\Response\BaseResponse;
 
-class SearchFeedback extends BaseRequest
+class SearchFeedback extends GetPurchase
 {
 
     public function __construct(string $uri, string $user, string $startId, int $count)
@@ -16,9 +16,12 @@ class SearchFeedback extends BaseRequest
         );
     }
 
-    public static function responseToModel(BaseResponse $response): array
+    public static function responseToModel(BaseResponse $response)
     {
-        // TODO: Missing data
-        return [];
+        $feedback = [];
+        foreach ($response->getResult() as $result) {
+            $feedback[] = self::resultToModel($result);
+        }
+        return $feedback;
     }
 }

@@ -2,29 +2,32 @@
 
 namespace DCorePHPTests\Sdk;
 
+use DCorePHP\Crypto\Address;
 use DCorePHP\Crypto\Credentials;
 use DCorePHP\Crypto\ECKeyPair;
-use DCorePHP\Crypto\PrivateKey;
 use DCorePHP\DCoreApi;
 use DCorePHP\Exception\InvalidApiCallException;
 use DCorePHP\Exception\ObjectNotFoundException;
 use DCorePHP\Exception\ValidationException;
 use DCorePHP\Model\Account;
 use DCorePHP\Model\Asset\AssetAmount;
-use DCorePHP\Model\BrainKeyInfo;
+use DCorePHP\Model\Authority;
 use DCorePHP\Model\ChainObject;
-use DCorePHP\Model\ElGamalKeys;
 use DCorePHP\Model\FullAccount;
-use DCorePHP\Model\InvalidOperationTypeException;
+use DCorePHP\Model\Subscription\AuthMap;
 use DCorePHP\Model\TransactionDetail;
 use DCorePHP\Net\Model\Request\SearchAccountHistory;
 use DCorePHP\Sdk\AccountApi;
 use DCorePHPTests\DCoreSDKTest;
+use Exception;
 use WebSocket\BadOpcodeException;
 
 class AccountApiTest extends DCoreSDKTest
 {
     /**
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
+     * @throws ObjectNotFoundException
      * @throws ValidationException
      */
     public function testExist(): void
@@ -32,6 +35,12 @@ class AccountApiTest extends DCoreSDKTest
         $this->assertTrue(self::$sdk->getAccountApi()->exist(new ChainObject('1.2.27')));
     }
 
+    /**
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
+     * @throws ObjectNotFoundException
+     * @throws ValidationException
+     */
     public function testGet(): void
     {
         $account = self::$sdk->getAccountApi()->get(new ChainObject('1.2.27'));
@@ -40,6 +49,11 @@ class AccountApiTest extends DCoreSDKTest
         $this->assertEquals('1.2.27', $account->getId());
     }
 
+    /**
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
+     * @throws ObjectNotFoundException
+     */
     public function testGetByName(): void
     {
         $account = self::$sdk->getAccountApi()->getByName(DCoreSDKTest::ACCOUNT_NAME_1);
@@ -48,6 +62,11 @@ class AccountApiTest extends DCoreSDKTest
         $this->assertEquals(DCoreSDKTest::ACCOUNT_NAME_1, $account->getName());
     }
 
+    /**
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
+     * @throws ObjectNotFoundException
+     */
     public function testGetByNameException(): void
     {
         $this->expectException(ObjectNotFoundException::class);
@@ -55,7 +74,12 @@ class AccountApiTest extends DCoreSDKTest
         self::$sdk->getAccountApi()->getByName('non-existent');
     }
 
-    public function testGetByNameOrId()
+    /**
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
+     * @throws ObjectNotFoundException
+     */
+    public function testGetByNameOrId(): void
     {
         // getByName
         $accountApiMock = $this
@@ -100,6 +124,10 @@ class AccountApiTest extends DCoreSDKTest
         $sdkMock->getAccountApi()->getByNameOrId('1.2.38');
     }
 
+    /**
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
+     */
     public function testGetCountAll(): void
     {
         $count = self::$sdk->getAccountApi()->countAll();
@@ -109,7 +137,8 @@ class AccountApiTest extends DCoreSDKTest
     }
 
     /**
-     * @throws ValidationException
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
      */
     public function testFindAllReferencesByKeys(): void
     {
@@ -119,6 +148,8 @@ class AccountApiTest extends DCoreSDKTest
     }
 
     /**
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
      * @throws ValidationException
      */
     public function testFindAllReferencesByAccount(): void
@@ -129,6 +160,8 @@ class AccountApiTest extends DCoreSDKTest
     }
 
     /**
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
      * @throws ValidationException
      */
     public function testGetAll(): void
@@ -140,6 +173,8 @@ class AccountApiTest extends DCoreSDKTest
     }
 
     /**
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
      * @throws ValidationException
      */
     public function testGetFullAccounts(): void
@@ -151,6 +186,10 @@ class AccountApiTest extends DCoreSDKTest
         $this->assertEquals(DCoreSDKTest::ACCOUNT_NAME_2, $accounts[DCoreSDKTest::ACCOUNT_NAME_2]->getAccount()->getName());
     }
 
+    /**
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
+     */
     public function testGetAllByNames(): void
     {
         /** @var Account[] $accounts */
@@ -162,6 +201,10 @@ class AccountApiTest extends DCoreSDKTest
         $this->assertEquals(DCoreSDKTest::ACCOUNT_ID_2, $accounts[1]->getId());
     }
 
+    /**
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
+     */
     public function testListAllRelative(): void
     {
         /** @var Account[] $accounts */
@@ -174,6 +217,10 @@ class AccountApiTest extends DCoreSDKTest
         $this->assertInternalType('array', $accounts);
     }
 
+    /**
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
+     */
     public function testFindAll(): void
     {
         $accounts = self::$sdk->getAccountApi()->findAll(DCoreSDKTest::ACCOUNT_NAME_1, '', DCoreSDKTest::ACCOUNT_ID_1, 1);
@@ -187,6 +234,11 @@ class AccountApiTest extends DCoreSDKTest
         $this->assertEquals(DCoreSDKTest::ACCOUNT_ID_1, $account->getId());
     }
 
+    /**
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
+     * @throws ValidationException
+     */
     public function testSearchAccountHistory(): void
     {
         $transactions = self::$sdk->getAccountApi()->searchAccountHistory(new ChainObject('1.2.27'), '0.0.0', SearchAccountHistory::ORDER_TIME_DESC, 1);
@@ -198,21 +250,11 @@ class AccountApiTest extends DCoreSDKTest
         }
     }
 
-    public function testCreateCredentials(): void
-    {
-        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
-    }
-
-    public function testCreateTransfer(): void
-    {
-        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
-    }
-
     /**
      * @throws InvalidApiCallException
      * @throws ValidationException
      * @throws BadOpcodeException
-     * @throws \Exception
+     * @throws Exception
      */
     public function testTransfer(): void
     {
@@ -234,114 +276,41 @@ class AccountApiTest extends DCoreSDKTest
         $this->assertEquals(1500000, $lastTransaction->getAmount()->getAmount());
     }
 
-    public function testDerivePrivateKey()
-    {
-        $privateKey = self::$sdk->getAccountApi()->derivePrivateKey(DCoreSDKTest::PRIVATE_KEY_1);
-
-        $this->assertInstanceOf(PrivateKey::class, $privateKey);
-        $this->assertEquals('5956ee8e521a78e0cc6f6c8f65ed0a3a4be3fbe326d4d1e611fbd6454177bda4', $privateKey->toHex());
-    }
-
-    public function testSuggestBrainKey(): void
-    {
-        $brainKey = self::$sdk->getAccountApi()->suggestBrainKey();
-
-        $this->assertCount(16, explode(' ', $brainKey));
-    }
-
-    public function testGenerateBrainKeyElGamalKey(): void
-    {
-        $brainKey = self::$sdk->getAccountApi()->generateBrainKeyElGamalKey();
-
-        $this->assertNotEmpty($brainKey[0]);
-        $this->assertNotEmpty($brainKey[1]);
-        $this->assertInstanceOf(BrainKeyInfo::class, $brainKey[0]);
-        $this->assertInstanceOf(ElGamalKeys::class, $brainKey[1]);
-    }
-
-    public function testGetBrainKeyInfo(): void
-    {
-        $brainKeyInfo = self::$sdk->getAccountApi()->getBrainKeyInfo('FAILING AHIMSA INFLECT RETOUR OVERWEB PODIUM UNPILED DEVELIN BATED PUDGILY EXUDATE PASTEL ISOTOPY OSOPHY SELLAR SWAYING');
-
-        $this->assertEquals('FAILING AHIMSA INFLECT RETOUR OVERWEB PODIUM UNPILED DEVELIN BATED PUDGILY EXUDATE PASTEL ISOTOPY OSOPHY SELLAR SWAYING', $brainKeyInfo->getBrainPrivateKey());
-        $this->assertEquals('5K5uAt9rPndBfEWth2fgBjDQx4gtEX9jRBB9unbo4VdVAx8jems', $brainKeyInfo->getWifPrivateKey());
-        $this->assertEquals('DCT6BU82XJnfLLtBYsweEVSSsEy3fNNNuZoWxV2mcESjvrH5cLLtw', $brainKeyInfo->getPublicKey());
-    }
-
-    public function testNormalizeBrainKey(): void
-    {
-        $brainKey = self::$sdk->getAccountApi()->normalizeBrainKey('failing   ahimsa inflect retour overweb podium unpiled develin bated  pudgily EXUDATE pastel isotopy osophy sellar swaying ');
-
-        $this->assertEquals('FAILING AHIMSA INFLECT RETOUR OVERWEB PODIUM UNPILED DEVELIN BATED PUDGILY EXUDATE PASTEL ISOTOPY OSOPHY SELLAR SWAYING', $brainKey);
-    }
-
-    public function testGenerateElGamalKeys()
-    {
-        $elGamalKeys = self::$sdk->getAccountApi()->generateElGamalKeys();
-
-        $this->assertInstanceOf(ElGamalKeys::class, $elGamalKeys);
-    }
-
-    public function testRegisterAccount()
-    {
-        $accountName = 'ttibensky1' . date('U');
-
-        self::$sdk->getAccountApi()->registerAccount(
-            $accountName,
-            DCoreSDKTest::PUBLIC_KEY_1,
-            DCoreSDKTest::PUBLIC_KEY_1,
-            DCoreSDKTest::PUBLIC_KEY_1,
-            new ChainObject(DCoreSDKTest::ACCOUNT_ID_1),
-            DCoreSDKTest::PRIVATE_KEY_1
-        );
-
-        $account = self::$sdk->getAccountApi()->getByName($accountName);
-
-        $this->assertEquals($accountName, $account->getName());
-    }
-
-    public function testCreateAccountWithBrainKey()
-    {
-        $accountName = 'ttibensky2' . date('U');
-
-        self::$sdk->getAccountApi()->createAccountWithBrainKey(
-            'FAILING AHIMSA INFLECT RETOUR OVERWEB PODIUM UNPILED DEVELIN BATED PUDGILY EXUDATE PASTEL ISOTOPY OSOPHY SELLAR SWAYING',
-            $accountName,
-            new ChainObject(DCoreSDKTest::ACCOUNT_ID_1),
-            DCoreSDKTest::PRIVATE_KEY_1
-        );
-
-        $account = self::$sdk->getAccountApi()->getByName($accountName);
-
-        $this->assertEquals($accountName, $account->getName());
-    }
-
     /**
+     * @throws BadOpcodeException
      * @throws InvalidApiCallException
      * @throws ObjectNotFoundException
      * @throws ValidationException
-     * @throws BadOpcodeException
-     * @throws InvalidOperationTypeException
+     * @throws Exception
      */
-    public function testUpdateAccount(): void
+    public function testCreate(): void
     {
-        $account = self::$sdk->getAccountApi()->get(new ChainObject(self::ACCOUNT_ID_1));
+        $accountName = 'account-test' . time();
+        $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
+        self::$sdk->getAccountApi()->create($credentials, $accountName, Address::decode(DCoreSDKTest::PUBLIC_KEY_1));
 
-        $oldOptions = $account->getOptions();
-        $newOptions =
-            $oldOptions
-                ->setAllowSubscription(false)
-                ->setNumMiner(0)
-                ->setVotes(['0:3'])
-                ->setExtensions([])
-                ->setSubscriptionPeriod(0);
+        $account = self::$sdk->getAccountApi()->getByName($accountName);
+        self::assertEquals($account->getName(), $accountName);
+        self::assertEquals($account->getRegistrar()->getId(), DCoreSDKTest::ACCOUNT_ID_1);
+    }
 
-        self::$sdk->getAccountApi()->updateAccount(
-            new ChainObject(DCoreSDKTest::ACCOUNT_ID_1),
-            $newOptions,
-            DCoreSDKTest::PRIVATE_KEY_1
-        );
+    /**
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
+     * @throws ObjectNotFoundException
+     * @throws ValidationException
+     * @throws Exception
+     */
+    public function testUpdate(): void
+    {
+        $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
+        $authority = (new Authority())->setKeyAuths([(new AuthMap())->setValue(DCoreSDKTest::PUBLIC_KEY_2)]);
+        self::$sdk->getAccountApi()->update($credentials, null, $authority);
 
-        $this->expectNotToPerformAssertions();
+        $account = self::$sdk->getAccountApi()->getByName(DCoreSDKTest::ACCOUNT_NAME_1);
+        /** @var AuthMap[] $keyAuths */
+        $keyAuths = $account->getActive()->getKeyAuths();
+        $keyAuth = reset($keyAuths);
+        self::assertEquals($keyAuth->getValue()->encode(), DCoreSDKTest::PUBLIC_KEY_2);
     }
 }

@@ -18,9 +18,11 @@ use DCorePHP\Model\Operation\AssetClaimFeesOperation;
 use DCorePHP\Model\Operation\AssetCreateOperation;
 use DCorePHP\Model\Operation\AssetFundPoolsOperation;
 use DCorePHP\Model\Operation\AssetIssueOperation;
+use DCorePHP\Model\Operation\AssetReserveOperation;
 use DCorePHP\Model\Operation\AssetUpdateAdvancedOperation;
 use DCorePHP\Model\Operation\AssetUpdateOperation;
 use DCorePHP\Model\TransactionConfirmation;
+use Exception;
 use WebSocket\BadOpcodeException;
 
 interface AssetApiInterface
@@ -146,7 +148,7 @@ interface AssetApiInterface
      * @param null $fee
      * @return TransactionConfirmation|null
      * @throws ValidationException
-     * @throws \Exception
+     * @throws Exception
      */
     public function create(Credentials $credentials, string $symbol, int $precision, string $description, AssetOptions $options = null, $fee = null): ?TransactionConfirmation;
 
@@ -160,7 +162,7 @@ interface AssetApiInterface
      * @param $fee
      * @return TransactionConfirmation|null the signed transaction creating a new asset
      * @throws ValidationException
-     * @throws \Exception
+     * @throws Exception
      */
     public function createMonitoredAsset(Credentials $credentials, string $symbol, int $precision, string $description, MonitoredAssetOptions $options, $fee): ?TransactionConfirmation;
 
@@ -194,7 +196,7 @@ interface AssetApiInterface
      * @throws ObjectNotFoundException
      * @throws ValidationException
      * @throws BadOpcodeException
-     * @throws \Exception
+     * @throws Exception
      */
     public function update(Credentials $credentials, $asset, ExchangeRate $exchangeRate = null, string $description = null, bool $exchangeable = null, string $maxSupply = null, ChainObject $newIssuer = null, $fee = null): ?TransactionConfirmation;
 
@@ -221,7 +223,7 @@ interface AssetApiInterface
      * @throws InvalidApiCallException
      * @throws ObjectNotFoundException
      * @throws ValidationException
-     * @throws \Exception
+     * @throws Exception
      */
     public function updateAdvanced(Credentials $credentials, $asset, int $precision = null, bool  $fixedMaxSupply = null, $fee = null): ?TransactionConfirmation;
 
@@ -247,7 +249,7 @@ interface AssetApiInterface
      * @param Memo|null $memo
      * @param null $fee
      * @return TransactionConfirmation|null
-     * @throws \Exception
+     * @throws Exception
      */
     public function issue(Credentials $credentials, $assetRef, $amount, ChainObject $to = null, Memo $memo = null, $fee = null): ?TransactionConfirmation;
 
@@ -274,7 +276,7 @@ interface AssetApiInterface
      * @throws InvalidApiCallException
      * @throws ObjectNotFoundException
      * @throws ValidationException
-     * @throws \Exception
+     * @throws Exception
      */
     public function fund(Credentials $credentials, $assetRef, $uia, $dct, $fee = null): ?TransactionConfirmation;
 
@@ -301,7 +303,35 @@ interface AssetApiInterface
      * @throws InvalidApiCallException
      * @throws ObjectNotFoundException
      * @throws ValidationException
-     * @throws \Exception
+     * @throws Exception
      */
     public function claim(Credentials $credentials, $assetRef, $uia, $dct, $fee = null): ?TransactionConfirmation;
+
+    /**
+     * @param $assetRef
+     * @param $amount
+     * @param null $fee
+     *
+     * @return AssetReserveOperation
+     * @throws InvalidApiCallException
+     * @throws ObjectNotFoundException
+     * @throws ValidationException
+     * @throws BadOpcodeException
+     */
+    public function createReserveOperation($assetRef, $amount, $fee = null): AssetReserveOperation;
+
+    /**
+     * @param Credentials $credentials
+     * @param $assetRef
+     * @param $amount
+     * @param null $fee
+     *
+     * @return TransactionConfirmation|null
+     * @throws InvalidApiCallException
+     * @throws ObjectNotFoundException
+     * @throws ValidationException
+     * @throws BadOpcodeException
+     * @throws Exception
+     */
+    public function reserve(Credentials $credentials, $assetRef, $amount, $fee = null): TransactionConfirmation;
 }

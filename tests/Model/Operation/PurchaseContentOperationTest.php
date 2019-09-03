@@ -6,9 +6,10 @@ use DCorePHP\Crypto\Credentials;
 use DCorePHP\Crypto\ECKeyPair;
 use DCorePHP\Model\Asset\AssetAmount;
 use DCorePHP\Model\ChainObject;
-use DCorePHP\Model\Content\ContentObject;
+use DCorePHP\Model\Content\Content;
 use DCorePHP\Model\Content\PricePerRegion;
 use DCorePHP\Model\Operation\PurchaseContentOperation;
+use DCorePHP\Model\PubKey;
 use DCorePHPTests\DCoreSDKTest;
 use PHPUnit\Framework\TestCase;
 
@@ -21,11 +22,14 @@ class PurchaseContentOperationTest extends TestCase
     public function testToBytes(): void
     {
         $credentials = new Credentials(new ChainObject('1.2.34'), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
-        $content = (new ContentObject())
-            ->setAuthor('1.2.34')
-            ->setPrice((new PricePerRegion())->setPrices([2 => (new AssetAmount())->setAssetId(new ChainObject('1.3.0'))->setAmount(1000)]))
-            ->setURI('http://decent.ch?testtime=1552986916');
-        $operation = new PurchaseContentOperation($credentials, $content);
+
+        $operation = new PurchaseContentOperation();
+        $operation
+            ->setConsumer($credentials->getAccount())
+            ->setPrice((new AssetAmount())->setAssetId(new ChainObject('1.3.0'))->setAmount(1000))
+            ->setUri('http://decent.ch?testtime=1552986916')
+            ->setPublicElGamal(parse_url('http://decent.ch?testtime=1552986916', PHP_URL_SCHEME) !== 'ipfs' ? new PubKey() : (new PubKey())->setPubKey($credentials->getKeyPair()->getPrivate()->toElGamalPublicKey()))
+            ->setRegionCode(2);
 
         $this->assertEquals(
             '1500000000000000000024687474703a2f2f646563656e742e63683f7465737474696d653d3135353239383639313622e803000000000000000200000002302e',

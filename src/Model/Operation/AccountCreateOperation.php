@@ -2,53 +2,81 @@
 
 namespace DCorePHP\Model\Operation;
 
+use DCorePHP\Exception\ValidationException;
 use DCorePHP\Model\Authority;
 use DCorePHP\Model\BaseOperation;
 use DCorePHP\Model\ChainObject;
 use DCorePHP\Model\Options;
 use DCorePHP\Utils\Math;
 use DCorePHP\Utils\VarInt;
+use Exception;
+use InvalidArgumentException;
 
-class CreateAccountOperation extends BaseOperation
+class AccountCreateOperation extends BaseOperation
 {
     public const OPERATION_TYPE = 1;
     public const OPERATION_NAME = 'account_create';
 
+    /** @var ChainObject */
+    private $registrar;
     /** @var string */
-    private $accountName;
+    private $name;
     /** @var Authority */
     private $owner;
     /** @var Authority */
     private $active;
-    /** @var ChainObject */
-    private $registrar;
     /** @var Options */
     private $options;
+
+    /**
+     * @return ChainObject
+     */
+    public function getRegistrar(): ChainObject
+    {
+        return $this->registrar;
+    }
+
+    /**
+     * @param ChainObject|string $registrar
+     *
+     * @return AccountCreateOperation
+     * @throws ValidationException
+     */
+    public function setRegistrar($registrar): AccountCreateOperation
+    {
+        if (is_string($registrar)) {
+            $registrar = new ChainObject($registrar);
+        }
+        $this->registrar = $registrar;
+
+        return $this;
+    }
 
     /**
      * @return string
      */
     public function getAccountName(): string
     {
-        return $this->accountName;
+        return $this->name;
     }
 
     /**
      * @param string $accountName
-     * @return CreateAccountOperation
-     * @throws \Exception
+     *
+     * @return AccountCreateOperation
+     * @throws Exception
      */
-    public function setAccountName(string $accountName): CreateAccountOperation
+    public function setAccountName(string $accountName): AccountCreateOperation
     {
         if (!preg_match('/^[a-z][a-z0-9-]+[a-z0-9](?:\.[a-z][a-z0-9-]+[a-z0-9])*$/', $accountName)) {
-            throw new \Exception("Account name '{$accountName}' is not valid. Name doesn't match pattern '/^[a-z][a-z0-9-]+[a-z0-9](?:\.[a-z][a-z0-9-]+[a-z0-9])*$/'");
+            throw new InvalidArgumentException("Account name '{$accountName}' is not valid. Name doesn't match pattern '/^[a-z][a-z0-9-]+[a-z0-9](?:\.[a-z][a-z0-9-]+[a-z0-9])*$/'");
         }
 
-        if (!in_array(strlen($accountName), range(5, 63))) {
-            throw new \Exception("Account name '{$accountName}' is not valid. Name doesn't match required length 5..63 characters");
+        if (!in_array(strlen($accountName), range(5, 63), true)) {
+            throw new InvalidArgumentException("Account name '{$accountName}' is not valid. Name doesn't match required length 5..63 characters");
         }
 
-        $this->accountName = $accountName;
+        $this->name = $accountName;
         return $this;
     }
 
@@ -62,11 +90,13 @@ class CreateAccountOperation extends BaseOperation
 
     /**
      * @param Authority $owner
-     * @return CreateAccountOperation
+     *
+     * @return AccountCreateOperation
      */
-    public function setOwner(Authority $owner): CreateAccountOperation
+    public function setOwner(Authority $owner): AccountCreateOperation
     {
         $this->owner = $owner;
+
         return $this;
     }
 
@@ -80,33 +110,13 @@ class CreateAccountOperation extends BaseOperation
 
     /**
      * @param Authority $active
-     * @return CreateAccountOperation
+     *
+     * @return AccountCreateOperation
      */
-    public function setActive(Authority $active): CreateAccountOperation
+    public function setActive(Authority $active): AccountCreateOperation
     {
         $this->active = $active;
-        return $this;
-    }
 
-    /**
-     * @return ChainObject
-     */
-    public function getRegistrar(): ChainObject
-    {
-        return $this->registrar;
-    }
-
-    /**
-     * @param ChainObject|string $registrar
-     * @return CreateAccountOperation
-     */
-    public function setRegistrar($registrar): CreateAccountOperation
-    {
-        if (is_string($registrar)) {
-            $registrar = new ChainObject($registrar);
-        }
-
-        $this->registrar = $registrar;
         return $this;
     }
 
@@ -120,17 +130,16 @@ class CreateAccountOperation extends BaseOperation
 
     /**
      * @param Options $options
-     * @return CreateAccountOperation
+     *
+     * @return AccountCreateOperation
      */
-    public function setOptions(Options $options): CreateAccountOperation
+    public function setOptions(Options $options): AccountCreateOperation
     {
         $this->options = $options;
+
         return $this;
     }
 
-    /**
-     * @return array
-     */
     public function toArray(): array
     {
         return [
@@ -142,15 +151,11 @@ class CreateAccountOperation extends BaseOperation
                 'owner' => $this->getOwner()->toArray(),
                 'active' => $this->getActive()->toArray(),
                 'options' => $this->getOptions()->toArray(),
-                'extensions' => [],
+                'extensions' => $this->getExtensions(),
             ],
         ];
     }
 
-    /**
-     * @return string
-     * @throws \Exception
-     */
     public function toBytes(): string
     {
         return implode('', [

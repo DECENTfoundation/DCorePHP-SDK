@@ -2,61 +2,72 @@
 
 namespace DCorePHPTests\Sdk;
 
-use DCorePHP\Model\Content\Seeder;
+use DCorePHP\Exception\InvalidApiCallException;
+use DCorePHP\Exception\ObjectNotFoundException;
+use DCorePHP\Exception\ValidationException;
 use DCorePHP\Model\ChainObject;
-use DCorePHP\Net\Model\Request\BaseRequest;
-use DCorePHP\Net\Model\Request\GetSeederAbstract;
-use DCorePHP\Net\Model\Request\ListSeedersByPrice;
-use DCorePHP\Net\Model\Request\ListSeedersByUpload;
-use DCorePHP\Net\Model\Response\BaseResponse;
 use DCorePHPTests\DCoreSDKTest;
+use WebSocket\BadOpcodeException;
 
 class SeederApiTest extends DCoreSDKTest
 {
     /**
-     * @throws \DCorePHP\Exception\ValidationException
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
+     * @throws ValidationException
+     *
+     * @doesNotPerformAssertions
      */
     public function testGetSeeder(): void
     {
-        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
-//        $seeder = self::$sdk->getSeederApi()->get(new ChainObject('1.2.17'));
-//        $this->assertEquals('1.2.17', $seeder->getSeeder()->getId());
+        try {
+            $seeder = self::$sdk->getSeederApi()->get(new ChainObject('1.2.17'));
+            $this->assertEquals('1.2.17', $seeder->getSeeder()->getId());
+        } catch (ObjectNotFoundException $exception) {}
     }
 
+    /**
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
+     *
+     * @doesNotPerformAssertions
+     */
     public function testListSeedersByPrice(): void
     {
-        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
-//        $seeders = self::$sdk->getSeederApi()->listByPrice();
-//        foreach ($seeders as $seeder) {
-//            $this->assertInstanceOf(Seeder::class, $seeder);
-//        }
+        self::$sdk->getSeederApi()->listByPrice();
     }
 
+    /**
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
+     *
+     * @doesNotPerformAssertions
+     */
     public function testListSeedersByUpload(): void
     {
-        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
-//        $seeders = self::$sdk->getSeederApi()->listByUpload();
-//
-//        foreach ($seeders as $seeder) {
-//            $this->assertInstanceOf(Seeder::class, $seeder);
-//        }
+        self::$sdk->getSeederApi()->listByUpload();
     }
 
+    /**
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
+     *
+     * @doesNotPerformAssertions
+     */
     public function testListSeedersByRegion(): void
     {
-        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
-//        $seeders = self::$sdk->getSeederApi()->listByRegion();
-//        $this->markTestIncomplete('This test has not been implemented yet.');
+        self::$sdk->getSeederApi()->listByRegion();
     }
 
+    /**
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
+     *
+     * @doesNotPerformAssertions
+     */
     public function testListSeedersByRating(): void
     {
-        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
-//        $seeders = self::$sdk->getSeederApi()->listByRating();
-//
-//        foreach ($seeders as $seeder) {
-//            $this->assertInstanceOf(Seeder::class, $seeder);
-//        }
+        self::$sdk->getSeederApi()->listByRating();
     }
 
 }

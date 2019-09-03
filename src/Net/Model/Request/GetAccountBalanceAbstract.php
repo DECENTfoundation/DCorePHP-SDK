@@ -11,17 +11,15 @@ abstract class GetAccountBalanceAbstract extends BaseRequest
     /**
      * @param BaseResponse $response
      * @return BalanceChange
-     * @throws \DCorePHP\Model\InvalidOperationTypeException
      */
     public static function responseToModel(BaseResponse $response)
     {
-        return self::resultToModel($response->getResult());
+        return $response->getResult() ? self::resultToModel($response->getResult()) : null;
     }
 
     /**
      * @param array $result
      * @return BalanceChange
-     * @throws \DCorePHP\Model\InvalidOperationTypeException
      */
     protected static function resultToModel(array $result): BalanceChange
     {

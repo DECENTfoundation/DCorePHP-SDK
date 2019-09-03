@@ -4,22 +4,20 @@ namespace DCorePHPTests\Sdk;
 
 use DCorePHP\Crypto\Credentials;
 use DCorePHP\Crypto\ECKeyPair;
+use DCorePHP\Exception\InvalidApiCallException;
 use DCorePHP\Exception\ValidationException;
 use DCorePHP\Model\Asset\AssetAmount;
 use DCorePHP\Model\ChainObject;
-use DCorePHP\Net\Model\Request\BaseRequest;
-use DCorePHP\Net\Model\Request\BroadcastTransaction;
-use DCorePHP\Net\Model\Request\GetChainId;
-use DCorePHP\Net\Model\Request\GetDynamicGlobalProperties;
-use DCorePHP\Net\Model\Request\GetRequiredFees;
-use DCorePHP\Net\Model\Response\BaseResponse;
+use DCorePHP\Model\Operation\TransferOperation;
 use DCorePHPTests\DCoreSDKTest;
+use Exception;
+use WebSocket\BadOpcodeException;
 
 class BroadcastApiTest extends DCoreSDKTest
 {
     /**
      * @throws ValidationException
-     * @throws \Exception
+     * @throws Exception
      */
     public function testBroadcast(): void
     {
@@ -40,7 +38,7 @@ class BroadcastApiTest extends DCoreSDKTest
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function testBroadcastOperationsWithECKeyPair(): void
     {
@@ -59,7 +57,7 @@ class BroadcastApiTest extends DCoreSDKTest
 
     /**
      * @throws ValidationException
-     * @throws \Exception
+     * @throws Exception
      */
     public function testBroadcastOperationWithECKeyPair(): void
     {
@@ -78,7 +76,7 @@ class BroadcastApiTest extends DCoreSDKTest
 
     /**
      * @throws ValidationException
-     * @throws \Exception
+     * @throws Exception
      */
     public function testBroadcastOperationsWithPrivateKey(): void
     {
@@ -97,7 +95,7 @@ class BroadcastApiTest extends DCoreSDKTest
 
     /**
      * @throws ValidationException
-     * @throws \Exception
+     * @throws Exception
      */
     public function testBroadcastOperationWithPrivateKey(): void
     {
@@ -114,29 +112,122 @@ class BroadcastApiTest extends DCoreSDKTest
         $this->expectNotToPerformAssertions();
     }
 
+    /**
+     * @throws ValidationException
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
+     * @throws Exception
+     */
     public function testBroadcastWithCallback(): void
     {
-        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
+        $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
+        $transfer = self::$sdk->getAccountApi()->createTransfer(
+            $credentials,
+            DCoreSDKTest::ACCOUNT_ID_2,
+            (new AssetAmount())->setAmount(mt_rand()),
+            'Ahoy PHP',
+            false);
+
+        $transaction = self::$sdk->getTransactionApi()->createTransaction([$transfer]);
+        $transaction->sign($credentials->getKeyPair()->getPrivate()->toWif());
+
+        $notice = self::$sdk->getBroadcastApi()->broadcastWithCallback($transaction);
+        $ops = $notice->getTransaction()->getOperations();
+        /** @var TransferOperation $op */
+        $op = reset($ops);
+        self::assertEquals(DCoreSDKTest::ACCOUNT_ID_2, $op->getTo()->getId());
     }
 
+    /**
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
+     * @throws ValidationException
+     * @throws Exception
+     */
     public function testBroadcastOperationsWithECKeyPairWithCallback(): void
     {
-        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
+        $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_2), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_2));
+        $transfer = self::$sdk->getAccountApi()->createTransfer(
+            $credentials,
+            DCoreSDKTest::ACCOUNT_ID_1,
+            (new AssetAmount())->setAmount(mt_rand()),
+            'Ahoy PHP',
+            false);
+
+        $notice = self::$sdk->getBroadcastApi()->broadcastOperationsWithECKeyPairWithCallback($credentials->getKeyPair(), [$transfer]);
+        $ops = $notice->getTransaction()->getOperations();
+        /** @var TransferOperation $op */
+        $op = reset($ops);
+        self::assertEquals(DCoreSDKTest::ACCOUNT_ID_1, $op->getTo()->getId());
     }
 
+    /**
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
+     * @throws ValidationException
+     * @throws Exception
+     */
     public function testBroadcastOperationWithECKeyPairWithCallback(): void
     {
-        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
+        $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
+        $transfer = self::$sdk->getAccountApi()->createTransfer(
+            $credentials,
+            DCoreSDKTest::ACCOUNT_ID_2,
+            (new AssetAmount())->setAmount(mt_rand()),
+            'Ahoy PHP',
+            false);
+
+        $notice = self::$sdk->getBroadcastApi()->broadcastOperationWithECKeyPairWithCallback($credentials->getKeyPair(), $transfer);
+        $ops = $notice->getTransaction()->getOperations();
+        /** @var TransferOperation $op */
+        $op = reset($ops);
+        self::assertEquals(DCoreSDKTest::ACCOUNT_ID_2, $op->getTo()->getId());
     }
 
+    /**
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
+     * @throws ValidationException
+     * @throws Exception
+     */
     public function testBroadcastOperationsWithPrivateKeyWithCallback(): void
     {
-        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
+        $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_2), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_2));
+        $transfer = self::$sdk->getAccountApi()->createTransfer(
+            $credentials,
+            DCoreSDKTest::ACCOUNT_ID_1,
+            (new AssetAmount())->setAmount(mt_rand()),
+            'Ahoy PHP',
+            false);
+
+        $notice = self::$sdk->getBroadcastApi()->broadcastOperationsWithPrivateKeyWithCallback($credentials->getKeyPair()->getPrivate()->toWif(), [$transfer]);
+        $ops = $notice->getTransaction()->getOperations();
+        /** @var TransferOperation $op */
+        $op = reset($ops);
+        self::assertEquals(DCoreSDKTest::ACCOUNT_ID_1, $op->getTo()->getId());
     }
 
+    /**
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
+     * @throws ValidationException
+     * @throws Exception
+     */
     public function testBroadcastOperationWithPrivateKeyWithCallback(): void
     {
-        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
+        $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
+        $transfer = self::$sdk->getAccountApi()->createTransfer(
+            $credentials,
+            DCoreSDKTest::ACCOUNT_ID_2,
+            (new AssetAmount())->setAmount(mt_rand()),
+            'Ahoy PHP',
+            false);
+
+        $notice = self::$sdk->getBroadcastApi()->broadcastOperationWithPrivateKeyWithCallback($credentials->getKeyPair()->getPrivate()->toWif(), $transfer);
+        $ops = $notice->getTransaction()->getOperations();
+        /** @var TransferOperation $op */
+        $op = reset($ops);
+        self::assertEquals(DCoreSDKTest::ACCOUNT_ID_2, $op->getTo()->getId());
     }
 
     public function testBroadcastSynchronous(): void

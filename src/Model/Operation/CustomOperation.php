@@ -2,17 +2,18 @@
 
 namespace DCorePHP\Model\Operation;
 
+use DCorePHP\Exception\ValidationException;
 use DCorePHP\Model\BaseOperation;
 use DCorePHP\Model\ChainObject;
 use DCorePHP\Utils\Math;
 use DCorePHP\Utils\VarInt;
+use Symfony\Component\PropertyAccess\Exception\NoSuchPropertyException;
 
 class CustomOperation extends BaseOperation
 {
     public const OPERATION_TYPE = 18;
     public const OPERATION_NAME = 'custom';
     public const CUSTOM_TYPE = 0;
-    public const CUSTOM_TYPE_MESSAGE = 1;
 
     /** @var ChainObject */
     private $payer;
@@ -41,7 +42,7 @@ class CustomOperation extends BaseOperation
             try {
                 $value = $this->getPropertyAccessor()->getValue($rawOperation, $path);
                 $this->getPropertyAccessor()->setValue($this, $modelPath, $value);
-            } catch (\Symfony\Component\PropertyAccess\Exception\NoSuchPropertyException $exception) {
+            } catch (NoSuchPropertyException $exception) {
                 // skip
             }
         }
@@ -54,7 +55,7 @@ class CustomOperation extends BaseOperation
             [
                 'id' => $this->getId(),
                 'payer' => $this->getPayer()->getId(),
-                'required_auths' => array_map(function (ChainObject $data) {return $data->getId();}, $this->getRequiredAuths()),
+                'required_auths' => array_map(static function (ChainObject $data) {return $data->getId();}, $this->getRequiredAuths()),
                 'data' => $this->getData(),
                 'fee' => $this->getFee()->toArray()
             ],
@@ -68,7 +69,7 @@ class CustomOperation extends BaseOperation
             $this->getFee()->toBytes(),
             $this->getPayer()->toBytes(),
             VarInt::encodeDecToHex(sizeof($this->getRequiredAuths())),
-            implode('', array_map(function (ChainObject $auth) {
+            implode('', array_map(static function (ChainObject $auth) {
                 return $auth->toBytes();
             }, $this->getRequiredAuths())),
             Math::getInt16($this->getId()),
@@ -89,7 +90,7 @@ class CustomOperation extends BaseOperation
     /**
      * @param ChainObject|string $payer
      * @return CustomOperation
-     * @throws \DCorePHP\Exception\ValidationException
+     * @throws ValidationException
      */
     public function setPayer($payer): CustomOperation
     {
@@ -113,7 +114,7 @@ class CustomOperation extends BaseOperation
     /**
      * @param ChainObject[]|string[] $requiredAuths
      * @return CustomOperation
-     * @throws \DCorePHP\Exception\ValidationException
+     * @throws ValidationException
      */
     public function setRequiredAuths(array $requiredAuths): CustomOperation
     {

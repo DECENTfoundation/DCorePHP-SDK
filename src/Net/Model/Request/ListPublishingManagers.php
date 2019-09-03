@@ -2,6 +2,7 @@
 
 namespace DCorePHP\Net\Model\Request;
 
+use DCorePHP\Model\ChainObject;
 use DCorePHP\Net\Model\Response\BaseResponse;
 
 class ListPublishingManagers extends BaseRequest
@@ -18,8 +19,10 @@ class ListPublishingManagers extends BaseRequest
 
     public static function responseToModel(BaseResponse $response)
     {
-        // TODO: Untested no data
-        dump('here');
-        dump($response->getResult());
+        $result = [];
+        foreach($response->getResult() as $rawId) {
+            $result[] = new ChainObject($rawId);
+        }
+        return $result;
     }
 }

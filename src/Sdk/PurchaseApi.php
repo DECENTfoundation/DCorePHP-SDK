@@ -75,7 +75,6 @@ class PurchaseApi extends BaseApi implements PurchaseApiInterface
     /**
      * @inheritdoc
      */
-    // TODO: Default arguments: StartId
     public function findAllForFeedback(string $uri, string $user = '', string $startId = ChainObject::NULL_OBJECT, int $count = 100): array
     {
         return $this->dcoreApi->requestWebsocket(new SearchFeedback($uri, $user, $startId, $count)) ?: [];

@@ -3,12 +3,12 @@
 namespace DCorePHP\Sdk;
 
 use DCorePHP\Crypto\Credentials;
-use DCorePHP\Model\BaseOperation;
+use DCorePHP\Model\Asset\AssetAmount;
 use DCorePHP\Model\ChainObject;
 use DCorePHP\Model\Explorer\Miner;
 use DCorePHP\Model\Mining\MinerId;
+use DCorePHP\Model\Operation\AccountUpdateOperation;
 use DCorePHP\Model\TransactionConfirmation;
-use DCorePHP\Model\Operation\UpdateAccountOperation;
 use DCorePHP\Net\Model\Request\GetActualVotes;
 use DCorePHP\Net\Model\Request\GetAssetPerBlock;
 use DCorePHP\Net\Model\Request\GetFeedsByMiner;
@@ -79,7 +79,7 @@ class MiningApi extends BaseApi implements MiningApiInterface
         /** @var MinerId[] $minerIds */
         $minerIds = $this->listMinersRelative();
         /** @var Miner[] $miners */
-        $miners = $this->getMiners(array_map(function (MinerId $minerId) {return $minerId->getId(); } ,$minerIds));
+        $miners = $this->getMiners(array_map(static function (MinerId $minerId) {return $minerId->getId(); } ,$minerIds));
         // Loop relies on minerIds and miners arrays to have Ids in the same order
         for ($index = 0, $indexMax = sizeof($minerIds); $index < $indexMax; $index++) {
             $minersWithName[$minerIds[$index]->getName()] = $miners[$index];
@@ -128,95 +128,28 @@ class MiningApi extends BaseApi implements MiningApiInterface
     /**
      * @inheritdoc
      */
-    public function createVoteOperation(ChainObject $accountId, array $minderIds): UpdateAccountOperation
+    public function createVoteOperation(ChainObject $accountId, array $minderIds, $fee = null): AccountUpdateOperation
     {
         $miners = $this->getMiners($minderIds);
         // array_unique used to remove duplicates
-        $voteIds = array_unique(array_map(function (Miner $miner) { return $miner->getVoteId(); }, $miners));
+        $voteIds = array_unique(array_map(static function (Miner $miner) { return $miner->getVoteId(); }, $miners));
         $account = $this->dcoreApi->getAccountApi()->get($accountId);
-        $update = new UpdateAccountOperation();
-        return $update->setAccountId($account->getId())->setOptions($account->getOptions()->setVotes($voteIds));
+        $operation = new AccountUpdateOperation();
+        $operation
+            ->setAccountId($account->getId())
+            ->setOptions($account->getOptions()->setVotes($voteIds));
+        return $operation;
     }
 
     /**
      * @inheritdoc
      */
-    public function vote(Credentials $credentials, array $minerIds): ?TransactionConfirmation
+    public function vote(Credentials $credentials, array $minerIds, $fee = null): ?TransactionConfirmation
     {
+        $fee = $fee ?: new AssetAmount();
         return $this->dcoreApi->getBroadcastApi()->broadcastOperationWithECKeyPairWithCallback(
             $credentials->getKeyPair(),
-            $this->createVoteOperation($credentials->getAccount(), $minerIds)
+            $this->createVoteOperation($credentials->getAccount(), $minerIds, $fee)
         );
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function createMiner(string $account, string $url, bool $broadcast = false): BaseOperation
-    {
-        // TODO: Implement createMiner() method.
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function updateMiner(
-        string $minerName,
-        string $url,
-        string $blockSigningKey,
-        bool $broadcast = false
-    ): BaseOperation
-    {
-        // TODO: Implement updateMiner() method.
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function withdrawVesting(
-        string $minerName,
-        string $amount,
-        string $assetSymbol,
-        bool $broadcast = false
-    ): BaseOperation
-    {
-        // TODO: Implement withdrawVesting() method.
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function voteForMiner(
-        string $votingAccount,
-        string $miner,
-        bool $approve,
-        bool $broadcast = false
-    ): BaseOperation
-    {
-        // TODO: Implement voteForMiner() method.
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function setVotingProxy(
-        string $accountToModify,
-        string $votingAccount = null,
-        bool $broadcast = false
-    ): BaseOperation
-    {
-        // TODO: Implement setVotingProxy() method.
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function setDesiredMinerCount(
-        string $accountToModify,
-        int $desiredNumberOfMiners,
-        bool $broadcast = true
-    ): BaseOperation
-    {
-        // TODO: Implement setDesiredMinerCount() method.
     }
 }

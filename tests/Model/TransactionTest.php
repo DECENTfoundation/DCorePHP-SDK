@@ -9,8 +9,10 @@ use DCorePHP\Model\BlockData;
 use DCorePHP\Model\DynamicGlobalProps;
 use DCorePHP\Model\Memo;
 use DCorePHP\Model\ChainObject;
+use DCorePHP\Model\Operation\AccountCreateOperation;
+use DCorePHP\Model\Operation\AccountUpdateOperation;
 use DCorePHP\Model\Operation\CreateAccountOperation;
-use DCorePHP\Model\Operation\Transfer2;
+use DCorePHP\Model\Operation\TransferOperation;
 use DCorePHP\Model\Operation\UpdateAccountOperation;
 use DCorePHP\Model\Options;
 use DCorePHP\Model\Subscription\AuthMap;
@@ -53,7 +55,7 @@ class TransactionTest extends TestCase
             ->setDynamicFlags(0)
             ->setLastIrreversibleBlockNum(599091);
 
-        $operation = new Transfer2();
+        $operation = new TransferOperation();
         $operation
             ->setFrom(DCoreSDKTest::ACCOUNT_ID_1)
             ->setTo(DCoreSDKTest::ACCOUNT_ID_2)
@@ -87,7 +89,7 @@ class TransactionTest extends TestCase
 
         $this->assertEquals(
             '202ce584bb151776719959cadd9d88f93e1872083ea6c699105541eca34e16017263eefd5e849d18786188e693a42fe12075c251c6db141bcc39f196f2dd9cdd41',
-            $transaction->getSignature()
+            $transaction->getSignatures()[0]
         );
     }
 
@@ -128,15 +130,13 @@ class TransactionTest extends TestCase
             ->setExtensions([])
             ->setSubscriptionPeriod(0);
 
-        $operation = new CreateAccountOperation();
+        $operation = new AccountCreateOperation();
         $operation
             ->setAccountName('mikeeee')
             ->setOwner((new Authority())->setKeyAuths([(new AuthMap())->setValue('DCT6718kUCCksnkeYD1YySWkXb1VLpzjkFfHHMirCRPexp5gDPJLU')]))
             ->setActive((new Authority())->setKeyAuths([(new AuthMap())->setValue('DCT6718kUCCksnkeYD1YySWkXb1VLpzjkFfHHMirCRPexp5gDPJLU')]))
             ->setRegistrar(new ChainObject('1.2.34'))
             ->setOptions($options)
-            ->setName(CreateAccountOperation::OPERATION_NAME)
-            ->setType(CreateAccountOperation::OPERATION_TYPE)
             ->setFee((new AssetAmount())->setAmount(500000));
 
         $transaction = new Transaction();
@@ -152,7 +152,7 @@ class TransactionTest extends TestCase
         );
         $this->assertEquals(
             '206cd94c347e104009a429b8234f0898d71426254dabb6ec4a37242d0f0d3658dc5795f05e0554eef61ee2b71337c68d66803267bae6545c3fe39c4dfabbab4d2f',
-            $transaction->getSignature()
+            $transaction->getSignatures()[0]
         );
     }
 
@@ -192,12 +192,10 @@ class TransactionTest extends TestCase
             ->setExtensions([])
             ->setSubscriptionPeriod(0);
 
-        $operation = new UpdateAccountOperation();
+        $operation = new AccountUpdateOperation();
         $operation
             ->setAccountId(new ChainObject('1.2.34'))
             ->setOptions($options)
-            ->setName(CreateAccountOperation::OPERATION_NAME)
-            ->setType(CreateAccountOperation::OPERATION_TYPE)
             ->setFee((new AssetAmount())->setAmount(500000));
 
         $transaction = new Transaction();
@@ -216,7 +214,7 @@ class TransactionTest extends TestCase
 
         $this->assertEquals(
             '1f6a0cad43d970a786385afd87ed7e0b70b8386e8496ded40a21d02bbab603c8923f9f914196ee0b0f5d2dd36b2f8aaaf37fbc0f73934be7829247bb8ea8595138',
-            $transaction->getSignature()
+            $transaction->getSignatures()[0]
         );
     }
 }

@@ -4,13 +4,13 @@ use DCorePHP\Exception\ValidationException;
 use DCorePHP\Model\Asset\AssetAmount;
 use DCorePHP\Model\Authority;
 use DCorePHP\Model\ChainObject;
-use DCorePHP\Model\Operation\UpdateAccountOperation;
+use DCorePHP\Model\Operation\AccountUpdateOperation;
 use DCorePHP\Model\Options;
 use DCorePHP\Model\Subscription\AuthMap;
 use DCorePHPTests\DCoreSDKTest;
 use PHPUnit\Framework\TestCase;
 
-class UpdateAccountOperationTest extends TestCase
+class AccountUpdateOperationTest extends TestCase
 {
     /**
      * @throws ValidationException
@@ -18,7 +18,7 @@ class UpdateAccountOperationTest extends TestCase
      */
     public function testToBytes(): void
     {
-        $updateAccount = new UpdateAccountOperation();
+        $updateAccount = new AccountUpdateOperation();
         $updateAccount
             ->setAccountId(new ChainObject('1.2.34'))
             ->setOptions(
@@ -30,11 +30,7 @@ class UpdateAccountOperationTest extends TestCase
                     ->setExtensions([])
                     ->setAllowSubscription(false)
                     ->setSubscriptionPeriod(0)
-                    ->setPricePerSubscribe(
-                        (new AssetAmount())
-                            ->setAmount(0)
-                            ->setAssetId(new ChainObject('1.3.0'))
-                    )
+                    ->setPricePerSubscribe(new AssetAmount())
             )->setFee(
                 (new AssetAmount())
                     ->setAmount(500000)
@@ -45,8 +41,15 @@ class UpdateAccountOperationTest extends TestCase
             '0220a10700000000000022000001039cf1a65f567cf37066fbfc13419e16c47953a7194d621ceb2d00f3796f73f43c030000010003000000000000000000000000000000000000',
             $updateAccount->toBytes()
         );
+    }
 
-        $updateAccount = new UpdateAccountOperation();
+    /**
+     * @throws ValidationException
+     * @throws Exception
+     */
+    public function toBytesSecond(): void
+    {
+        $updateAccount = new AccountUpdateOperation();
         $updateAccount
             ->setAccountId(new ChainObject('1.2.34'))
             ->setOwner((new Authority())->setKeyAuths([(new AuthMap())->setValue(DCoreSDKTest::PUBLIC_KEY_1)]))

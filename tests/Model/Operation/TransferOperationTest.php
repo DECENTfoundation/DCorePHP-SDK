@@ -3,7 +3,7 @@
 use DCorePHP\Model\Asset\AssetAmount;
 use DCorePHP\Model\Memo;
 use DCorePHP\Model\ChainObject;
-use DCorePHP\Model\Operation\Transfer2;
+use DCorePHP\Model\Operation\TransferOperation;
 use DCorePHP\Crypto\Address;
 use DCorePHP\Utils\Crypto;
 use DCorePHP\Crypto\PrivateKey;
@@ -15,7 +15,7 @@ class TransferOperationTest extends TestCase
 {
     public function testHydrate(): void
     {
-        $transfer = new Transfer2();
+        $transfer = new TransferOperation();
         $transfer->hydrate([
             'fee' => [
                 'amount' => 500000,
@@ -58,7 +58,7 @@ class TransferOperationTest extends TestCase
         $senderPublicKeyWif = DCoreSDKTest::PUBLIC_KEY_1;
         $recipientPublicKeyWif = DCoreSDKTest::PUBLIC_KEY_2;
 
-        $operation = new Transfer2();
+        $operation = new TransferOperation();
         $operation
             ->setFrom('1.2.34')
             ->setTo('1.2.35')

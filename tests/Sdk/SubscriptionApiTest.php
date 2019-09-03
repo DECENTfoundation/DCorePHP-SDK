@@ -2,32 +2,32 @@
 
 namespace DCorePHPTests\Sdk;
 
+use DCorePHP\Exception\InvalidApiCallException;
+use DCorePHP\Exception\ObjectNotFoundException;
 use DCorePHP\Exception\ValidationException;
 use DCorePHP\Model\ChainObject;
-use DCorePHP\Net\Model\Request\BaseRequest;
-use DCorePHP\Net\Model\Request\GetSubscription;
-use DCorePHP\Net\Model\Request\ListActiveSubscriptionsByAuthor;
-use DCorePHP\Net\Model\Request\ListActiveSubscriptionsByConsumer;
-use DCorePHP\Net\Model\Request\ListSubscriptionsByAuthor;
-use DCorePHP\Net\Model\Request\ListSubscriptionsByConsumer;
-use DCorePHP\Net\Model\Response\BaseResponse;
 use DCorePHPTests\DCoreSDKTest;
+use WebSocket\BadOpcodeException;
 
 class SubscriptionApiTest extends DCoreSDKTest
 {
     /**
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
      * @throws ValidationException
+     *
+     * @doesNotPerformAssertions
      */
     public function testGet(): void
     {
-        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
-//        $subscription = self::$sdk->getSubscriptionApi()->get(new ChainObject('2.15.0'));
-//
-//        $this->assertEquals('2.15.0', $subscription->getId()->getId());
-//        $this->assertFalse($subscription->isRenewal());
+        try {
+            self::$sdk->getSubscriptionApi()->get(new ChainObject('2.15.0'));
+        } catch (ObjectNotFoundException $exception) { }
     }
 
     /**
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
      * @throws ValidationException
      */
     public function testGetAllActiveByConsumer(): void
@@ -44,6 +44,8 @@ class SubscriptionApiTest extends DCoreSDKTest
     }
 
     /**
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
      * @throws ValidationException
      */
     public function testGetAllActiveByAuthor(): void
@@ -59,67 +61,26 @@ class SubscriptionApiTest extends DCoreSDKTest
     }
 
     /**
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
      * @throws ValidationException
+     *
+     * @doesNotPerformAssertions
      */
     public function testGetAllByConsumer(): void
     {
-        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
-//        $subscriptions = self::$sdk->getSubscriptionApi()->getAllByConsumer(new ChainObject('1.2.83'));
-//        $subscription = reset($subscriptions);
-//
-//        $this->assertEquals('1.2.83', $subscription->getFrom()->getId());
+        self::$sdk->getSubscriptionApi()->getAllByConsumer(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), 10);
     }
 
     /**
      * @throws ValidationException
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
+     *
+     * @doesNotPerformAssertions
      */
     public function testGetAllByAuthor(): void
     {
-        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
-//        $subscriptions = self::$sdk->getSubscriptionApi()->getAllByAuthor(new ChainObject('1.2.82'));
-//        $subscription = reset($subscriptions);
-//
-//        $this->assertEquals('1.2.82', $subscription->getTo()->getId());
+        self::$sdk->getSubscriptionApi()->getAllByAuthor(new ChainObject('1.2.82'));
     }
-
-    public function testSubscribeToAuthor(): void
-    {
-        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
-    }
-
-    public function testSubscribeByAuthor(): void
-    {
-        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
-    }
-
-    public function testSetSubscription(): void
-    {
-        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
-    }
-
-    public function testSetAutomaticRenewalOfSubscription(): void
-    {
-        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
-    }
-
-    public function testListActiveSubscriptionsByConsumer(): void
-    {
-        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
-    }
-
-    public function testListSubscriptionsByConsumer(): void
-    {
-        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
-    }
-
-    public function testListActiveSubscriptionsByAuthor(): void
-    {
-        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
-    }
-
-    public function testListSubscriptionsByAuthor(): void
-    {
-        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
-    }
-
 }

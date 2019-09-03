@@ -1,26 +1,25 @@
 <?php
 
-
 namespace DCorePHP\Sdk;
 
-
+use DateTime;
 use DCorePHP\Crypto\Credentials;
 use DCorePHP\Exception\InvalidApiCallException;
-use DCorePHP\Exception\ObjectAlreadyFoundException;
 use DCorePHP\Exception\ObjectNotFoundException;
+use DCorePHP\Exception\ValidationException;
 use DCorePHP\Model\Asset\AssetAmount;
-use DCorePHP\Model\BaseOperation;
 use DCorePHP\Model\ChainObject;
-use DCorePHP\Model\Content\Content;
+use DCorePHP\Model\CoAuthors;
 use DCorePHP\Model\Content\ContentKeys;
-use DCorePHP\Model\Content\ContentObject;
-use DCorePHP\Model\Content\SubmitContent;
-use DCorePHP\Model\Operation\ContentSubmitOperation;
+use DCorePHP\Model\Content\Content;
+use DCorePHP\Model\Operation\AddOrUpdateContentOperation;
+use DCorePHP\Model\Operation\RemoveContentOperation;
 use DCorePHP\Model\Operation\PurchaseContentOperation;
-use DCorePHP\Model\Operation\Transfer;
+use DCorePHP\Model\Operation\TransferOperation;
 use DCorePHP\Model\PubKey;
 use DCorePHP\Model\TransactionConfirmation;
 use DCorePHP\Net\Model\Request\SearchContent;
+use Exception;
 use WebSocket\BadOpcodeException;
 
 interface ContentApiInterface
@@ -29,9 +28,11 @@ interface ContentApiInterface
      * Generate keys for new content submission.
      *
      * @param ChainObject[] $seeders list of seeder account IDs
+     *
      * @return ContentKeys key and key parts
-     * @throws \DCorePHP\Exception\InvalidApiCallException
-     * @throws \WebSocket\BadOpcodeException
+     *
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
      */
     public function generateKeys(array $seeders): ContentKeys;
 
@@ -39,29 +40,34 @@ interface ContentApiInterface
      * Get a content by id
      *
      * @param ChainObject $contentId the id of the content to retrieve
-     * @return ContentObject the content corresponding to the provided URI, or null if no matching content was found
+     *
+     * @return Content the content corresponding to the provided URI, or null if no matching content was found
      * @throws ObjectNotFoundException
-     * @throws \DCorePHP\Exception\InvalidApiCallException
-     * @throws \WebSocket\BadOpcodeException
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
      */
-    public function get(ChainObject $contentId): ContentObject;
+    public function get(ChainObject $contentId): Content;
 
     /**
      * Get a content by URI
      *
      * @param string $uri the URI of the content to retrieve
-     * @return ContentObject the content corresponding to the provided URI, or null if no matching content was found
+     *
+     * @return Content the content corresponding to the provided URI, or null if no matching content was found
      * @throws ObjectNotFoundException
-     * @throws \DCorePHP\Exception\InvalidApiCallException
-     * @throws \WebSocket\BadOpcodeException
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
      */
-    public function getByURI(string $uri): ContentObject;
+    public function getByURI(string $uri): Content;
 
     /**
      * Get contents byt Ids
      *
      * @param array $contentIds
      * @return array
+     *
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
      */
     public function getAll(array $contentIds): array;
 
@@ -79,6 +85,9 @@ interface ContentApiInterface
      * @param string $lowerBound the name of the first account to return. If the named account does not exist, the list will start at the account that comes after lowerBound
      * @param int $limit the maximum number of accounts to return (max: 100)
      * @return ChainObject[] a list of publishing managers
+     *
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
      */
     public function listAllPublishersRelative(string $lowerBound, int $limit = 100): array;
 
@@ -88,6 +97,9 @@ interface ContentApiInterface
      * @param PubKey $elGamalPrivate
      * @param ChainObject $purchaseId
      * @return mixed restored AES key from key particles
+     *
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
      */
     public function restoreEncryptionKey(PubKey $elGamalPrivate, ChainObject $purchaseId): string;
 
@@ -99,23 +111,15 @@ interface ContentApiInterface
      * @param string $user content owner
      * @param string $regionCode two letter region code
      * @param string $type the application and content type to be filtered, separated by comma
-     * @param string $startid the id of content object to start searching from
+     * @param string $startId the id of content object to start searching from
      * @param int $limit maximum number of contents to fetch (must not exceed 100)
      *
      * @return Content[] the contents found
+     *
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
      */
-    public function findAll(string $term, string $order = SearchContent::CREATED_DESC, string $user = '', string $regionCode = 'default', string $type, string $startid, int $limit = 100): array;
-
-    /**
-     * @param SubmitContent $content
-     * @param Credentials $author which will pay operation fee, will owner of content.
-     * @param AssetAmount $publishingFee
-     * @param AssetAmount $fee
-     * @return TransactionConfirmation that content was created.
-     * @throws ObjectNotFoundException
-     * @throws \Exception
-     */
-    public function create(SubmitContent $content, Credentials $author, AssetAmount $publishingFee, AssetAmount $fee): ?TransactionConfirmation;
+    public function findAll(string $term, string $order = SearchContent::CREATED_DESC, string $user = '', string $regionCode = 'default', string $type = '0.0.0', string $startId = '1.0.0', int $limit = 100): array;
 
     /**
      * Create a purchase content operation.
@@ -124,7 +128,11 @@ interface ContentApiInterface
      * @param ChainObject $contentId, 2.13.*
      *
      * @return PurchaseContentOperation
-     * @throws \DCorePHP\Exception\ValidationException
+     *
+     * @throws ValidationException
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
+     * @throws ObjectNotFoundException
      */
     public function createPurchaseOperation(Credentials $credentials, ChainObject $contentId): PurchaseContentOperation;
 
@@ -135,7 +143,11 @@ interface ContentApiInterface
      * @param string $uri
      *
      * @return PurchaseContentOperation
-     * @throws \DCorePHP\Exception\ValidationException
+     *
+     * @throws ValidationException
+     * @throws ObjectNotFoundException
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
      */
     public function createPurchaseOperationWithUri(Credentials $credentials, string $uri): PurchaseContentOperation;
 
@@ -146,8 +158,8 @@ interface ContentApiInterface
      * @param ChainObject $contentId, 2.13.*
      *
      * @return TransactionConfirmation
-     * @throws \DCorePHP\Exception\ValidationException
-     * @throws \Exception
+     * @throws ValidationException
+     * @throws Exception
      */
     public function purchase(Credentials $credentials, ChainObject $contentId): ?TransactionConfirmation;
 
@@ -158,65 +170,165 @@ interface ContentApiInterface
      * @param string $uri
      *
      * @return TransactionConfirmation
-     * @throws \DCorePHP\Exception\ValidationException
-     * @throws \Exception
+     * @throws ValidationException
+     * @throws Exception
      */
     public function purchaseWithUri(Credentials $credentials, string $uri): ?TransactionConfirmation;
 
     /**
+     * @param ChainObject $id
+     * @param null $fee
+     *
+     * @return RemoveContentOperation
+     *
+     * @throws ObjectNotFoundException
+     * @throws ValidationException
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
+     */
+    public function createRemoveContentByIdOperation(ChainObject $id, $fee = null): RemoveContentOperation;
+
+    /**
+     * @param string $uri
+     * @param null $fee
+     *
+     * @return RemoveContentOperation
+     *
+     * @throws ObjectNotFoundException
+     * @throws ValidationException
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
+     */
+    public function createRemoveContentByUriOperation(string $uri, $fee = null): RemoveContentOperation;
+
+    /**
      * Delete content by id
      *
-     * @param ChainObject $contentId
-     * @param Credentials $author Credentials of account which will pay operation fee,
-     * will owner of content.
+     * @param Credentials $credentials of account which will pay operation fee
+     * @param ChainObject $content
      * @param AssetAmount $fee for the operation
+     *
      * @return TransactionConfirmation|null
-     * @throws \DCorePHP\Exception\ValidationException
-     * @throws \Exception
+     *
+     * @throws ValidationException
+     * @throws Exception
      */
-    public function deleteById(ChainObject $contentId, Credentials $author, AssetAmount $fee): ?TransactionConfirmation;
+    public function removeById(Credentials $credentials, ChainObject $content, AssetAmount $fee): ?TransactionConfirmation;
 
     /**
      * Delete content by uri
      *
+     * @param Credentials $author Credentials of account which will pay operation fee,
+     * will owner of content.
      * @param string $url
-     * @param Credentials $author Credentials of account which will pay operation fee,
-     * will owner of content.
      * @param AssetAmount $fee for the operation
+     *
      * @return TransactionConfirmation|null
-     * @throws \DCorePHP\Exception\ValidationException
-     * @throws \Exception
+     *
+     * @throws ValidationException
+     * @throws Exception
      */
-    public function deleteByUrl(string $url, Credentials $author, AssetAmount $fee): ?TransactionConfirmation;
+    public function removeByIUrl(Credentials $author, string $url, AssetAmount $fee): ?TransactionConfirmation;
 
     /**
-     * Delete content by reference (id or uri)
+     * Create request to submit content operation.
      *
-     * @param $reference
-     * @param Credentials $author Credentials of account which will pay operation fee,
-     * will owner of content.
-     * @param AssetAmount $fee for the operation
-     * @return TransactionConfirmation|null
-     * @throws \DCorePHP\Exception\ValidationException
+     * @param ChainObject $author
+     * @param CoAuthors $coAuthors
+     * @param string $uri
+     * @param array $price
+     * @param DateTime $expiration
+     * @param string $synopsis
+     * @param null $fee
+     *
+     * @return AddOrUpdateContentOperation
+     *
+     * @throws ValidationException
+     * @throws Exception
      */
-    public function deleteByRef($reference, Credentials $author, AssetAmount $fee): ?TransactionConfirmation;
+    public function createAddContentOperation(ChainObject $author, CoAuthors $coAuthors, string $uri, array $price, DateTime $expiration, string $synopsis, $fee = null): AddOrUpdateContentOperation;
 
     /**
-     * Update Content
+     * Add content.
      *
-     * @param SubmitContent $content
-     * @param Credentials $author
-     * @param AssetAmount $publishingFee
-     * @param AssetAmount $fee
-     * @return TransactionConfirmation|null
-     * @throws BadOpcodeException
-     * @throws InvalidApiCallException
-     * @throws ObjectAlreadyFoundException
+     * @param Credentials $credentials
+     * @param CoAuthors $coAuthors
+     * @param string $uri
+     * @param array $price
+     * @param DateTime $expiration
+     * @param string $synopsis
+     * @param null $fee
+     *
+     * @return TransactionConfirmation
+     *
+     * @throws ValidationException
+     * @throws Exception
+     */
+    public function add(Credentials $credentials, CoAuthors $coAuthors, string $uri, array $price, DateTime $expiration, string $synopsis, $fee = null): TransactionConfirmation;
+
+    /**
+     * Create request to update content operation. Fills the model with actual content values.
+     *
+     * @param ChainObject $id
+     * @param null $fee
+     *
+     * @return AddOrUpdateContentOperation
+     *
      * @throws ObjectNotFoundException
-     * @throws \DCorePHP\Exception\ValidationException
-     * @throws \Exception
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
      */
-    public function update(SubmitContent $content, Credentials $author, AssetAmount $publishingFee, AssetAmount $fee): ?TransactionConfirmation;
+    public function createUpdateContentWithIdOperation(ChainObject $id, $fee = null): AddOrUpdateContentOperation;
+
+    /**
+     * Create request to update content operation. Fills the model with actual content values.
+     *
+     * @param ChainObject $uri
+     * @param null $fee
+     *
+     * @return AddOrUpdateContentOperation
+     *
+     * @throws ObjectNotFoundException
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
+     */
+    public function createUpdateContentWithUriOperation(ChainObject $uri, $fee = null): AddOrUpdateContentOperation;
+
+    /**
+     * Update content.
+     *
+     * @param Credentials $credentials
+     * @param ChainObject $id
+     * @param string|null $synopsis
+     * @param array|null $price
+     * @param CoAuthors|null $coAuthors
+     * @param null $fee
+     *
+     * @return TransactionConfirmation
+     *
+     * @throws ObjectNotFoundException
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
+     */
+    public function updateWithId(Credentials $credentials, ChainObject $id, string $synopsis = null, array $price = null, CoAuthors $coAuthors = null, $fee = null): TransactionConfirmation;
+
+    /**
+     * Update content. Update parameters are functions that have current values as arguments.
+     *
+     * @param Credentials $credentials
+     * @param string $uri
+     * @param string|null $synopsis
+     * @param array|null $price
+     * @param CoAuthors|null $coAuthors
+     * @param null $fee
+     *
+     * @return TransactionConfirmation
+     *
+     * @throws ObjectNotFoundException
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
+     */
+    public function updateWithUri(Credentials $credentials, string $uri, string $synopsis = null, array $price = null, CoAuthors $coAuthors = null, $fee = null): TransactionConfirmation;
 
     /**
      * Transfers an amount of one asset to content. Amount is transferred to author and co-authors of the content, if they are specified.
@@ -228,83 +340,26 @@ interface ContentApiInterface
      * @param string $memo optional unencrypted message
      * @param AssetAmount $fee for the operation, if left [BaseOperation.FEE_UNSET] the fee will be computed in DCT asset
      *
-     * @return Transfer transaction confirmation
+     * @return TransferOperation
+     *
+     * @throws ValidationException
      */
-    public function createTransfer(Credentials $credentials, ChainObject $id, AssetAmount $amount, string $memo = null, AssetAmount $fee = null): Transfer;
+    public function createTransfer(Credentials $credentials, ChainObject $id, AssetAmount $amount, string $memo = null, $fee = null): TransferOperation;
 
     /**
-     * This function can be used to cancel submitted content
-     * @param ChainObject $authorId the author of the content
-     * @param string $uri the URI of the content
-     * @param bool $broadcast
-     * @param string $authorPrivateKeyWif,
-     * @return mixed true to broadcast the transaction on the network
-     * @throws \Exception
+     * Transfers an amount of one asset to content. Amount is transferred to author and co-authors of the content, if they are specified.
+     * Fees are paid by the "from" account.
+     *
+     * @param Credentials $credentials
+     * @param ChainObject $id
+     * @param AssetAmount $amount
+     * @param string|null $memo
+     * @param null $fee
+     *
+     * @return TransactionConfirmation
+     *
+     * @throws ValidationException
+     * @throws Exception
      */
-    public function contentCancellation(ChainObject $authorId, string $uri, string $authorPrivateKeyWif, bool $broadcast);
-
-    /**
-     * Downloads encrypted content specified by provided URI.
-     * @param string $consumer consumer of the content
-     * @param string $uri the URI of the content
-     * @param string $regionCodeFrom two letter region code
-     * @param bool $broadcast true to broadcast the transaction on the network
-     */
-    public function downloadContent(string $consumer, string $uri, string $regionCodeFrom, bool $broadcast = false);
-
-    /**
-     * Get status about particular download process specified by provided URI
-     * @param string $consumer consumer of the content
-     * @param string $uri he URI of the content
-     * @return mixed download status, or null if no matching download process was found
-     */
-    public function getDownloadStatus(string $consumer, string $uri);
-
-    /**
-     * This function is used to send a request to buy a content. This request is caught by seeders
-     * @param ChainObject $consumer consumer of the content
-     * @param string $uri the URI of the content
-     * @param string $priceAssetName ticker symbol of the asset which will be used to buy content
-     * @param string $priceAmount the price of the content
-     * @param int $regionCodeFrom two letter region code
-     * @param string $authorPrivateKeyWif
-     * @param bool $broadcast true to broadcast the transaction on the network
-     */
-    public function requestToBuy(ChainObject $consumer, string $uri, string $priceAssetName, string $priceAmount, int $regionCodeFrom, string $authorPrivateKeyWif, bool $broadcast = true);
-
-    /**
-     * Rates and comments a content
-     * @param string $consumer consumer giving the rating
-     * @param string $uri the URI of the content
-     * @param int $rating the rating. The available options are 1-5
-     * @param string $comment the maximum length of a comment is 100 characters
-     * @param bool $broadcast true to broadcast the transaction on the network
-     * @return BaseOperation
-     */
-    public function leaveRatingAndComment(string $consumer, string $uri, int $rating, string $comment, bool $broadcast = false): BaseOperation;
-
-    /**
-     * Generates AES encryption key
-     * @return mixed random encryption key
-     */
-    public function generateEncryptionKey();
-
-    /**
-     * @param string $user content owner
-     * @param string $term search term
-     * @param string $order order field
-     * @param string $regionCode two letter region code
-     * @param string $id the id of content object to start searching from
-     * @param string $type the application and content type to be filtered, separated by comma
-     * @param int $count maximum number of contents to fetch (must not exceed 100)
-     * @return array
-     */
-    public function searchUserContent(string $user, string $term, string $order, string $regionCode, string $id, string $type, int $count = 100): array;
-
-    /**
-     * Get author and list of co-authors of a content corresponding to the provided URI.
-     * @param string $uri the URI of the content
-     * @return array the author of the content and the list of co-authors, if provided
-     */
-    public function getAuthorAndCoAuthorsByUri(string $uri): array;
+    public function transfer(Credentials $credentials, ChainObject $id, AssetAmount $amount, string $memo = null, $fee = null): TransactionConfirmation;
 }

@@ -2,30 +2,37 @@
 
 namespace DCorePHP\Model\Subscription;
 
+use DCorePHP\Crypto\Address;
 use DCorePHP\Crypto\PublicKey;
 use DCorePHP\Utils\Math;
+use Exception;
 
 class AuthMap
 {
-    /** @var string */
+    /** @var Address */
     private $value;
     /** @var int */
     private $weight = 1;
 
     /**
-     * @return string
+     * @return Address
      */
-    public function getValue(): string
+    public function getValue(): Address
     {
         return $this->value;
     }
 
     /**
-     * @param string $value
+     * @param Address|string $value
+     *
      * @return AuthMap
+     * @throws Exception
      */
-    public function setValue(string $value): AuthMap
+    public function setValue($value): AuthMap
     {
+        if (is_string($value)) {
+            $value = Address::decodeCheckNull($value);
+        }
         $this->value = $value;
         return $this;
     }
@@ -50,23 +57,24 @@ class AuthMap
 
     /**
      * @return array
+     * @throws Exception
      */
     public function toArray(): array
     {
         return [
-            $this->getValue(),
+            $this->getValue()->encode(),
             $this->getWeight()
         ];
     }
 
     /**
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     public function toBytes(): string
     {
         return implode('', [
-            PublicKey::fromWif($this->getValue())->toCompressedPublicKey(),
+            PublicKey::fromWif($this->getValue()->encode())->toCompressedPublicKey(),
             Math::getInt8($this->getWeight()) . '00',
         ]);
     }

@@ -4,15 +4,17 @@ namespace DCorePHP\Model;
 
 use DCorePHP\Crypto\Address;
 use DCorePHP\Crypto\PublicKey;
+use DCorePHP\Exception\ValidationException;
 use DCorePHP\Model\Asset\AssetAmount;
 use DCorePHP\Utils\Math;
+use Exception;
 
 class Options
 {
     /** @var Address */
     private $memoKey;
     /** @var ChainObject */
-    private $votingAccount = '1.2.3';
+    private $votingAccount;
     /** @var int */
     private $numMiner = 0;
     /** @var array */
@@ -26,8 +28,15 @@ class Options
     /** @var int */
     private $subscriptionPeriod = 0;
 
+    public static function initWithAddress(Address $public): self
+    {
+        $instance = new self();
+        $instance->setMemoKey($public);
+    }
+
     public function __construct()
     {
+        $this->votingAccount = new ChainObject('1.2.3');
         $this->pricePerSubscribe = new AssetAmount();
     }
 
@@ -42,7 +51,7 @@ class Options
     /**
      * @param Address|string $memoKey
      * @return Options
-     * @throws \Exception
+     * @throws Exception
      */
     public function setMemoKey($memoKey): Options
     {
@@ -63,9 +72,9 @@ class Options
     }
 
     /**
-     * @param $votingAccount
+     * @param ChainObject|string $votingAccount
      * @return Options
-     * @throws \DCorePHP\Exception\ValidationException
+     * @throws ValidationException
      */
     public function setVotingAccount($votingAccount): Options
     {
@@ -193,6 +202,7 @@ class Options
 
     /**
      * @return array
+     * @throws Exception
      */
     public function toArray(): array
     {
@@ -210,7 +220,7 @@ class Options
 
     /**
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     public function toBytes(): string
     {

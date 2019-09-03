@@ -2,11 +2,10 @@
 
 namespace DCorePHP\Model\Operation;
 
-use DCorePHP\Crypto\Credentials;
+use DCorePHP\Exception\ValidationException;
 use DCorePHP\Model\Asset\AssetAmount;
 use DCorePHP\Model\BaseOperation;
 use DCorePHP\Model\ChainObject;
-use DCorePHP\Model\Content\ContentObject;
 use DCorePHP\Model\PubKey;
 use DCorePHP\Utils\Math;
 use DCorePHP\Utils\VarInt;
@@ -26,23 +25,6 @@ class PurchaseContentOperation extends BaseOperation
     private $publicElGamal;
     /** @var integer */
     private $regionCode;
-
-    /**
-     * PurchaseContentOperationTest constructor.
-     * @param Credentials $credentials
-     * @param ContentObject $content
-     * @throws \DCorePHP\Exception\ValidationException
-     */
-    public function __construct(Credentials $credentials, ContentObject $content)
-    {
-        parent::__construct();
-        $this
-            ->setUri($content->getURI())
-            ->setConsumer($credentials->getAccount())
-            ->setPrice($content->regionalPrice()->getPrice())
-            ->setPublicElGamal(parse_url($content->getURI(), PHP_URL_SCHEME) !== 'ipfs' ? new PubKey() : (new PubKey())->setPubKey($credentials->getKeyPair()->getPrivate()->toElGamalPublicKey()))
-            ->setRegionCode($content->regionalPrice()->getRegion());
-    }
 
     /**
      * @return string
@@ -74,7 +56,7 @@ class PurchaseContentOperation extends BaseOperation
     /**
      * @param ChainObject|string $consumer
      * @return PurchaseContentOperation
-     * @throws \DCorePHP\Exception\ValidationException
+     * @throws ValidationException
      */
     public function setConsumer($consumer): PurchaseContentOperation
     {

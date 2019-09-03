@@ -2,6 +2,8 @@
 
 namespace DCorePHP\Model\Content;
 
+use DCorePHP\Model\RegionalPrice;
+
 class PricePerRegion
 {
     /** @var array [Region => AssetAmount] */
@@ -24,5 +26,16 @@ class PricePerRegion
         $this->prices = $prices;
 
         return $this;
+    }
+
+    /**
+     * @return RegionalPrice[]
+     */
+    public function regionalPrice(): array {
+        $result = [];
+        foreach ($this->getPrices() as $region => $amount) {
+            $result[] = (new RegionalPrice())->setRegion($region)->setPrice($amount);
+        }
+        return $result;
     }
 }

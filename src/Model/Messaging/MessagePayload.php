@@ -2,9 +2,9 @@
 
 namespace DCorePHP\Model\Messaging;
 
-use DCorePHP\Model\Address;
+use DCorePHP\Crypto\Address;
+use DCorePHP\Exception\ValidationException;
 use DCorePHP\Model\ChainObject;
-use DCorePHP\Model\Memo;
 
 class MessagePayload
 {
@@ -24,7 +24,7 @@ class MessagePayload
     public function __construct(ChainObject $from, array $messages, Address $fromAddress = null)
     {
         $this->from = $from;
-        $this->receiversData = array_map(function($data) { return new MessagePayloadReceiver($data[0], Memo::withMessage($data[1])->getMessage()); }, $messages);
+        $this->receiversData = $messages;
         $this->fromAddress = $fromAddress;
     }
 
@@ -39,7 +39,7 @@ class MessagePayload
     /**
      * @param ChainObject|string $from
      * @return MessagePayload
-     * @throws \DCorePHP\Exception\ValidationException
+     * @throws ValidationException
      */
     public function setFrom($from): MessagePayload
     {
@@ -71,9 +71,9 @@ class MessagePayload
     }
 
     /**
-     * @return Address
+     * @return Address|null
      */
-    public function getFromAddress(): Address
+    public function getFromAddress(): ?Address
     {
         return $this->fromAddress;
     }
@@ -91,16 +91,18 @@ class MessagePayload
 
     public function toArray(): array
     {
-        return [
+        $array = [
             'from' => $this->getFrom()->getId(),
-            'receivers_data' => array_map(function (MessagePayloadReceiver $data){ return $data->toArray(); }, $this->getReceiversData()),
-//            'pub_from' => $this->getFromAddress()->getPublicKey()
+            'receivers_data' => array_map(static function (MessagePayloadReceiver $data){ return $data->toArray(); }, $this->getReceiversData()),
         ];
+
+        $this->getFromAddress() ? $array['pub_from'] = $this->getFromAddress()->encode() : null;
+
+        return $array;
     }
 
     public function toJson(): string
     {
-//        dump(preg_replace('/(?<=nonce":)(.+)(?=}])/', '', json_encode($this->toArray())));
         return json_encode($this->toArray());
     }
 }

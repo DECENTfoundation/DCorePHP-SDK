@@ -6,10 +6,10 @@ use DCorePHP\Crypto\Credentials;
 use DCorePHP\Crypto\ECKeyPair;
 use DCorePHP\Crypto\PublicKey;
 use DCorePHP\Crypto\Address;
-use DCorePHP\Model\Subscription\AuthMap;
 use DCorePHP\Utils\Crypto;
 use DCorePHP\Utils\Math;
 use DCorePHP\Utils\VarInt;
+use Exception;
 
 class Memo
 {
@@ -42,13 +42,11 @@ class Memo
      * @param Credentials $credentials
      * @param Account $recipient
      * @return Memo
-     * @throws \Exception
+     * @throws Exception
      */
     public static function withCredentials(string $message, Credentials $credentials, Account $recipient): Memo
     {
-        /** @var AuthMap $authMap */
-        $authMap = $recipient->getActive()->getKeyAuths()[0];
-        return self::fromECKeyPair($message, $credentials->getKeyPair(), Address::decode($authMap->getValue()));
+        return self::fromECKeyPair($message, $credentials->getKeyPair(), $recipient->getOptions()->getMemoKey());
     }
 
     /**
@@ -59,7 +57,7 @@ class Memo
      * @param Address $recipient
      * @param string|null $nonce
      * @return Memo
-     * @throws \Exception
+     * @throws Exception
      */
     public static function fromECKeyPair(string $message, ECKeyPair $keyPair, Address $recipient, string $nonce = null): Memo
     {
@@ -135,14 +133,14 @@ class Memo
     {
         try {
             return gmp_strval(gmp_add(gmp_init(str_pad(str_replace('.', '', microtime(true)), 18, '0')), random_int(0, PHP_INT_MAX)));
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->generateNonce();
         }
     }
 
     /**
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     public function toArray(): array
     {
@@ -162,7 +160,7 @@ class Memo
 
     /**
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     public function toBytes(): string
     {

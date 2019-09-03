@@ -4,60 +4,75 @@ namespace DCorePHPTests\Model\Operation;
 
 use DCorePHP\Crypto\Credentials;
 use DCorePHP\Crypto\ECKeyPair;
+use DCorePHP\Exception\InvalidApiCallException;
+use DCorePHP\Exception\ObjectNotFoundException;
+use DCorePHP\Exception\ValidationException;
 use DCorePHP\Model\ChainObject;
 use DCorePHP\Model\Memo;
 use DCorePHP\Model\Messaging\MessagePayload;
 use DCorePHP\Model\Messaging\MessagePayloadReceiver;
 use DCorePHP\Model\Operation\SendMessageOperation;
-use DCorePHPTests\DCoreSDKTest;;
+use DCorePHP\Utils\Math;
+use DCorePHPTests\DCoreSDKTest;
+use Exception;
+use WebSocket\BadOpcodeException;
 
 class SendMessageTest extends DCoreSDKTest
 {
-    // TODO: quotes in json payload (nonce)
-//    /**
-//     * @throws \DCorePHP\Exception\InvalidApiCallException
-//     * @throws \DCorePHP\Exception\ObjectNotFoundException
-//     * @throws \DCorePHP\Exception\ValidationException
-//     * @throws \WebSocket\BadOpcodeException
-//     * @throws \Exception
-//     */
-//    public function testToBytesEncrypted(): void
-//    {
-//        $sender = self::$sdk->getAccountApi()->get(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1));
-//        $recipient = self::$sdk->getAccountApi()->get(new ChainObject(DCoreSDKTest::ACCOUNT_ID_2));
-//        $keyPair = ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1);
-//        $msg = Memo::fromECKeyPair('hello messaging api', $keyPair, $recipient->getOptions()->getMemoKey(), '10216254519122646016');
-//        $payloadReceiver = new MessagePayloadReceiver($recipient->getId(), $msg->getMessage(), $recipient->getOptions()->getMemoKey(), $msg->getNonce());
-//        $payload = new MessagePayload($sender->getId(), [$payloadReceiver], $sender->getOptions()->getMemoKey());
-//        $operation = new SendMessageOperation($payload->toJson(), $sender->getId());
-//        dump($payload->toJson());
-//
-//        $this->assertEquals(
-//            '1200000000000000000022012201009f027b2266726f6d223a22312e322e3334222c227265636569766572735f64617461223a5b7b22746f223a22312e322e3335222c2264617461223a2239623933633537343130656137643830626136373530383139653036643665326237626138316366393162626637653331643236353930396234363739306164222c227075625f746f223a224443543662566d696d745953765751747764726b56565147486b5673544a5a564b74426955716634596d4a6e724a506e6b38395150222c226e6f6e6365223a31303231363235343531393132323634363031367d5d2c227075625f66726f6d223a22444354364d41355451513655624d794d614c506d505845325379683547335a566876355362466564714c507164464368536571547a227d',
-//            $operation->toBytes()
-//        );
-//    }
-
     /**
-     * @throws \DCorePHP\Exception\ValidationException
-     * @throws \Exception
+     * @throws InvalidApiCallException
+     * @throws ObjectNotFoundException
+     * @throws ValidationException
+     * @throws BadOpcodeException
+     * @throws Exception
      */
-    public function testToBytesUnencrypted(): void
+    public function testToBytesEncrypted(): void
     {
-        $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
-        $messages = [[new ChainObject(DCoreSDKTest::ACCOUNT_ID_2) , 'hello messaging api unencrypted']];
-        $payload = new MessagePayload($credentials->getAccount(), $messages);
-        $operation = new SendMessageOperation($payload->toJson(), $credentials->getAccount());
+        $sender = self::$sdk->getAccountApi()->get(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1));
+        $recipient = self::$sdk->getAccountApi()->get(new ChainObject(DCoreSDKTest::ACCOUNT_ID_2));
+        $keyPair = ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1);
+        $msg = Memo::fromECKeyPair('hello messaging api', $keyPair, $recipient->getOptions()->getMemoKey(), '10216254519122646016');
+        $payloadReceiver = new MessagePayloadReceiver($recipient->getId(), $msg->getMessage(), $recipient->getOptions()->getMemoKey(), $msg->getNonce());
+        $payload = new MessagePayload($sender->getId(), [$payloadReceiver], $sender->getOptions()->getMemoKey());
+        $operation = new SendMessageOperation();
+        $operation
+            ->setId(SendMessageOperation::CUSTOM_TYPE_MESSAGE)
+            ->setData(Math::byteArrayToHex(Math::stringToByteArray($payload->toJson())))
+            ->setPayer($sender->getId())
+            ->setRequiredAuths([$sender->getId()]);
 
         $this->assertEquals(
-            '120000000000000000001b011b010084017b2266726f6d223a22312e322e3237222c227265636569766572735f64617461223a5b7b22746f223a22312e322e3238222c2264617461223a2230303030303030303638363536633663366632303664363537333733363136373639366536373230363137303639323037353665363536653633373237393730373436353634227d5d7d',
+            '120000000000000000001b011b0100a1027b2266726f6d223a22312e322e3237222c227265636569766572735f64617461223a5b7b22746f223a22312e322e3238222c2264617461223a2265336265326132326339313063383766306436356662303539343866393061623431643364613866393034383061316235316533623465363165353339346539222c227075625f746f223a2244435438324d5443515661395444466d7a335a77614c7a7346416d434c6f4a7a727446756770463732767362754531437043774b79222c226e6f6e6365223a223130323136323534353139313232363436303136227d5d2c227075625f66726f6d223a2244435438324d5443515661395444466d7a335a77614c7a7346416d434c6f4a7a727446756770463732767362754531437043774b79227d',
             $operation->toBytes()
         );
     }
 
     /**
-     * @throws \DCorePHP\Exception\ValidationException
-     * @throws \Exception
+     * @throws ValidationException
+     * @throws Exception
+     */
+    public function testToBytesUnencrypted(): void
+    {
+        $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
+        $memo = Memo::withMessage('hello messaging api unencrypted');
+        $payloadReceivers = [new MessagePayloadReceiver(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), $memo->getMessage())];
+        $payload = new MessagePayload($credentials->getAccount(), $payloadReceivers);
+        $operation = new SendMessageOperation();
+        $operation
+            ->setId(SendMessageOperation::CUSTOM_TYPE_MESSAGE)
+            ->setData(Math::byteArrayToHex(Math::stringToByteArray($payload->toJson())))
+            ->setPayer($credentials->getAccount())
+            ->setRequiredAuths([$credentials->getAccount()]);
+
+        $this->assertEquals(
+            '120000000000000000001b011b010084017b2266726f6d223a22312e322e3237222c227265636569766572735f64617461223a5b7b22746f223a22312e322e3237222c2264617461223a2230303030303030303638363536633663366632303664363537333733363136373639366536373230363137303639323037353665363536653633373237393730373436353634227d5d7d',
+            $operation->toBytes()
+        );
+    }
+
+    /**
+     * @throws ValidationException
+     * @throws Exception
      */
     public function testCreateMessageOperationUnencrypted(): void
     {

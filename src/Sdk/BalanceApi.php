@@ -61,11 +61,11 @@ class BalanceApi extends BaseApi implements BalanceApiInterface
     {
         /** @var Asset[] $assets */
         $assets = $this->dcoreApi->getAssetApi()->getAllByName($assetSymbols);
-        $balances = $this->getAll($accountId, array_map(function (Asset $asset) {return $asset->getId();}, $assets));
+        $balances = $this->getAll($accountId, array_map(static function (Asset $asset) {return $asset->getId();}, $assets));
         return array_map(
-            function (Asset $asset) use($balances) {
+            static function (Asset $asset) use($balances) {
                 return [$asset, array_filter($balances,
-                    function (AssetAmount $balance) use($asset) {
+                    static function (AssetAmount $balance) use($asset) {
                         return $balance->getAssetId()->getId() === $asset->getId()->getId();
                     })[0]
                 ];
@@ -88,11 +88,11 @@ class BalanceApi extends BaseApi implements BalanceApiInterface
     {
         /** @var Asset[] $assets */
         $assets = $this->dcoreApi->getAssetApi()->getAllByName($assetSymbols);
-        $balances = $this->getAllByName($name, array_map(function (Asset $asset) {return $asset->getId();}, $assets));
+        $balances = $this->getAllByName($name, array_map(static function (Asset $asset) {return $asset->getId();}, $assets));
         return array_map(
-            function (Asset $asset) use($balances) {
+            static function (Asset $asset) use($balances) {
                 return [$asset, array_filter($balances,
-                    function (AssetAmount $balance) use($asset) {
+                    static function (AssetAmount $balance) use($asset) {
                         return $balance->getAssetId()->getId() === $asset->getId()->getId();
                     })[0]
                 ];

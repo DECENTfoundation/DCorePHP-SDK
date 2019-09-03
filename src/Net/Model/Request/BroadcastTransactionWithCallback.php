@@ -22,12 +22,10 @@ class BroadcastTransactionWithCallback extends BaseRequest
     /**
      * @param BaseResponse $response
      * @return TransactionConfirmation
-     * @throws \DCorePHP\Model\InvalidOperationTypeException
      */
     public static function responseToModel(BaseResponse $response): TransactionConfirmation
     {
-        // TODO: What is this number in params response?
-        [$unknownId, $rawTrxConfArray] = $response->getParams();
+        [$_, $rawTrxConfArray] = $response->getParams();
         $rawTrxConf = reset($rawTrxConfArray);
 
         $trxConf = new TransactionConfirmation();

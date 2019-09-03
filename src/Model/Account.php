@@ -2,11 +2,13 @@
 
 namespace DCorePHP\Model;
 
+use DCorePHP\Exception\ValidationException;
+
 class Account
 {
     /** @var ChainObject */
     private $id;
-    /** @var string */
+    /** @var ChainObject */
     private $registrar;
     /** @var string */
     private $name;
@@ -39,7 +41,7 @@ class Account
     /**
      * @param ChainObject|string $id
      * @return Account
-     * @throws \DCorePHP\Exception\ValidationException
+     * @throws ValidationException
      */
     public function setId($id): Account
     {
@@ -51,23 +53,43 @@ class Account
         return $this;
     }
 
-    public function getRegistrar(): string
+    /**
+     * @return ChainObject
+     */
+    public function getRegistrar(): ChainObject
     {
         return $this->registrar;
     }
 
-    public function setRegistrar(string $registrar): Account
+    /**
+     * @param ChainObject|string $registrar
+     *
+     * @return Account
+     * @throws ValidationException
+     */
+    public function setRegistrar($registrar): Account
     {
+        if (is_string($registrar)) {
+            $registrar = new ChainObject($registrar);
+        }
         $this->registrar = $registrar;
 
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getName(): string
     {
         return $this->name;
     }
 
+    /**
+     * @param string $name
+     *
+     * @return Account
+     */
     public function setName(string $name): Account
     {
         $this->name = $name;
@@ -75,11 +97,19 @@ class Account
         return $this;
     }
 
+    /**
+     * @return Authority
+     */
     public function getOwner(): Authority
     {
         return $this->owner;
     }
 
+    /**
+     * @param Authority $owner
+     *
+     * @return Account
+     */
     public function setOwner(Authority $owner): Account
     {
         $this->owner = $owner;
@@ -87,11 +117,19 @@ class Account
         return $this;
     }
 
+    /**
+     * @return Authority
+     */
     public function getActive(): Authority
     {
         return $this->active;
     }
 
+    /**
+     * @param Authority $active
+     *
+     * @return Account
+     */
     public function setActive(Authority $active): Account
     {
         $this->active = $active;
@@ -99,11 +137,19 @@ class Account
         return $this;
     }
 
+    /**
+     * @return Options
+     */
     public function getOptions(): Options
     {
         return $this->options;
     }
 
+    /**
+     * @param Options $options
+     *
+     * @return Account
+     */
     public function setOptions(Options $options): Account
     {
         $this->options = $options;
@@ -111,11 +157,19 @@ class Account
         return $this;
     }
 
+    /**
+     * @return Publishing
+     */
     public function getRightsToPublish(): Publishing
     {
         return $this->rightsToPublish;
     }
 
+    /**
+     * @param Publishing $rightsToPublish
+     *
+     * @return Account
+     */
     public function setRightsToPublish(Publishing $rightsToPublish): Account
     {
         $this->rightsToPublish = $rightsToPublish;
@@ -123,11 +177,19 @@ class Account
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getStatistics(): string
     {
         return $this->statistics;
     }
 
+    /**
+     * @param string $statistics
+     *
+     * @return Account
+     */
     public function setStatistics(string $statistics): Account
     {
         $this->statistics = $statistics;
@@ -135,11 +197,19 @@ class Account
         return $this;
     }
 
+    /**
+     * @return int
+     */
     public function getTopControlFlags(): int
     {
         return $this->topControlFlags;
     }
 
+    /**
+     * @param int $topControlFlags
+     *
+     * @return Account
+     */
     public function setTopControlFlags(int $topControlFlags): Account
     {
         $this->topControlFlags = $topControlFlags;

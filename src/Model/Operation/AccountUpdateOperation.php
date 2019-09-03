@@ -8,12 +8,10 @@ use DCorePHP\Model\Authority;
 use DCorePHP\Model\BaseOperation;
 use DCorePHP\Model\ChainObject;
 use DCorePHP\Model\Options;
-use DCorePHP\Utils\Math;
 use DCorePHP\Utils\VarInt;
-use Exception;
 use Symfony\Component\PropertyAccess\Exception\NoSuchPropertyException;
 
-class UpdateAccountOperation extends BaseOperation
+class AccountUpdateOperation extends BaseOperation
 {
     public const OPERATION_TYPE = 2;
     public const OPERATION_NAME = 'account_update';
@@ -26,8 +24,6 @@ class UpdateAccountOperation extends BaseOperation
     private $active;
     /** @var Options */
     private $options;
-    /** @var array */
-    private $extensions = [];
 
     /**
      * @param array $rawOperation
@@ -71,23 +67,24 @@ class UpdateAccountOperation extends BaseOperation
     /**
      * @return ChainObject
      */
-    public function getAccountId(): ?ChainObject
+    public function getAccountId(): ChainObject
     {
         return $this->accountId;
     }
 
     /**
      * @param ChainObject|string $accountId
-     * @return UpdateAccountOperation
+     *
+     * @return AccountUpdateOperation
      * @throws ValidationException
      */
-    public function setAccountId($accountId): UpdateAccountOperation
+    public function setAccountId($accountId): AccountUpdateOperation
     {
         if (is_string($accountId)) {
             $accountId = new ChainObject($accountId);
         }
-
         $this->accountId = $accountId;
+
         return $this;
     }
 
@@ -101,11 +98,13 @@ class UpdateAccountOperation extends BaseOperation
 
     /**
      * @param Authority $owner
-     * @return UpdateAccountOperation
+     *
+     * @return AccountUpdateOperation
      */
-    public function setOwner(Authority $owner): UpdateAccountOperation
+    public function setOwner(Authority $owner): AccountUpdateOperation
     {
         $this->owner = $owner;
+
         return $this;
     }
 
@@ -119,11 +118,13 @@ class UpdateAccountOperation extends BaseOperation
 
     /**
      * @param Authority $active
-     * @return UpdateAccountOperation
+     *
+     * @return AccountUpdateOperation
      */
-    public function setActive(Authority $active): UpdateAccountOperation
+    public function setActive(Authority $active): AccountUpdateOperation
     {
         $this->active = $active;
+
         return $this;
     }
 
@@ -137,36 +138,31 @@ class UpdateAccountOperation extends BaseOperation
 
     /**
      * @param Options $options
-     * @return UpdateAccountOperation
+     *
+     * @return AccountUpdateOperation
      */
-    public function setOptions(Options $options): UpdateAccountOperation
+    public function setOptions(Options $options): AccountUpdateOperation
     {
         $this->options = $options;
+
         return $this;
     }
 
-    /**
-     * @return array
-     */
     public function toArray(): array
     {
         return [
             self::OPERATION_TYPE,
-            array_filter([
+            [
                 'fee' => $this->getFee()->toArray(),
                 'account' => $this->getAccountId() ? $this->getAccountId()->getId() : null,
                 'owner' => $this->getOwner() ? $this->getOwner()->toArray() : null,
                 'active' => $this->getActive() ? $this->getActive()->toArray() : null,
                 'new_options' => $this->getOptions() ? $this->getOptions()->toArray() : null,
-                'extensions' => [],
-            ]),
+                'extensions' => $this->getExtensions(),
+            ],
         ];
     }
 
-    /**
-     * @return string
-     * @throws Exception
-     */
     public function toBytes(): string
     {
         return implode('', [

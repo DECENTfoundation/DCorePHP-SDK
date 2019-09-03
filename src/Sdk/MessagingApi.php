@@ -4,13 +4,15 @@ namespace DCorePHP\Sdk;
 
 use DCorePHP\Crypto\Credentials;
 use DCorePHP\Model\ChainObject;
+use DCorePHP\Model\Memo;
 use DCorePHP\Model\Messaging\Message;
 use DCorePHP\Model\Messaging\MessagePayload;
+use DCorePHP\Model\Messaging\MessagePayloadReceiver;
 use DCorePHP\Model\Messaging\MessageResponse;
 use DCorePHP\Model\Operation\SendMessageOperation;
 use DCorePHP\Model\TransactionConfirmation;
 use DCorePHP\Net\Model\Request\GetMessageObjects;
-use DCorePHP\Net\Model\Request\Messaging;
+use DCorePHP\Utils\Math;
 
 class MessagingApi extends BaseApi implements MessagingApiInterface
 {
@@ -74,7 +76,21 @@ class MessagingApi extends BaseApi implements MessagingApiInterface
      */
     public function createMessageOperationMultiple(Credentials $credentials, array $messages): SendMessageOperation
     {
-        // TODO: Implement createMessageOperationMultiple() method.
+        $sender = $this->dcoreApi->getAccountApi()->get($credentials->getAccount());
+        $payloadReceivers = [];
+        foreach ($messages as $id => $message) {
+            $recipient = $this->dcoreApi->getAccountApi()->get(new ChainObject($id));
+            $msg = Memo::withCredentials($message, $credentials, $recipient);
+            $payloadReceivers[] = new MessagePayloadReceiver($recipient->getId(), $msg->getMessage(), $recipient->getOptions()->getMemoKey(), $msg->getNonce());
+        }
+        $data = new MessagePayload($sender->getId(), $payloadReceivers, $sender->getOptions()->getMemoKey());
+        $operation = new SendMessageOperation();
+        $operation
+            ->setId(SendMessageOperation::CUSTOM_TYPE_MESSAGE)
+            ->setData(Math::byteArrayToHex(Math::stringToByteArray($data->toJson())))
+            ->setPayer($credentials->getAccount())
+            ->setRequiredAuths([$credentials->getAccount()]);
+        return $operation;
     }
 
     /**
@@ -85,7 +101,7 @@ class MessagingApi extends BaseApi implements MessagingApiInterface
         ChainObject $to,
         string $message
     ):SendMessageOperation {
-        return $this->createMessageOperationUnencryptedMultiple($credentials, [[$to, $message]]);
+        return $this->createMessageOperationUnencryptedMultiple($credentials, [$to->getId() => $message]);
     }
 
     /**
@@ -94,9 +110,20 @@ class MessagingApi extends BaseApi implements MessagingApiInterface
     public function createMessageOperationUnencryptedMultiple(
         Credentials $credentials,
         array $messages
-    ):SendMessageOperation {
-        $messagePayload = new MessagePayload($credentials->getAccount(), $messages);
-        return new SendMessageOperation($messagePayload->toJson(), $credentials->getAccount());
+    ): SendMessageOperation {
+        $payloadReceivers = [];
+        foreach ($messages as $id => $message) {
+            $memo = Memo::withMessage($message);
+            $payloadReceivers[] = new MessagePayloadReceiver(new ChainObject($id), $memo->getMessage());
+        }
+        $data = new MessagePayload($credentials->getAccount(), $payloadReceivers);
+        $operation = new SendMessageOperation();
+        $operation
+            ->setId(SendMessageOperation::CUSTOM_TYPE_MESSAGE)
+            ->setData(Math::byteArrayToHex(Math::stringToByteArray($data->toJson())))
+            ->setPayer($credentials->getAccount())
+            ->setRequiredAuths([$credentials->getAccount()]);
+        return $operation;
     }
 
     /**
@@ -167,6 +194,6 @@ class MessagingApi extends BaseApi implements MessagingApiInterface
      * @return Message[]
      */
     private function decryptMessages(array $messages, Credentials $credentials): array {
-        return array_map(function (Message $message) use($credentials) {return $message->decrypt($credentials);}, $messages);
+        return array_map(static function (Message $message) use($credentials) {return $message->decrypt($credentials);}, $messages);
     }
 }

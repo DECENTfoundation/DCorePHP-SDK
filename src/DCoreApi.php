@@ -22,12 +22,12 @@ use DCorePHP\Sdk\HistoryApi;
 use DCorePHP\Sdk\MessagingApi;
 use DCorePHP\Sdk\MiningApi;
 use DCorePHP\Sdk\NftApi;
-use DCorePHP\Sdk\ProposalApi;
 use DCorePHP\Sdk\PurchaseApi;
 use DCorePHP\Sdk\SeederApi;
 use DCorePHP\Sdk\SubscriptionApi;
 use DCorePHP\Sdk\TransactionApi;
 use DCorePHP\Sdk\ValidationApi;
+use Exception;
 use WebSocket\BadOpcodeException;
 
 class DCoreApi extends DCoreSdk
@@ -57,8 +57,6 @@ class DCoreApi extends DCoreSdk
     private $assetApi;
     /** @var SubscriptionApi */
     private $subscriptionApi;
-    /** @var ProposalApi */
-    private $proposalApi;
     /** @var ContentApi */
     private $contentApi;
     /** @var GeneralApi */
@@ -93,7 +91,6 @@ class DCoreApi extends DCoreSdk
         $this->seederApi = new SeederApi($this);
         $this->assetApi = new AssetApi($this);
         $this->subscriptionApi = new SubscriptionApi($this);
-        $this->proposalApi = new ProposalApi($this);
         $this->contentApi = new ContentApi($this);
         $this->generalApi = new GeneralApi($this);
         $this->historyApi = new HistoryApi($this);
@@ -240,22 +237,6 @@ class DCoreApi extends DCoreSdk
     public function setSubscriptionApi(SubscriptionApi $subscriptionApi): void
     {
         $this->subscriptionApi = $subscriptionApi;
-    }
-
-    /**
-     * @return ProposalApi
-     */
-    public function getProposalApi(): ProposalApi
-    {
-        return $this->proposalApi;
-    }
-
-    /**
-     * @param ProposalApi $proposalApi
-     */
-    public function setProposalApi(ProposalApi $proposalApi): void
-    {
-        $this->proposalApi = $proposalApi;
     }
 
     /**
@@ -464,8 +445,12 @@ class DCoreApi extends DCoreSdk
     /**
      * @param BaseOperation[] $operations
      * @param int $expiration
+     *
      * @return Transaction
-     * @throws \Exception
+     *
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
+     * @throws Exception
      */
     public function prepareTransaction(array $operations, int $expiration): Transaction
     {

@@ -2,6 +2,7 @@
 
 namespace DCorePHP\Net\Model\Request;
 
+use DCorePHP\Model\ChainObject;
 use DCorePHP\Model\Content\ContentKeys;
 use DCorePHP\Net\Model\Response\BaseResponse;
 
@@ -13,7 +14,7 @@ class GenerateContentKeys extends BaseRequest
         parent::__construct(
             self::API_GROUP_DATABASE,
             'generate_content_keys',
-            [$seeders]
+            [array_map(static function (ChainObject $id) { return $id->getId(); }, $seeders)]
         );
     }
 

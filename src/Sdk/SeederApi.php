@@ -2,8 +2,10 @@
 
 namespace DCorePHP\Sdk;
 
+use DCorePHP\Exception\ObjectNotFoundException;
 use DCorePHP\Model\ChainObject;
 use DCorePHP\Model\Content\Seeder;
+use DCorePHP\Model\RegionalPrice;
 use DCorePHP\Net\Model\Request\GetSeeder;
 use DCorePHP\Net\Model\Request\ListSeedersByPrice;
 use DCorePHP\Net\Model\Request\ListSeedersByRating;
@@ -18,7 +20,11 @@ class SeederApi extends BaseApi implements SeederApiInterface
      */
     public function get(ChainObject $accountId): Seeder
     {
-        return $this->dcoreApi->requestWebsocket(new GetSeeder($accountId));
+        $seeder = $this->dcoreApi->requestWebsocket(new GetSeeder($accountId));
+        if ($seeder instanceof Seeder) {
+            return $seeder;
+        }
+        throw new ObjectNotFoundException("Seeder with id $accountId not found!");
     }
 
     /**
@@ -40,7 +46,7 @@ class SeederApi extends BaseApi implements SeederApiInterface
     /**
      * @inheritdoc
      */
-    public function listByRegion(string $region = 'default'): array
+    public function listByRegion(string $region = RegionalPrice::REGIONS_ALL): array
     {
         return $this->dcoreApi->requestWebsocket(new ListSeedersByRegion($region)) ?: [];
     }

@@ -3,11 +3,16 @@
 namespace DCorePHP\Sdk;
 
 use DCorePHP\Crypto\Credentials;
+use DCorePHP\Exception\InvalidApiCallException;
+use DCorePHP\Exception\ObjectNotFoundException;
+use DCorePHP\Exception\ValidationException;
 use DCorePHP\Model\ChainObject;
 use DCorePHP\Model\Messaging\Message;
 use DCorePHP\Model\Messaging\MessageResponse;
 use DCorePHP\Model\Operation\SendMessageOperation;
 use DCorePHP\Model\TransactionConfirmation;
+use Exception;
+use WebSocket\BadOpcodeException;
 
 interface MessagingApiInterface
 {
@@ -19,6 +24,9 @@ interface MessagingApiInterface
      * @param int $maxCount max items to return
      *
      * @return MessageResponse[] a vector of message objects
+     *
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
      */
     public function getAllOperations(ChainObject $sender = null, ChainObject $receiver = null, int $maxCount = 1000): array;
 
@@ -28,7 +36,11 @@ interface MessagingApiInterface
      * @param ChainObject $sender name of message sender. If you dont want to filter by sender then let it empty
      * @param ChainObject $receiver name of message receiver. If you dont want to filter by receiver then let it empty
      * @param int $maxCount maximal number of last messages to be displayed
+     *
      * @return Message[] a list of messages
+     *
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
      */
     public function getAll(ChainObject $sender = null, ChainObject $receiver = null, int $maxCount = 1000): array;
 
@@ -41,6 +53,9 @@ interface MessagingApiInterface
      * @param int $maxCount max items to return
      *
      * @return Message[] a list of messages
+     *
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
      */
     public function getAllDecrypted(Credentials $credentials, ChainObject $sender = null, ChainObject $receiver = null, int $maxCount = 1000): array;
 
@@ -51,6 +66,9 @@ interface MessagingApiInterface
      * @param int $maxCount max items to return
      *
      * @return Message[] a list of messages
+     *
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
      */
     public function getAllDecryptedForSender(Credentials $credentials, int $maxCount = 1000): array;
 
@@ -62,6 +80,9 @@ interface MessagingApiInterface
      * @param int $maxCount max items to return
      *
      * @return Message[] a list of messages
+     *
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
      */
     public function getAllDecryptedForReceiver(Credentials $credentials, int $maxCount = 1000): array;
 
@@ -73,6 +94,11 @@ interface MessagingApiInterface
      * @param string $message a message to send
      *
      * @return SendMessageOperation
+     *
+     * @throws InvalidApiCallException
+     * @throws ObjectNotFoundException
+     * @throws BadOpcodeException
+     * @throws ValidationException*
      */
     public function createMessageOperation(Credentials $credentials, ChainObject $to, string $message): SendMessageOperation;
 
@@ -83,6 +109,12 @@ interface MessagingApiInterface
      * @param array $messages a list of pairs of receiver account id and message
      *
      * @return SendMessageOperation
+     *
+     * @throws InvalidApiCallException
+     * @throws ObjectNotFoundException
+     * @throws BadOpcodeException
+     * @throws ValidationException
+     * @throws Exception
      */
     public function createMessageOperationMultiple(Credentials $credentials, array $messages): SendMessageOperation;
 
@@ -94,6 +126,8 @@ interface MessagingApiInterface
      * @param string $message a message to send
      *
      * @return SendMessageOperation
+     *
+     * @throws ValidationException
      */
     public function createMessageOperationUnencrypted(Credentials $credentials, ChainObject $to, string $message): SendMessageOperation;
 
@@ -104,6 +138,8 @@ interface MessagingApiInterface
      * @param array messages a list of pairs of receiver account id and message
      *
      * @return SendMessageOperation
+     *
+     * @throws ValidationException
      */
     public function createMessageOperationUnencryptedMultiple(Credentials $credentials, array $messages): SendMessageOperation;
 
@@ -113,7 +149,10 @@ interface MessagingApiInterface
      * @param Credentials $credentials
      * @param ChainObject $to
      * @param string $message
+     *
      * @return TransactionConfirmation|null
+     *
+     * @throws Exception
      */
     public function send(Credentials $credentials, ChainObject $to, string $message): ?TransactionConfirmation;
 
@@ -122,7 +161,14 @@ interface MessagingApiInterface
      *
      * @param Credentials $credentials
      * @param array $messages
+     *
      * @return TransactionConfirmation|null
+     *
+     * @throws InvalidApiCallException
+     * @throws ObjectNotFoundException
+
+     * @throws BadOpcodeException
+     * @throws Exception
      */
     public function sendMultiple(Credentials $credentials, array $messages): ?TransactionConfirmation;
 
@@ -132,7 +178,11 @@ interface MessagingApiInterface
      * @param Credentials $credentials
      * @param ChainObject $to
      * @param string $message
+     *
      * @return TransactionConfirmation|null
+     *
+     * @throws ValidationException
+     * @throws Exception
      */
     public function sendUnencrypted(Credentials $credentials, ChainObject $to, string $message): ?TransactionConfirmation;
 
@@ -141,7 +191,11 @@ interface MessagingApiInterface
      *
      * @param Credentials $credentials
      * @param array $messages
+     *
      * @return TransactionConfirmation|null
+     *
+     * @throws ValidationException
+     * @throws Exception
      */
     public function sendUnencryptedMultiple(Credentials $credentials, array $messages): ?TransactionConfirmation;
 }

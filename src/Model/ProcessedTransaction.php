@@ -2,8 +2,13 @@
 
 namespace DCorePHP\Model;
 
+use DateTime;
+use Exception;
+
 class ProcessedTransaction
 {
+    // Times two because 20 is in bytes
+    public const TRX_ID_SIZE = 20 * 2;
 
     /** @var array */
     private $signatures;
@@ -11,7 +16,7 @@ class ProcessedTransaction
     private $extensions;
     /** @var BaseOperation[] */
     private $operations;
-    /** @var \DateTime */
+    /** @var DateTime */
     private $expiration;
     /** @var int */
     private $refBlockNum;
@@ -79,21 +84,21 @@ class ProcessedTransaction
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
-    public function getExpiration(): \DateTime
+    public function getExpiration(): DateTime
     {
         return $this->expiration;
     }
 
     /**
-     * @param \DateTime|string $expiration
+     * @param DateTime|string $expiration
      * @return ProcessedTransaction
-     * @throws \Exception
+     * @throws Exception
      */
     public function setExpiration($expiration): ProcessedTransaction
     {
-        $this->expiration = $expiration instanceof \DateTime ? $expiration : new \DateTime($expiration);
+        $this->expiration = $expiration instanceof DateTime ? $expiration : new DateTime($expiration);
 
         return $this;
     }
@@ -153,6 +158,21 @@ class ProcessedTransaction
         $this->opResults = $opResults;
 
         return $this;
+    }
+
+    /**
+     * @return string
+     * @throws Exception
+     */
+    public function getId(): string {
+        $transaction = new Transaction();
+        $transaction
+            ->setOperations($this->getOperations())
+            ->setBlockData(new BlockData($this->getRefBlockNum(), $this->getRefBlockPrefix(), $this->getExpiration()))
+            ->setSignatures($this->getSignatures())
+            ->setExtensions($this->getExtensions());
+
+        return substr(hash('sha256', hex2bin($transaction->toBytes())), 0, self::TRX_ID_SIZE);
     }
 
 }

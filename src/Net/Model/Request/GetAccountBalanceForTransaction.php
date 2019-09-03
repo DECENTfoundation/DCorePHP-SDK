@@ -15,9 +15,4 @@ class GetAccountBalanceForTransaction extends GetAccountBalanceAbstract
             [$accountId->getId(), $operationId->getId()]
         );
     }
-
-    public static function responseToModel(BaseResponse $response)
-    {
-        return self::resultToModel($response->getResult());
-    }
 }

@@ -9,7 +9,6 @@ use DCorePHP\Model\Transaction;
 use DCorePHP\Model\TransactionConfirmation;
 use DCorePHP\Net\Model\Request\BroadcastTransaction;
 use DCorePHP\Net\Model\Request\BroadcastTransactionWithCallback;
-use DCorePHP\Net\Model\Request\NetworkBroadcast;
 
 class BroadcastApi extends BaseApi implements BroadcastApiInterface
 {

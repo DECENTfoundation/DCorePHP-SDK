@@ -3,17 +3,17 @@
 namespace DCorePHP\Model;
 
 use DCorePHP\Model\Asset\Asset;
-use DCorePHP\Model\Content\ContentObject;
-use DCorePHP\Model\Operation\Transfer2;
+use DCorePHP\Model\Content\Content;
+use DCorePHP\Model\Operation\TransferOperation;
 
 class OperationHistoryComposed
 {
 
-    /** @var Transfer2 */
+    /** @var TransferOperation */
     private $operation;
     /** @var Account */
     private $from;
-    /** @var Account | ContentObject */
+    /** @var Account | Content */
     private $to;
     /** @var Asset */
     private $asset;
@@ -21,18 +21,19 @@ class OperationHistoryComposed
     private $expiration;
 
     /**
-     * @return Transfer2
+     * @return TransferOperation
      */
-    public function getOperation(): Transfer2
+    public function getOperation(): TransferOperation
     {
         return $this->operation;
     }
 
     /**
-     * @param Transfer2 $operation
+     * @param TransferOperation $operation
+     *
      * @return OperationHistoryComposed
      */
-    public function setOperation(Transfer2 $operation): OperationHistoryComposed
+    public function setOperation(TransferOperation $operation): OperationHistoryComposed
     {
         $this->operation = $operation;
 
@@ -59,7 +60,7 @@ class OperationHistoryComposed
     }
 
     /**
-     * @return Account | ContentObject
+     * @return Account | Content
      */
     public function getTo()
     {
@@ -67,7 +68,8 @@ class OperationHistoryComposed
     }
 
     /**
-     * @param Account | ContentObject $to
+     * @param Account | Content $to
+     *
      * @return OperationHistoryComposed
      */
     public function setTo($to): OperationHistoryComposed

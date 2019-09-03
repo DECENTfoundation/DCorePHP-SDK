@@ -2,26 +2,22 @@
 
 namespace DCorePHP\Sdk;
 
+use DateTime;
 use DCorePHP\Crypto\Credentials;
-use DCorePHP\Crypto\PrivateKey;
-use DCorePHP\Exception\ObjectAlreadyFoundException;
 use DCorePHP\Exception\ObjectNotFoundException;
-use DCorePHP\Exception\ValidationException;
 use DCorePHP\Model\Asset\AssetAmount;
-use DCorePHP\Model\BaseOperation;
 use DCorePHP\Model\ChainObject;
+use DCorePHP\Model\CoAuthors;
 use DCorePHP\Model\Content\ContentKeys;
-use DCorePHP\Model\Content\ContentObject;
-use DCorePHP\Model\Content\SubmitContent;
-use DCorePHP\Model\Operation\ContentCancellationOperation;
-use DCorePHP\Model\Operation\ContentSubmitOperation;
+use DCorePHP\Model\Content\Content;
+use DCorePHP\Model\Memo;
+use DCorePHP\Model\Operation\RemoveContentOperation;
+use DCorePHP\Model\Operation\AddOrUpdateContentOperation;
 use DCorePHP\Model\Operation\PurchaseContentOperation;
-use DCorePHP\Model\Operation\RequestToBuy;
-use DCorePHP\Model\Operation\Transfer;
+use DCorePHP\Model\Operation\TransferOperation;
 use DCorePHP\Model\PubKey;
-use DCorePHP\Model\Transaction;
+use DCorePHP\Model\RegionalPrice;
 use DCorePHP\Model\TransactionConfirmation;
-use DCorePHP\Net\Model\Request\BroadcastTransactionWithCallback;
 use DCorePHP\Net\Model\Request\GenerateContentKeys;
 use DCorePHP\Net\Model\Request\GetContentById;
 use DCorePHP\Net\Model\Request\GetContentByURI;
@@ -29,8 +25,7 @@ use DCorePHP\Net\Model\Request\GetContentsById;
 use DCorePHP\Net\Model\Request\ListPublishingManagers;
 use DCorePHP\Net\Model\Request\RestoreEncryptionKey;
 use DCorePHP\Net\Model\Request\SearchContent;
-use Symfony\Component\Validator\Constraints\IdenticalTo;
-use Symfony\Component\Validator\Validation;
+use Exception;
 
 class ContentApi extends BaseApi implements ContentApiInterface
 {
@@ -47,7 +42,7 @@ class ContentApi extends BaseApi implements ContentApiInterface
         return null;
     }
 
-    public function get(ChainObject $contentId): ContentObject
+    public function get(ChainObject $contentId): Content
     {
         $contents = $this->dcoreApi->requestWebsocket(new GetContentById($contentId));
 
@@ -57,10 +52,10 @@ class ContentApi extends BaseApi implements ContentApiInterface
     /**
      * @inheritdoc
      */
-    public function getByURI(string $uri): ContentObject
+    public function getByURI(string $uri): Content
     {
         $content = $this->dcoreApi->requestWebsocket(new GetContentByURI($uri));
-        if ($content instanceof ContentObject) {
+        if ($content instanceof Content) {
             return $content;
         }
 
@@ -83,7 +78,7 @@ class ContentApi extends BaseApi implements ContentApiInterface
         try {
             $this->getByURI($uri);
             return true;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return false;
         }
     }
@@ -108,30 +103,16 @@ class ContentApi extends BaseApi implements ContentApiInterface
      * @inheritdoc
      */
     public function findAll(
-        string $term = '',
-        string $order = SearchContent::ORDER_NONE,
+        string $term,
+        string $order = SearchContent::CREATED_DESC,
         string $user = '',
-        string $regionCode = '',
-        string $id = '0.0.0',
-        string $type = '1',
+        string $regionCode = RegionalPrice::REGIONS_ALL,
+        string $type = '0.0.0',
+        string $startId = '1.0.0',
         int $count = 100
     ): array
     {
-        return $this->dcoreApi->requestWebsocket(new SearchContent($term, $order, $user, $regionCode, $id, $type, $count)) ?: [];
-    }
-
-    public function create(SubmitContent $content, Credentials $author, AssetAmount $publishingFee, AssetAmount $fee): ?TransactionConfirmation {
-        if ($this->exist($content->getUri())) {
-            throw new ObjectAlreadyFoundException("Content with uri: {$content->getUri()} already exists!");
-        }
-
-        return $this->dcoreApi->getBroadcastApi()->broadcastOperationWithECKeyPairWithCallback($author->getKeyPair(), (
-            new ContentSubmitOperation())
-            ->setContent($content)
-            ->setAuthor($author->getAccount())
-            ->setPublishingFee($publishingFee)
-            ->setFee($fee)
-        );
+        return $this->dcoreApi->requestWebsocket(new SearchContent($term, $order, $user, $regionCode, $type, $startId, $count)) ?: [];
     }
 
     /**
@@ -139,7 +120,15 @@ class ContentApi extends BaseApi implements ContentApiInterface
      */
     public function createPurchaseOperation(Credentials $credentials, ChainObject $contentId): PurchaseContentOperation
     {
-        return new PurchaseContentOperation($credentials, $this->get($contentId));
+        $content = $this->get($contentId);
+        $operation = new PurchaseContentOperation();
+        $operation
+            ->setUri($content->getURI())
+            ->setConsumer($credentials->getAccount())
+            ->setPrice($content->regionalPrice()->getPrice())
+            ->setPublicElGamal(parse_url($content->getURI(), PHP_URL_SCHEME) !== 'ipfs' ? new PubKey() : (new PubKey())->setPubKey($credentials->getKeyPair()->getPrivate()->toElGamalPublicKey()))
+            ->setRegionCode($content->regionalPrice()->getRegion());
+        return $operation;
     }
 
     /**
@@ -147,7 +136,15 @@ class ContentApi extends BaseApi implements ContentApiInterface
      */
     public function createPurchaseOperationWithUri(Credentials $credentials, string $uri): PurchaseContentOperation
     {
-        return new PurchaseContentOperation($credentials, $this->getByURI($uri));
+        $content = $this->getByURI($uri);
+        $operation = new PurchaseContentOperation();
+        $operation
+            ->setUri($content->getURI())
+            ->setConsumer($credentials->getAccount())
+            ->setPrice($content->regionalPrice()->getPrice())
+            ->setPublicElGamal(parse_url($content->getURI(), PHP_URL_SCHEME) !== 'ipfs' ? new PubKey() : (new PubKey())->setPubKey($credentials->getKeyPair()->getPrivate()->toElGamalPublicKey()))
+            ->setRegionCode($content->regionalPrice()->getRegion());
+        return $operation;
     }
 
     /**
@@ -173,67 +170,6 @@ class ContentApi extends BaseApi implements ContentApiInterface
     }
 
     /**
-     * @inheritDoc
-     */
-    public function deleteById(ChainObject $contentId, Credentials $author, AssetAmount $fee): ?TransactionConfirmation
-    {
-        return $this->deleteByUrl($this->get($contentId)->getURI(), $author, $fee);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function deleteByUrl(string $url, Credentials $author, AssetAmount $fee): ?TransactionConfirmation
-    {
-        $operation = new ContentCancellationOperation();
-        $operation
-            ->setAuthor($author->getAccount())
-            ->setUri($url)
-            ->setFee($fee);
-
-        return $this->dcoreApi->getBroadcastApi()->broadcastOperationWithECKeyPairWithCallback(
-            $author->getKeyPair(),
-            $operation
-        );
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function deleteByRef($reference, Credentials $author, AssetAmount $fee): ?TransactionConfirmation
-    {
-        if ($reference instanceof ChainObject) {
-            return $this->deleteById($reference, $author, $fee);
-        }
-        if (ContentObject::hasValid($reference)) {
-            return $this->deleteByUrl($reference, $author, $fee);
-        }
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function update(SubmitContent $content, Credentials $author, AssetAmount $publishingFee, AssetAmount $fee): ?TransactionConfirmation
-    {
-        $foundContent = $this->getByURI($content->getUri()); // Also checks if exists and throws exception
-        [$subject, $constraints] = [$foundContent->getExpiration()->format('c'), [
-            new IdenticalTo([
-                'value' => $content->getExpiration()->format('c'),
-                'message' => 'Content expiration must be the same!'])]];
-        if (($violations = Validation::createValidator()->validate($subject, $constraints))->count() > 0) {
-            throw new ValidationException($violations);
-        }
-
-        return $this->dcoreApi->getBroadcastApi()->broadcastOperationWithECKeyPairWithCallback($author->getKeyPair(), (
-        new ContentSubmitOperation())
-            ->setContent($content)
-            ->setAuthor($author->getAccount())
-            ->setPublishingFee($publishingFee)
-            ->setFee($fee)
-        );
-    }
-
-    /**
      * @inheritdoc
      */
     public function createTransfer(
@@ -241,137 +177,180 @@ class ContentApi extends BaseApi implements ContentApiInterface
         ChainObject $id,
         AssetAmount $amount,
         string $memo = null,
-        AssetAmount $fee = null
-    ): Transfer {
-        // TODO: Implement createTransfer() method.
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function contentCancellation(ChainObject $authorId, string $uri, string $authorPrivateKeyWif, bool $broadcast)
-    {
-        /** @var $dynamicGlobalProperties $dynamicGlobalProps */
-        $dynamicGlobalProperties = $this->dcoreApi->getGeneralApi()->getDynamicGlobalProperties();
-
-        $operation = new ContentCancellationOperation();
+        $fee = null
+    ): TransferOperation {
+        $operation = new TransferOperation();
         $operation
-            ->setId($authorId)
-            ->setUri($uri);
-
-//        /** @var AssetAmount[] $fees */
-//        $fees = $this->dcoreApi->requestWebsocket(new GetRequiredFees([$operation], $assetId));
-//        $operation->setFee(clone reset($fees));
-
-        $transaction = new Transaction();
-        $transaction
-            ->setDynamicGlobalProps($dynamicGlobalProperties)
-            ->setOperations([$operation])
-            ->setExtensions([])
-            ->sign($authorPrivateKeyWif);
-
-        $this->dcoreApi->requestWebsocket(new BroadcastTransactionWithCallback($transaction));
+            ->setFrom($credentials->getAccount())
+            ->setTo($id)
+            ->setAmount($amount)
+            ->setMemo($memo ? Memo::withMessage($memo) : null)
+            ->setFee($fee);
+        return $operation;
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
-    public function downloadContent(string $consumer, string $uri, string $regionCodeFrom, bool $broadcast = false)
+    public function transfer(Credentials $credentials, ChainObject $id, AssetAmount $amount, string $memo = null, $fee = null): TransactionConfirmation
     {
-        // TODO: Implement downloadContent() method.
+        $fee = $fee ?: new AssetAmount();
+        return $this->dcoreApi->getBroadcastApi()->broadcastOperationWithECKeyPairWithCallback(
+            $credentials->getKeyPair(),
+            $this->createTransfer($credentials, $id, $amount, $memo, $fee)
+        );
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
-    public function getDownloadStatus(string $consumer, string $uri)
+    public function createRemoveContentByIdOperation(ChainObject $id, $fee = null): RemoveContentOperation
     {
-        // TODO: Implement getDownloadStatus() method.
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function requestToBuy(
-        ChainObject $consumer,
-        string $uri,
-        string $priceAssetName,
-        string $priceAmount,
-        int $regionCodeFrom = 1,
-        string $authorPrivateKeyWif,
-        bool $broadcast = true
-    )
-    {
-        /** @var $dynamicGlobalProperties $dynamicGlobalProps */
-        $dynamicGlobalProperties = $this->dcoreApi->getGeneralApi()->getDynamicGlobalProperties();
-
-        $elGamalPublicKey = PrivateKey::fromWif($authorPrivateKeyWif)->toElGamalPublicKey();
-
-        $operation = new RequestToBuy();
+        $content = $this->get($id);
+        $operation = new RemoveContentOperation();
         $operation
-            ->setConsumer($consumer)
+            ->setAuthor($content->getAuthor())
+            ->setUri($content->getURI())
+            ->setFee($fee);
+        return $operation;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function createRemoveContentByUriOperation(string $uri, $fee = null): RemoveContentOperation
+    {
+        $content = $this->getByURI($uri);
+        $operation = new RemoveContentOperation();
+        $operation
+            ->setAuthor($content->getAuthor())
+            ->setUri($content->getURI())
+            ->setFee($fee);
+        return $operation;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function removeById(Credentials $credentials, ChainObject $id, AssetAmount $fee = null): ?TransactionConfirmation
+    {
+        $fee = $fee ?: new AssetAmount();
+        return $this->dcoreApi->getBroadcastApi()->broadcastOperationWithECKeyPairWithCallback(
+            $credentials->getKeyPair(),
+            $this->createRemoveContentByIdOperation($id, $fee)
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function removeByIUrl(Credentials $credentials, string $content, AssetAmount $fee = null): ?TransactionConfirmation
+    {
+        $fee = $fee ?: new AssetAmount();
+        return $this->dcoreApi->getBroadcastApi()->broadcastOperationWithECKeyPairWithCallback(
+            $credentials->getKeyPair(),
+            $this->createRemoveContentByUriOperation($content, $fee)
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function createAddContentOperation(ChainObject $author, CoAuthors $coAuthors, string $uri, array $price, DateTime $expiration, string $synopsis, $fee = null): AddOrUpdateContentOperation
+    {
+        $operation = new AddOrUpdateContentOperation();
+        $operation
+            ->setAuthor($author)
+            ->setCoauthors($coAuthors)
             ->setUri($uri)
-            ->setPrice((new AssetAmount())->setAmount($priceAmount)->setAssetId($priceAssetName))
-            ->setRegionCodeFrom($regionCodeFrom)
-            // TODO: Better Public Key Implementation
-            ->setElGamalPublicKey((new PubKey())->setPubKey($elGamalPublicKey));
-
-        $fee = $this->dcoreApi->getValidationApi()->getFee($operation, new ChainObject($priceAssetName));
-        $operation->setFee($fee);
-
-        $transaction = new Transaction();
-        $transaction
-            ->setDynamicGlobalProps($dynamicGlobalProperties)
-            ->setOperations([$operation])
-            ->setExtensions([])
-            ->sign($authorPrivateKeyWif);
-
-        $this->dcoreApi->requestWebsocket(new BroadcastTransactionWithCallback($transaction));
+            ->setPrice($price)
+            ->setExpiration($expiration)
+            ->setSynopsis($synopsis)
+            ->setFee($fee);
+        return $operation;
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
-    public function leaveRatingAndComment(
-        string $consumer,
-        string $uri,
-        int $rating,
-        string $comment,
-        bool $broadcast = false
-    ): BaseOperation
+    public function add(Credentials $credentials, CoAuthors $coAuthors, string $uri, array $price, DateTime $expiration, string $synopsis, $fee = null): TransactionConfirmation
     {
-        // TODO: Implement leaveRatingAndComment() method.
+        $fee = $fee ?: new AssetAmount();
+        return $this->dcoreApi->getBroadcastApi()->broadcastOperationWithECKeyPairWithCallback(
+            $credentials->getKeyPair(),
+            $this->createAddContentOperation($credentials->getAccount(), $coAuthors, $uri, $price, $expiration, $synopsis, $fee)
+        );
+    }
+
+    private function createContentOperation(Content $old, $fee = null): AddOrUpdateContentOperation
+    {
+        $operation = new AddOrUpdateContentOperation();
+        $operation
+            ->setSize($old->getSize())
+            ->setAuthor($old->getAuthor())
+            ->setCoauthors($old->getCoauthors())
+            ->setUri($old->getUri())
+            ->setPrice($old->getPrice()->regionalPrice())
+            ->setHash($old->getHash())
+            ->setSeeders($old->getSeederPrice())
+            ->setKeyParts($old->getKeyParts())
+            ->setExpiration($old->getExpiration())
+            ->setPublishingFee($old->getPublishingFeeEscrow())
+            ->setSynopsis($old->getSynopsis())
+            ->setCustodyData($old->getCustodyData())
+            ->setFee($fee);
+        return $operation;
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
-    public function generateEncryptionKey()
+    public function createUpdateContentWithIdOperation(ChainObject $id, $fee = null): AddOrUpdateContentOperation
     {
-        // TODO: Implement generateEncryptionKey() method.
+        $content = $this->get($id);
+        return $this->createContentOperation($content, $fee);
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
-    public function searchUserContent(
-        string $user,
-        string $term,
-        string $order,
-        string $regionCode,
-        string $id,
-        string $type,
-        int $count = 100
-    ): array
+    public function createUpdateContentWithUriOperation(ChainObject $uri, $fee = null): AddOrUpdateContentOperation
     {
-        // TODO: Implement searchUserContent() method.
+        $content = $this->getByURI($uri);
+        return $this->createContentOperation($content, $fee);
+    }
+
+    private function update(Credentials $credentials, Content $content, string $synopsis = null, array $price = null, CoAuthors $coAuthors = null, $fee = null)
+    {
+        $fee = $fee ?: new AssetAmount();
+        $operation = $this->createContentOperation($content, $fee);
+        if ($synopsis !== null) $operation->setSynopsis($synopsis);
+        if ($price !== null) $operation->setPrice($price);
+        if ($coAuthors !== null) $operation->setCoauthors($coAuthors);
+
+        return $this->dcoreApi->getBroadcastApi()->broadcastOperationWithECKeyPairWithCallback(
+            $credentials->getKeyPair(),
+            $operation
+        );
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
-    public function getAuthorAndCoAuthorsByUri(string $uri): array
+    public function updateWithId(Credentials $credentials, ChainObject $id, string $synopsis = null, array $price = null, CoAuthors $coAuthors = null, $fee = null): TransactionConfirmation
     {
-        // TODO: Implement getAuthorAndCoAuthorsByUri() method.
+        $fee = $fee ?: new AssetAmount();
+        $content = $this->get($id);
+        return $this->update($credentials, $content, $synopsis, $price, $coAuthors, $fee);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function updateWithUri(Credentials $credentials, string $uri, string $synopsis = null, array $price = null, CoAuthors $coAuthors = null, $fee = null): TransactionConfirmation
+    {
+        $fee = $fee ?: new AssetAmount();
+        $content = $this->getByURI($uri);
+        return $this->update($credentials, $content, $synopsis, $price, $coAuthors, $fee);
     }
 }

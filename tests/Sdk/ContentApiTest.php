@@ -2,294 +2,252 @@
 
 namespace DCorePHPTests\Sdk;
 
+use DateTime;
 use DCorePHP\Crypto\Credentials;
 use DCorePHP\Crypto\ECKeyPair;
+use DCorePHP\Exception\InvalidApiCallException;
+use DCorePHP\Exception\ObjectNotFoundException;
 use DCorePHP\Exception\ValidationException;
 use DCorePHP\Model\Asset\AssetAmount;
 use DCorePHP\Model\ChainObject;
-use DCorePHP\Model\Content\Content;
-use DCorePHP\Model\Content\ContentKeys;
-use DCorePHP\Model\Content\ContentObject;
-use DCorePHP\Model\Content\SubmitContent;
+use DCorePHP\Model\CoAuthors;
+use DCorePHP\Model\PubKey;
 use DCorePHP\Model\RegionalPrice;
 use DCorePHPTests\DCoreSDKTest;
+use Exception;
+use WebSocket\BadOpcodeException;
 
 class ContentApiTest extends DCoreSDKTest
 {
     /** @var string */
-    private $contentUri;
+    private static $contentUri1;
     /** @var ChainObject */
-    private $contentId;
+    private static $contentId1;
+    /** @var string */
+    private static $contentUri2;
+    /** @var ChainObject */
+    private static $contentId2;
 
-    public function setUp()
+    public static function setUpBeforeClass()
     {
-        parent::setUp();
+        parent::setUpBeforeClass();
+        self::testAdd();
+        self::testAddWithCoauthors();
+//        self::testPurchase();
+    }
 
-        $this->contentUri = 'http://decent.ch?testtime=' . time();
-
-        $content = new SubmitContent();
-        $content
-            ->setUri($this->contentUri)
-            ->setCoauthors([])
-            ->setCustodyData(null)
-            ->setHash('2222222222222222222222222222222222222222')
-            ->setKeyParts([])
-            ->setSeeders([])
-            ->setQuorum(0)
-            ->setSize(10000)
-            ->setSynopsis(json_encode(['title' => 'Game Title', 'description' => 'Description', 'content_type_id' => '1.2.3']))
-            ->setExpiration((new \DateTime())->modify('+1 month'))
-            ->setPrice([(new RegionalPrice)->setPrice((new AssetAmount())->setAmount(1000))->setRegion(1)]);
-
+    /**
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
+     * @throws ObjectNotFoundException
+     * @throws ValidationException
+     * @throws Exception
+     */
+    public static function testAddWithCoauthors(): void
+    {
+        self::$contentUri1 = 'http://decent.ch?testtime=' . time();
         $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
-        self::$sdk->getContentApi()->create($content, $credentials, (new AssetAmount())->setAmount(1000000)->setAssetId('1.3.0'), (new AssetAmount())->setAmount(1000000)->setAssetId('1.3.0'));
 
-        $submittedContentObject = self::$sdk->getContentApi()->getByURI($this->contentUri);
-        $this->contentId = $submittedContentObject->getId();
+        $coAuthors = (new CoAuthors())->setAuthors([[new ChainObject(DCoreSDKTest::ACCOUNT_ID_2), 1000]]);
+        $price = (new RegionalPrice())->setPrice((new AssetAmount())->setAmount(2));
+        $expiration = (new DateTime())->modify('+100 days');
+        $synopsis = json_encode(['title' => 'hello', 'description' => 'world', 'content_type_id' => '0.0.0']);
+
+        self::$sdk->getContentApi()->add($credentials, $coAuthors, self::$contentUri1, [$price], $expiration, $synopsis);
+
+        $content = self::$sdk->getContentApi()->getByURI(self::$contentUri1);
+        self::$contentId1 = $content->getId();
+
+        self::assertNotNull($content);
+        self::assertEquals(self::$contentUri1, $content->getURI());
     }
 
     /**
-     * @throws \DCorePHP\Exception\InvalidApiCallException
-     * @throws \WebSocket\BadOpcodeException
+     * @throws Exception
      */
-    public function testGenerateKeys(): void
+    public static function testAdd(): void
     {
-        $contentKeys = self::$sdk->getContentApi()->generateKeys([]);
-
-        $this->assertInstanceOf(ContentKeys::class, $contentKeys);
-    }
-
-    /**
-     * @throws \DCorePHP\Exception\InvalidApiCallException
-     * @throws \DCorePHP\Exception\ObjectNotFoundException
-     * @throws \WebSocket\BadOpcodeException
-     */
-    public function testGet(): void
-    {
-        $contentByURI = self::$sdk->getContentApi()->getByURI($this->contentUri);
-
-        /** @var ContentObject $content */
-        $content = self::$sdk->getContentApi()->get($contentByURI->getId());
-
-        $this->assertEquals($this->contentUri, $content->getURI());
-        $this->assertEquals('1.2.27', $content->getAuthor());
-        $this->assertEquals('2222222222222222222222222222222222222222', $content->getHash());
-    }
-
-    /**
-     * @throws \DCorePHP\Exception\InvalidApiCallException
-     * @throws \DCorePHP\Exception\ObjectNotFoundException
-     * @throws \WebSocket\BadOpcodeException
-     */
-    public function testGetByURI(): void
-    {
-        $content = self::$sdk->getContentApi()->getByURI($this->contentUri);
-
-        $this->assertEquals($this->contentUri, $content->getURI());
-        $this->assertEquals('1.2.27', $content->getAuthor());
-        $this->assertEquals('2222222222222222222222222222222222222222', $content->getHash());
-    }
-
-    // TODO: Untested no data
-    public function testListAllPublishersRelative(): void
-    {
-        $sth = self::$sdk->getContentApi()->listAllPublishersRelative('');
-        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
-    }
-
-    public function testRestoreEncryptionKey(): void
-    {
-        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
-//        $response = self::$sdk->getContentApi()->restoreEncryptionKey(
-//            (new PubKey())->setPubKey('8149734503494312909116126763927194608124629667940168421251424974828815164868905638030541425377704620941193711130535974967507480114755414928915429397074890'),
-//            new ChainObject('2.12.3')
-//        );
-//
-//        $this->assertEquals('0000000000000000000000000000000000000000000000000000000000000000', $response);
-    }
-
-    public function testFindAll(): void
-    {
-        $contents = self::$sdk->getContentApi()->findAll();
-
-        $this->assertInternalType('array', $contents);
-
-        foreach ($contents as $content) {
-            $this->assertInstanceOf(Content::class, $content);
-        }
-    }
-
-    /**
-     * @throws \Exception
-     */
-    public function testCreatePurchaseOperation(): void
-    {
+        self::$contentUri2 = 'http://decent.ch?testtime=' . time();
         $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
-        $purchaseOp = self::$sdk->getContentApi()->createPurchaseOperation($credentials, clone $this->contentId);
 
-        $this->assertEquals(DCoreSDKTest::ACCOUNT_ID_1, $purchaseOp->getConsumer());
-        $this->assertEquals($this->contentUri, $purchaseOp->getUri());
+        $price = (new RegionalPrice())->setPrice((new AssetAmount())->setAmount(20));
+        $synopsis = json_encode(['title' => 'hello', 'description' => 'world', 'content_type_id' => '0.0.0']);
+        $expiration = (new DateTime())->modify('+10 days');
+
+        self::$sdk->getContentApi()->add($credentials, new CoAuthors(), self::$contentUri2, [$price], $expiration, $synopsis);
+
+        $content = self::$sdk->getContentApi()->getByURI(self::$contentUri2);
+        self::$contentId2 = $content->getId();
+
+        self::assertNotNull($content);
+        self::assertEquals(self::$contentUri2, $content->getURI());
     }
 
     /**
      * @throws ValidationException
-     * @throws \Exception
+     * @doesNotPerformAssertions
      */
-    public function testPurchase(): void
+    public function testTransfer(): void
     {
         $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
-
-        self::$sdk->getContentApi()->purchase($credentials, $this->contentId);
-
-        $contentAfter = self::$sdk->getContentApi()->getByURI($this->contentUri);
-        $this->assertEquals(1, $contentAfter->getTimesBought());
-    }
-
-    public function testPurchaseWithUri(): void
-    {
-        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
+        self::$sdk->getContentApi()->transfer($credentials, self::$contentId1, (new AssetAmount())->setAmount(1),
+            'transfer to content');
     }
 
     /**
-     * @throws \Exception
-     */
-    public function testCreate(): void
-    {
-        $randomUri = 'http://decent.ch?testtime=' . time();
-
-        $content = new SubmitContent();
-        $content
-            ->setUri($randomUri)
-            ->setCoauthors([])
-            ->setCustodyData(null)
-            ->setHash('2222222222222222222222222222222222222222')
-            ->setKeyParts([])
-            ->setSeeders([])
-            ->setQuorum(0)
-            ->setSize(10000)
-            ->setSynopsis(json_encode(['title' => 'Game Title', 'description' => 'Description', 'content_type_id' => '1.2.3']))
-            ->setExpiration((new \DateTime())->modify('+1 month'))
-            ->setPrice([(new RegionalPrice)->setPrice((new AssetAmount())->setAmount(1000))->setRegion(1)]);
-
-        $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
-        self::$sdk->getContentApi()->create($content, $credentials, (new AssetAmount())->setAmount(1000000)->setAssetId('1.3.0'), (new AssetAmount())->setAmount(1000000)->setAssetId('1.3.0'));
-
-        $submittedContentObject = self::$sdk->getContentApi()->getByURI($randomUri);
-        $this->assertEquals( $randomUri, $submittedContentObject->getURI());
-        $this->assertEquals(DCoreSDKTest::ACCOUNT_ID_1, $submittedContentObject->getAuthor());
-        $this->assertEquals('2222222222222222222222222222222222222222', $submittedContentObject->getHash());
-    }
-
-    /**
-     * @throws \DCorePHP\Exception\ObjectAlreadyFoundException
-     * @throws \DCorePHP\Exception\ObjectNotFoundException
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
+     * @throws ObjectNotFoundException
      * @throws ValidationException
-     * @throws \Exception
+     * @throws Exception
      */
     public function testUpdate(): void
     {
-        $uri = 'http://decent.ch?PHPtesttime=' . time();
-        $expiration = new \DateTime('+2 day');
-
         $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
-        $content = new SubmitContent();
-        $content
-            ->setUri($uri)
-            ->setCoauthors([])
-            ->setCustodyData(null)
-            ->setHash('2222222222222222222222222222222222222222')
-            ->setKeyParts([])
-            ->setSeeders([])
-            ->setQuorum(0)
-            ->setSize(10000)
-            ->setSynopsis(json_encode(['title' => 'Game Title', 'description' => 'Description', 'content_type_id' => '1.2.3']))
-            ->setExpiration($expiration)
-            ->setPrice([(new RegionalPrice)->setPrice((new AssetAmount())->setAmount(1000))->setRegion(1)]);
+        self::$sdk->getContentApi()->updateWithUri($credentials, self::$contentUri1, json_encode(['title' => 'hello', 'description' => 'update', 'content_type_id' => '0.0.0']));
 
-        self::$sdk->getContentApi()->create($content, $credentials, (new AssetAmount())->setAmount(1000000)->setAssetId('1.3.0'), (new AssetAmount())->setAmount(1000000)->setAssetId('1.3.0'));
+        $content = self::$sdk->getContentApi()->getByURI(self::$contentUri1);
+        self::$contentId2 = $content->getId();
+        $contentJson = json_decode($content->getSynopsis(), true);
 
-        $content->setSynopsis(json_encode(['title' => 'Game Title Updated by PHP', 'description' => 'Description Updated by PHP', 'content_type_id' => '1.2.3']));
-        self::$sdk->getContentApi()->update($content, $credentials, (new AssetAmount())->setAmount(1000001)->setAssetId('1.3.0'), (new AssetAmount())->setAmount(1000001)->setAssetId('1.3.0'));
-
-        $submittedContentObject = self::$sdk->getContentApi()->getByURI($uri);
-        $this->assertEquals( $uri, $submittedContentObject->getURI());
-        $this->assertEquals(DCoreSDKTest::ACCOUNT_ID_1, $submittedContentObject->getAuthor());
-        $this->assertEquals('Game Title Updated by PHP', $submittedContentObject->getSynopsisDecoded()['title']);
+        self::assertNotNull($content);
+        self::assertEquals($contentJson['description'], 'update');
     }
 
     /**
-     * @throws \DCorePHP\Exception\ObjectNotFoundException
-     * @throws \DCorePHP\Exception\ValidationException
-     * @throws \Exception
+     * @throws ValidationException
+     * @throws Exception
      */
-    public function testDeleteByUrl(): void
+    public static function testPurchase(): void
     {
-        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
-//        $randomUri = 'http://decent.ch?testtime=' . time() . '&lang=PHP';
-//        $credentials = new Credentials(new ChainObject('1.2.34'), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
-//
-//        $content = new SubmitContent();
-//        $content
-//            ->setUri($randomUri)
-//            ->setCoauthors([])
-//            ->setCustodyData(null)
-//            ->setHash('2222222222222222222222222222222222222222')
-//            ->setKeyParts([])
-//            ->setSeeders([])
-//            ->setQuorum(0)
-//            ->setSize(10000)
-//            ->setSynopsis(json_encode(['title' => 'Game Title', 'description' => 'Description', 'content_type_id' => '1.2.3']))
-//            ->setExpiration(new \DateTime('+2 day'))
-//            ->setPrice([(new RegionalPrice)->setPrice((new AssetAmount())->setAmount(1000))->setRegion(1)]);
-//
-//        self::$sdk->getContentApi()->create($content, $credentials, (new AssetAmount())->setAmount(0)->setAssetId('1.3.0'), (new AssetAmount())->setAmount(1000)->setAssetId('1.3.0'));
-//
-//        dump('Before:');
-//        dump(self::$sdk->getContentApi()->getByURI($randomUri));
-//
-//        self::$sdk->getContentApi()->deleteByUrl($randomUri, $credentials, (new AssetAmount())->setAmount(0)->setAssetId('1.3.0'));
-//
-//        dump('After:');
-//        dump(self::$sdk->getContentApi()->getByURI($randomUri));
+        $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
+
+        self::$sdk->getContentApi()->purchase($credentials, self::$contentId1);
+
+        $contentAfter = self::$sdk->getContentApi()->get(self::$contentId1);
+        self::assertEquals(1, $contentAfter->getTimesBought());
     }
 
-    public function testSubmitContentAsync(): void
+    /**
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
+     * @throws ObjectNotFoundException
+     * @throws ValidationException
+     * @throws Exception
+     */
+    public function testPurchaseWithUri(): void
     {
-        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
+        $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
+
+        self::$sdk->getContentApi()->purchaseWithUri($credentials, self::$contentUri2);
+
+        $contentAfter = self::$sdk->getContentApi()->get(self::$contentId2);
+        self::assertEquals(1, $contentAfter->getTimesBought());
     }
 
-    public function testContentCancellation(): void
+    /**
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
+     * @throws ObjectNotFoundException
+     * @throws ValidationException
+     * @throws Exception
+     */
+    public function testRemove(): void
     {
-        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
+        $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
+
+        self::$sdk->getContentApi()->removeById($credentials, self::$contentId2);
+
+        $content = self::$sdk->getContentApi()->get(self::$contentId2);
+
+        self::assertNotNull($content);
+        self::assertTrue($content->isBlocked());
     }
 
-    public function testDownloadContent(): void
+    /**
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
+     * @doesNotPerformAssertions
+     */
+    public function testGenerateKeys(): void
     {
-        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
+        self::$sdk->getContentApi()->generateKeys([]);
     }
 
-    public function testGetDownloadStatus(): void
+    /**
+     * @throws InvalidApiCallException
+     * @throws ObjectNotFoundException
+     * @throws BadOpcodeException
+     */
+    public function testGet(): void
     {
-        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
+        $content = self::$sdk->getContentApi()->get(self::$contentId1);
+
+        $this->assertEquals(self::$contentUri1, $content->getURI());
+        $this->assertEquals(DCoreSDKTest::ACCOUNT_ID_1, $content->getAuthor());
+        $this->assertEquals('1', $content->getSize());
     }
 
-    public function testLeaveRatingAndComment(): void
+    /**
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
+     */
+    public function testGetAll(): void
     {
-        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
+        $contents = self::$sdk->getContentApi()->getAll([self::$contentId1]);
+        $content = reset($contents);
+
+        $this->assertEquals(self::$contentUri1, $content->getURI());
+        $this->assertEquals(DCoreSDKTest::ACCOUNT_ID_1, $content->getAuthor());
+        $this->assertEquals('1', $content->getSize());
     }
 
-    public function testGenerateEncryptionKey(): void
+    /**
+     * @throws InvalidApiCallException
+     * @throws ObjectNotFoundException
+     * @throws BadOpcodeException
+     */
+    public function testGetByURI(): void
     {
-        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
+        $content = self::$sdk->getContentApi()->getByURI(self::$contentUri1);
+
+        $this->assertEquals(self::$contentUri1, $content->getURI());
+        $this->assertEquals(DCoreSDKTest::ACCOUNT_ID_1, $content->getAuthor());
+        $this->assertEquals('1', $content->getSize());
     }
 
-    public function testSearchUserContent(): void
+    /**
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
+     * @doesNotPerformAssertions
+     */
+    public function testListAllPublishersRelative(): void
     {
-        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
+        self::$sdk->getContentApi()->listAllPublishersRelative('');
     }
 
-    public function testGetAuthorAndCoAuthorsByUri(): void
+    /**
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
+     * @throws ValidationException
+     * @throws Exception
+     */
+    public function testRestoreEncryptionKey(): void
     {
-        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
+        $keyPair = ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1);
+        $pub = (new PubKey())->setPubKey($keyPair->getPrivate()->toElGamalPrivateKey());
+        $key = self::$sdk->getContentApi()->restoreEncryptionKey($pub, new ChainObject('2.12.0'));
+
+        self::assertEquals('0000000000000000000000000000000000000000000000000000000000000000', $key);
+    }
+
+    /**
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
+     * @doesNotPerformAssertions
+     */
+    public function testFindAll(): void
+    {
+        self::$sdk->getContentApi()->findAll('');
     }
 }

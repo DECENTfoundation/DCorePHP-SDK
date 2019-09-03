@@ -2,10 +2,11 @@
 
 namespace DCorePHP\Model;
 
+use function count;
 use DCorePHP\Crypto\ECKeyPair;
-use DCorePHP\Crypto\PrivateKey;
 use DCorePHP\DCorePHPException;
 use DCorePHP\Utils\Math;
+use Exception;
 
 class Transaction
 {
@@ -16,8 +17,8 @@ class Transaction
     private $operations = [];
     /** @var BlockData */
     private $blockData;
-    /** @var string */
-    private $signature;
+    /** @var array */
+    private $signatures;
     /** @var string */
     private $chainId = '';
 
@@ -58,20 +59,21 @@ class Transaction
     }
 
     /**
-     * @return string
+     * @return array
      */
-    public function getSignature(): ?string
+    public function getSignatures(): ?array
     {
-        return $this->signature;
+        return $this->signatures;
     }
 
     /**
-     * @param string $signature
+     * @param array $signatures
+     *
      * @return Transaction
      */
-    public function setSignature(string $signature): Transaction
+    public function setSignatures(array $signatures): Transaction
     {
-        $this->signature = $signature;
+        $this->signatures = $signatures;
         return $this;
     }
 
@@ -120,13 +122,13 @@ class Transaction
     {
         return [
             'extensions' => $this->getExtensions(),
-            'operations' => array_map(function (BaseOperation $operation) {
+            'operations' => array_map(static function (BaseOperation $operation) {
                 return $operation->toArray();
             }, $this->getOperations()),
             'ref_block_num' => $this->getBlockData()->getRefBlockNum(),
             'ref_block_prefix' => $this->getBlockData()->getRefBlockPrefix(),
             'expiration' => $this->getBlockData()->getExpiration()->format('Y-m-d\TH:i:s'),
-            'signatures' => $this->getSignature() ? [$this->getSignature()] : [],
+            'signatures' => $this->getSignatures() ?: [],
         ];
     }
 
@@ -137,9 +139,9 @@ class Transaction
     {
         return implode('', [
             $this->getBlockData()->toBytes(),
-            Math::getInt8(\count($this->getOperations())), // number of operations
-            $this->getOperations() ? implode('', array_map(static function (BaseOperation $transfer) { // operation bytes
-                return $transfer->toBytes();
+            Math::getInt8(count($this->getOperations())), // number of operations
+            $this->getOperations() ? implode('', array_map(static function (BaseOperation $operation) { // operation bytes
+                return $operation->toBytes();
             }, $this->getOperations())) : '00',
             '00', // extensions
         ]);
@@ -156,7 +158,7 @@ class Transaction
     /**
      * @param string $privateKeyWif
      * @return Transaction
-     * @throws \Exception
+     * @throws Exception
      */
     public function sign(string $privateKeyWif): self
     {
@@ -167,7 +169,7 @@ class Transaction
         do {
             try {
                 $signature = $ecKeyPair->signature($this->toBytes(), $this->getChainId());
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 // try again
             }
 
@@ -180,7 +182,7 @@ class Transaction
             $attempt++;
         } while (!$signature);
 
-        $this->setSignature($signature);
+        $this->setSignatures([$signature]);
 
         return $this;
     }

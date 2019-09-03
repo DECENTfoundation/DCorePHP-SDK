@@ -2,14 +2,20 @@
 
 namespace DCorePHPTests\Sdk;
 
+use DCorePHP\Exception\InvalidApiCallException;
+use DCorePHP\Exception\ValidationException;
 use DCorePHP\Model\Asset\AssetAmount;
 use DCorePHP\Model\ChainObject;
+use DCorePHP\Model\Explorer\VestingBalance;
 use DCorePHPTests\DCoreSDKTest;
+use WebSocket\BadOpcodeException;
 
 class BalanceApiTest extends DCoreSDKTest
 {
     /**
-     * @throws \DCorePHP\Exception\ValidationException
+     * @throws ValidationException
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
      */
     public function testGet(): void
     {
@@ -20,14 +26,14 @@ class BalanceApiTest extends DCoreSDKTest
     }
 
     /**
-     * @throws \DCorePHP\Exception\ValidationException
+     * @throws ValidationException
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
      */
     public function testGetAll(): void
     {
         /** @var AssetAmount[] $balances */
         $balances = self::$sdk->getBalanceApi()->getAll(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1));
-
-        $this->assertInternalType('array', $balances);
 
         foreach ($balances as $balance) {
             $this->assertRegExp('/^\d+\.\d+\.\d+$/', $balance->getAssetId());
@@ -36,7 +42,9 @@ class BalanceApiTest extends DCoreSDKTest
     }
 
     /**
-     * @throws \DCorePHP\Exception\ValidationException
+     * @throws ValidationException
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
      */
     public function testGetByName(): void
     {
@@ -46,7 +54,9 @@ class BalanceApiTest extends DCoreSDKTest
     }
 
     /**
-     * @throws \DCorePHP\Exception\ValidationException
+     * @throws ValidationException
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
      */
     public function testGetAllByName(): void
     {
@@ -57,7 +67,9 @@ class BalanceApiTest extends DCoreSDKTest
     }
 
     /**
-     * @throws \DCorePHP\Exception\ValidationException
+     * @throws ValidationException
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
      */
     public function testGetWithAsset(): void
     {
@@ -88,6 +100,10 @@ class BalanceApiTest extends DCoreSDKTest
         $this->assertEquals('1.3.0', $assetAmount->getAssetId()->getId());
     }
 
+    /**
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
+     */
     public function testGetAllWithAssetByName(): void
     {
         $assetPairs = self::$sdk->getBalanceApi()->getAllWithAssetByName(DCoreSDKTest::ACCOUNT_NAME_1, ['DCT', 'DCT']);
@@ -100,10 +116,14 @@ class BalanceApiTest extends DCoreSDKTest
     }
 
     /**
-     * @throws \DCorePHP\Exception\ValidationException
+     * @throws ValidationException
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
+     *
+     * @doesNotPerformAssertions
      */
     public function testGetAllVesting(): void
     {
-        $this->markTestIncomplete('This test has not been implemented yet.'); // @todo
+        self::$sdk->getBalanceApi()->getAllVesting(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1));
     }
 }

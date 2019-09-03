@@ -2,7 +2,8 @@
 
 namespace DCorePHP\Model\Messaging;
 
-use DCorePHP\Model\Address;
+use DCorePHP\Crypto\Address;
+use DCorePHP\Exception\ValidationException;
 use DCorePHP\Model\ChainObject;
 
 class MessagePayloadReceiver
@@ -43,7 +44,7 @@ class MessagePayloadReceiver
     /**
      * @param ChainObject|string $to
      * @return MessagePayloadReceiver
-     * @throws \DCorePHP\Exception\ValidationException
+     * @throws ValidationException
      */
     public function setTo($to): MessagePayloadReceiver
     {
@@ -75,9 +76,9 @@ class MessagePayloadReceiver
     }
 
     /**
-     * @return Address
+     * @return Address|null
      */
-    public function getToAddress(): Address
+    public function getToAddress(): ?Address
     {
         return $this->toAddress;
     }
@@ -94,9 +95,9 @@ class MessagePayloadReceiver
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getNonce(): string
+    public function getNonce(): ?string
     {
         return $this->nonce;
     }
@@ -114,11 +115,14 @@ class MessagePayloadReceiver
 
     public function toArray(): array
     {
-        return [
+        $array = [
             'to' => $this->getTo()->getId(),
             'data' => $this->getData(),
-//            'pub_to' => $this->getToAddress()->getPublicKey(),
-//            'nonce' => $this->getNonce()
         ];
+
+        $this->getToAddress() ? $array['pub_to'] = $this->getToAddress()->encode() : null;
+        $this->getNonce() ? $array['nonce'] = $this->getNonce() : null;
+
+        return $array;
     }
 }

@@ -5,6 +5,10 @@ namespace DCorePHP\Sdk;
 use DCorePHP\Model\Asset\AssetAmount;
 use DCorePHP\Model\BaseOperation;
 use DCorePHP\Model\ChainObject;
+use DCorePHP\Model\Operation\AddOrUpdateContentOperation;
+use DCorePHP\Model\Operation\AssertOperation;
+use DCorePHP\Model\Operation\AssetCreateOperation;
+use DCorePHP\Model\Operation\AssetIssueOperation;
 use DCorePHP\Model\Operation\CustomOperation;
 use DCorePHP\Model\Operation\EmptyOperation;
 use DCorePHP\Model\Operation\ProposalCreate;
@@ -80,22 +84,35 @@ class ValidationApi extends BaseApi implements ValidationApiInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
-    public function getFeeByType($type, ChainObject $assetId = null): AssetAmount
-    {
-        if (in_array(
-            $type,
-            [
-                ProposalCreate::OPERATION_TYPE,
-                ProposalUpdate::OPERATION_TYPE,
-                WithdrawPermissionClaim::OPERATION_TYPE,
-                CustomOperation::OPERATION_TYPE
-            ],
-            true
-        )) {
+    public function getFeesForType(array $types, ChainObject$assetId = null): array {
+        $assetId = $assetId ?: new ChainObject('1.3.0');
+
+        $notAllowed = [
+            AssetCreateOperation::OPERATION_TYPE,
+            AssetIssueOperation::OPERATION_TYPE,
+            ProposalCreate::OPERATION_TYPE,
+            ProposalUpdate::OPERATION_TYPE,
+            WithdrawPermissionClaim::OPERATION_TYPE,
+            CustomOperation::OPERATION_TYPE,
+            AssertOperation::OPERATION_TYPE,
+            AddOrUpdateContentOperation::OPERATION_TYPE
+        ];
+
+        if (!empty(array_intersect($types, $notAllowed))) {
             throw new InvalidArgumentException('This type of operation is not allowed!');
         }
-        return $this->getFee(new EmptyOperation($type), $assetId);
+
+        return $this->getFees(array_map(static function ($type) { return new EmptyOperation($type); }, $types), $assetId);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getFeeForType($type, ChainObject $assetId = null): AssetAmount
+    {
+        $fees = $this->getFeesForType([$type], $assetId);
+        return reset($fees);
     }
 }

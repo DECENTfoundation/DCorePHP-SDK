@@ -2,14 +2,17 @@
 
 namespace DCorePHP\Model\Operation;
 
+use DCorePHP\Exception\ValidationException;
 use DCorePHP\Model\Asset\AssetAmount;
 use DCorePHP\Model\BaseOperation;
 use DCorePHP\Model\ChainObject;
 use DCorePHP\Model\Memo;
 use DCorePHP\Crypto\Address;
 use DCorePHP\Utils\VarInt;
+use Exception;
+use Symfony\Component\PropertyAccess\Exception\NoSuchPropertyException;
 
-class Transfer2 extends BaseOperation
+class TransferOperation extends BaseOperation
 {
     public const OPERATION_TYPE = 39;
     public const OPERATION_NAME = 'transfer2';
@@ -32,7 +35,7 @@ class Transfer2 extends BaseOperation
 
     /**
      * @param array $rawOperation
-     * @throws \Exception
+     * @throws Exception
      */
     public function hydrate(array $rawOperation): void
     {
@@ -52,7 +55,7 @@ class Transfer2 extends BaseOperation
             try {
                 $value = $this->getPropertyAccessor()->getValue($rawOperation, $path);
                 $this->getPropertyAccessor()->setValue($this, $modelPath, $value);
-            } catch (\Symfony\Component\PropertyAccess\Exception\NoSuchPropertyException $exception) {
+            } catch (NoSuchPropertyException $exception) {
                 // skip
             }
             if ($rawOperation['memo']) {
@@ -72,10 +75,11 @@ class Transfer2 extends BaseOperation
 
     /**
      * @param ChainObject|string $from
-     * @return Transfer2
-     * @throws \DCorePHP\Exception\ValidationException
+     *
+     * @return TransferOperation
+     * @throws ValidationException
      */
-    public function setFrom($from): Transfer2
+    public function setFrom($from): TransferOperation
     {
         if (is_string($from)) {
             $from = new ChainObject($from);
@@ -94,10 +98,11 @@ class Transfer2 extends BaseOperation
 
     /**
      * @param ChainObject|string $to
-     * @return Transfer2
-     * @throws \DCorePHP\Exception\ValidationException
+     *
+     * @return TransferOperation
+     * @throws ValidationException
      */
-    public function setTo($to): Transfer2
+    public function setTo($to): TransferOperation
     {
         if (is_string($to)) {
             $to = new ChainObject($to);
@@ -116,9 +121,10 @@ class Transfer2 extends BaseOperation
 
     /**
      * @param AssetAmount $amount
-     * @return Transfer2
+     *
+     * @return TransferOperation
      */
-    public function setAmount(AssetAmount $amount): Transfer2
+    public function setAmount(AssetAmount $amount): TransferOperation
     {
         $this->amount = $amount;
         return $this;
@@ -134,9 +140,10 @@ class Transfer2 extends BaseOperation
 
     /**
      * @param Memo $memo
-     * @return Transfer2
+     *
+     * @return TransferOperation
      */
-    public function setMemo(?Memo $memo): Transfer2
+    public function setMemo(?Memo $memo): TransferOperation
     {
         $this->memo = $memo;
         return $this;
@@ -160,7 +167,7 @@ class Transfer2 extends BaseOperation
 
     /**
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     public function toBytes(): string
     {
