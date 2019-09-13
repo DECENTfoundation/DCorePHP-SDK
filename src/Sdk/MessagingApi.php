@@ -3,6 +3,7 @@
 namespace DCorePHP\Sdk;
 
 use DCorePHP\Crypto\Credentials;
+use DCorePHP\Exception\ObjectNotFoundException;
 use DCorePHP\Model\ChainObject;
 use DCorePHP\Model\Memo;
 use DCorePHP\Model\Messaging\Message;
@@ -12,6 +13,7 @@ use DCorePHP\Model\Messaging\MessageResponse;
 use DCorePHP\Model\Operation\SendMessageOperation;
 use DCorePHP\Model\TransactionConfirmation;
 use DCorePHP\Net\Model\Request\GetMessageObjects;
+use DCorePHP\Net\Model\Request\GetMessages;
 use DCorePHP\Utils\Math;
 
 class MessagingApi extends BaseApi implements MessagingApiInterface
@@ -19,7 +21,7 @@ class MessagingApi extends BaseApi implements MessagingApiInterface
     /**
      * @inheritdoc
      */
-    public function getAllOperations(
+    public function findAllOperations(
         ChainObject $sender = null,
         ChainObject $receiver = null,
         int $maxCount = 1000
@@ -30,7 +32,7 @@ class MessagingApi extends BaseApi implements MessagingApiInterface
     /**
      * @inheritdoc
      */
-    public function getAll(ChainObject $sender = null, ChainObject $receiver = null, int $maxCount = 1000): array
+    public function findAll(ChainObject $sender = null, ChainObject $receiver = null, int $maxCount = 1000): array
     {
         return $this->flattenMessageResponses($this->dcoreApi->requestWebsocket(new GetMessageObjects($sender, $receiver, $maxCount)));
     }
@@ -38,29 +40,29 @@ class MessagingApi extends BaseApi implements MessagingApiInterface
     /**
      * @inheritdoc
      */
-    public function getAllDecrypted(
+    public function findAllDecrypted(
         Credentials $credentials,
         ChainObject $sender = null,
         ChainObject $receiver = null,
         int $maxCount = 1000
     ): array {
-        return $this->decryptMessages($this->getAll($sender, $receiver, $maxCount), $credentials);
+        return $this->decryptMessages($this->findAll($sender, $receiver, $maxCount), $credentials);
     }
 
     /**
      * @inheritdoc
      */
-    public function getAllDecryptedForSender(Credentials $credentials, int $maxCount = 1000): array
+    public function findAllDecryptedForSender(Credentials $credentials, int $maxCount = 1000): array
     {
-        return $this->getAllDecrypted($credentials, $credentials->getAccount(), null, $maxCount);
+        return $this->findAllDecrypted($credentials, $credentials->getAccount(), null, $maxCount);
     }
 
     /**
      * @inheritdoc
      */
-    public function getAllDecryptedForReceiver(Credentials $credentials, int $maxCount = 1000): array
+    public function findAllDecryptedForReceiver(Credentials $credentials, int $maxCount = 1000): array
     {
-        return $this->getAllDecrypted($credentials, null, $credentials->getAccount(), $maxCount);
+        return $this->findAllDecrypted($credentials, null, $credentials->getAccount(), $maxCount);
     }
 
     /**
@@ -168,6 +170,29 @@ class MessagingApi extends BaseApi implements MessagingApiInterface
             $credentials->getKeyPair(),
             $this->createMessageOperationUnencryptedMultiple($credentials, $messages)
         );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getAll(array $ids): array
+    {
+        return $this->flattenMessageResponses($this->dcoreApi->requestWebsocket(new GetMessages($ids)));
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function get(ChainObject $id): Message
+    {
+        $messages = $this->getAll([$id]);
+        $message = reset($messages);
+
+        if ($message instanceof Message) {
+            return $message;
+        }
+
+        throw new ObjectNotFoundException("Message with id $id doesn't exist.");
     }
 
     /**

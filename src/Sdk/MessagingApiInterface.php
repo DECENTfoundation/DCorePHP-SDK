@@ -17,7 +17,7 @@ use WebSocket\BadOpcodeException;
 interface MessagingApiInterface
 {
     /**
-     * Get all message operations
+     * Find all message operations
      *
      * @param ChainObject $sender filter by sender account id
      * @param ChainObject $receiver filter by receiver account id
@@ -28,10 +28,10 @@ interface MessagingApiInterface
      * @throws InvalidApiCallException
      * @throws BadOpcodeException
      */
-    public function getAllOperations(ChainObject $sender = null, ChainObject $receiver = null, int $maxCount = 1000): array;
+    public function findAllOperations(ChainObject $sender = null, ChainObject $receiver = null, int $maxCount = 1000): array;
 
     /**
-     * Get all messages
+     * Find all messages
      *
      * @param ChainObject $sender name of message sender. If you dont want to filter by sender then let it empty
      * @param ChainObject $receiver name of message receiver. If you dont want to filter by receiver then let it empty
@@ -42,10 +42,10 @@ interface MessagingApiInterface
      * @throws InvalidApiCallException
      * @throws BadOpcodeException
      */
-    public function getAll(ChainObject $sender = null, ChainObject $receiver = null, int $maxCount = 1000): array;
+    public function findAll(ChainObject $sender = null, ChainObject $receiver = null, int $maxCount = 1000): array;
 
     /**
-     * Get all messages and decrypt
+     * Find all messages and decrypt
      *
      * @param Credentials $credentials account credentials used for decryption, must be either sender's or receiver's
      * @param ChainObject $sender filter by sender account id
@@ -57,10 +57,10 @@ interface MessagingApiInterface
      * @throws InvalidApiCallException
      * @throws BadOpcodeException
      */
-    public function getAllDecrypted(Credentials $credentials, ChainObject $sender = null, ChainObject $receiver = null, int $maxCount = 1000): array;
+    public function findAllDecrypted(Credentials $credentials, ChainObject $sender = null, ChainObject $receiver = null, int $maxCount = 1000): array;
 
     /**
-     * Get all messages for sender and decrypt
+     * Find all messages for sender and decrypt
      *
      * @param Credentials $credentials sender account credentials with decryption keys
      * @param int $maxCount max items to return
@@ -70,10 +70,10 @@ interface MessagingApiInterface
      * @throws InvalidApiCallException
      * @throws BadOpcodeException
      */
-    public function getAllDecryptedForSender(Credentials $credentials, int $maxCount = 1000): array;
+    public function findAllDecryptedForSender(Credentials $credentials, int $maxCount = 1000): array;
 
     /**
-     * Get all messages for receiver and decrypt
+     * Find all messages for receiver and decrypt
      *
      * Receives message objects by sender and/or receiver
      * @param Credentials $credentials sender account credentials with decryption keys
@@ -84,7 +84,7 @@ interface MessagingApiInterface
      * @throws InvalidApiCallException
      * @throws BadOpcodeException
      */
-    public function getAllDecryptedForReceiver(Credentials $credentials, int $maxCount = 1000): array;
+    public function findAllDecryptedForReceiver(Credentials $credentials, int $maxCount = 1000): array;
 
     /**
      * Create message operation, send a message to one receiver
@@ -198,4 +198,23 @@ interface MessagingApiInterface
      * @throws Exception
      */
     public function sendUnencryptedMultiple(Credentials $credentials, array $messages): ?TransactionConfirmation;
+
+    /**
+     * @param array $ids
+     *
+     * @return Message[]
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
+     */
+    public function getAll(array $ids): array;
+
+    /**
+     * @param ChainObject $id
+     *
+     * @return Message
+     * @throws ObjectNotFoundException
+     * @throws InvalidApiCallException
+     * @throws BadOpcodeException
+     */
+    public function get(ChainObject $id): Message;
 }

@@ -15,6 +15,7 @@ abstract class DCoreSDKTest extends TestCase
     public const PRIVATE_KEY_2 = '5JuJbrKZgAATcouJnwpaxPbHMAMDXSgUpQSfxTXzkSUufcnpTUa';
     public const PUBLIC_KEY_1 = 'DCT82MTCQVa9TDFmz3ZwaLzsFAmCLoJzrtFugpF72vsbuE1CpCwKy';
     public const PUBLIC_KEY_2 = 'DCT82MTCQVa9TDFmz3ZwaLzsFAmCLoJzrtFugpF72vsbuE1CpCwKy';
+    public const MESSAGE_ID_1 = '2.18.0';
 
 
     /** @var DCoreApi */

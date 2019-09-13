@@ -46,7 +46,7 @@ class MessagingApiTest extends DCoreSDKTest
         self::$sdk->getMessagingApi()->sendMultiple($credentials, [DCoreSDKTest::ACCOUNT_ID_2 => $msg]);
 
         /** @var Message[] $messages */
-        $messages = self::$sdk->getMessagingApi()->getAllDecrypted($credentials, $from, $to);
+        $messages = self::$sdk->getMessagingApi()->findAllDecrypted($credentials, $from, $to);
         $messageFound = false;
         foreach ($messages as $message) {
             if ($message->getMessage() === $msg && !$message->isEncrypted()) {
@@ -74,7 +74,7 @@ class MessagingApiTest extends DCoreSDKTest
         self::$sdk->getMessagingApi()->sendUnencryptedMultiple($credentials, [DCoreSDKTest::ACCOUNT_ID_2 => $msg]);
 
         /** @var Message[] $messages */
-        $messages = self::$sdk->getMessagingApi()->getAllDecrypted($credentials, $from, $to);
+        $messages = self::$sdk->getMessagingApi()->findAllDecrypted($credentials, $from, $to);
         $messageFound = false;
         foreach ($messages as $message) {
             if ($message->getMessage() === $msg) {
@@ -89,10 +89,10 @@ class MessagingApiTest extends DCoreSDKTest
      * @throws InvalidApiCallException
      * @throws ValidationException
      */
-    public function testGetAllOperations(): void
+    public function testFindAllOperations(): void
     {
         /** @var MessageResponse[] $messageResponses */
-        $messageResponses = self::$sdk->getMessagingApi()->getAllOperations(null, new ChainObject(DCoreSDKTest::ACCOUNT_ID_2));
+        $messageResponses = self::$sdk->getMessagingApi()->findAllOperations(null, new ChainObject(DCoreSDKTest::ACCOUNT_ID_2));
         foreach ($messageResponses as $messageResponse) {
             $this->assertEquals(DCoreSDKTest::ACCOUNT_ID_2, $messageResponse->getReceiversData()[0]->getReceiver()->getId());
         }
@@ -103,9 +103,9 @@ class MessagingApiTest extends DCoreSDKTest
      * @throws InvalidApiCallException
      * @throws BadOpcodeException
      */
-    public function testGetAll(): void
+    public function testFindAll(): void
     {
-        $messages = self::$sdk->getMessagingApi()->getAll(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1) );
+        $messages = self::$sdk->getMessagingApi()->findAll(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1) );
         foreach ($messages as $message) {
             $this->assertInstanceOf(Message::class, $message);
         }
@@ -115,11 +115,11 @@ class MessagingApiTest extends DCoreSDKTest
      * @throws ValidationException
      * @throws Exception
      */
-    public function testGetAllDecryptedForSender(): void
+    public function testFindAllDecryptedForSender(): void
     {
         $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_1), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_1));
         /** @var Message[] $messages */
-        $messages = self::$sdk->getMessagingApi()->getAllDecryptedForSender($credentials);
+        $messages = self::$sdk->getMessagingApi()->findAllDecryptedForSender($credentials);
 
         foreach ($messages as $message) {
             dump($message->getMessage());
@@ -133,16 +133,42 @@ class MessagingApiTest extends DCoreSDKTest
      * @throws ValidationException
      * @throws Exception
      */
-    public function testGetAllDecryptedForReceiver(): void
+    public function testFindAllDecryptedForReceiver(): void
     {
         $credentials = new Credentials(new ChainObject(DCoreSDKTest::ACCOUNT_ID_2), ECKeyPair::fromBase58(DCoreSDKTest::PRIVATE_KEY_2));
         /** @var Message[] $messages */
-        $messages = self::$sdk->getMessagingApi()->getAllDecryptedForReceiver($credentials);
+        $messages = self::$sdk->getMessagingApi()->findAllDecryptedForReceiver($credentials);
 
         foreach ($messages as $message) {
             $this->assertInstanceOf(Message::class, $message);
             $this->assertEquals(DCoreSDKTest::ACCOUNT_ID_2, $message->getReceiver()->getId());
             $this->assertFalse($message->isEncrypted());
         }
+    }
+
+    /**
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
+     * @throws ObjectNotFoundException
+     * @throws ValidationException
+     */
+    public function testGet(): void
+    {
+        $message = self::$sdk->getMessagingApi()->get(new ChainObject(DCoreSDKTest::MESSAGE_ID_1));
+
+        $this->assertEquals(DCoreSDKTest::MESSAGE_ID_1, $message->getOperationId()->getId());
+    }
+
+    /**
+     * @throws BadOpcodeException
+     * @throws InvalidApiCallException
+     * @throws ValidationException
+     */
+    public function testGetAll(): void
+    {
+        $messages = self::$sdk->getMessagingApi()->getAll([new ChainObject(DCoreSDKTest::MESSAGE_ID_1)]);
+        $message = reset($messages);
+
+        $this->assertEquals(DCoreSDKTest::MESSAGE_ID_1, $message->getOperationId()->getId());
     }
 }

@@ -2,14 +2,17 @@
 
 namespace DCorePHP\Model\Messaging;
 
+use DateTime;
+use DCorePHP\Exception\ValidationException;
 use DCorePHP\Model\ChainObject;
 use DCorePHP\Crypto\Address;
+use Exception;
 
 class MessageResponse
 {
     /** @var ChainObject */
     private $id;
-    /** @var int */
+    /** @var DateTime */
     private $created;
     /** @var ChainObject */
     private $sender;
@@ -31,7 +34,7 @@ class MessageResponse
     /**
      * @param ChainObject|string $id
      * @return MessageResponse
-     * @throws \DCorePHP\Exception\ValidationException
+     * @throws ValidationException
      */
     public function setId($id): MessageResponse
     {
@@ -44,20 +47,22 @@ class MessageResponse
     }
 
     /**
-     * @return int
+     * @return DateTime
      */
-    public function getCreated(): int
+    public function getCreated(): DateTime
     {
         return $this->created;
     }
 
     /**
-     * @param int $created
+     * @param $created
+     *
      * @return MessageResponse
+     * @throws Exception
      */
-    public function setCreated(int $created): MessageResponse
+    public function setCreated($created): MessageResponse
     {
-        $this->created = $created;
+        $this->created = $created instanceof DateTime ? $created : new DateTime($created);
 
         return $this;
     }
@@ -73,7 +78,7 @@ class MessageResponse
     /**
      * @param ChainObject|string $sender
      * @return MessageResponse
-     * @throws \DCorePHP\Exception\ValidationException
+     * @throws ValidationException
      */
     public function setSender($sender): MessageResponse
     {

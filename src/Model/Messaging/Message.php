@@ -2,6 +2,7 @@
 
 namespace DCorePHP\Model\Messaging;
 
+use DateTime;
 use DCorePHP\Crypto\Credentials;
 use DCorePHP\Crypto\ECKeyPair;
 use DCorePHP\Crypto\PublicKey;
@@ -17,7 +18,7 @@ class Message
 {
     /** @var ChainObject */
     private $operationId;
-    /** @var int */
+    /** @var DateTime */
     private $timestamp;
     /** @var ChainObject */
     private $sender;
@@ -97,20 +98,22 @@ class Message
     }
 
     /**
-     * @return int
+     * @return DateTime
      */
-    public function getTimestamp(): int
+    public function getTimestamp(): DateTime
     {
         return $this->timestamp;
     }
 
     /**
-     * @param int $timestamp
+     * @param DateTime $timestamp
+     *
      * @return Message
+     * @throws Exception
      */
-    public function setTimestamp(int $timestamp): Message
+    public function setTimestamp($timestamp): Message
     {
-        $this->timestamp = $timestamp;
+        $this->timestamp = $timestamp instanceof DateTime ? $timestamp : new DateTime($timestamp);
 
         return $this;
     }
