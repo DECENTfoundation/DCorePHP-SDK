@@ -35,7 +35,7 @@ composer.json
 ```
 
 ```bash
-composer require decentfoundation/dcorephp-sdk:^2.5
+composer require decentfoundation/dcorephp-sdk:^2.6
 ```
 
 ## Usage
