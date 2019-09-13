@@ -9,7 +9,12 @@ use DCorePHP\Utils\Math;
 use kornrunner\Secp256k1;
 use kornrunner\Serializer\HexSignatureSerializer;
 use Mdanter\Ecc\Crypto\Signature\SignatureInterface;
+use Mdanter\Ecc\Crypto\Signature\Signer;
+use Mdanter\Ecc\Crypto\Signature\SignHasher;
+use Mdanter\Ecc\EccFactory;
 use Mdanter\Ecc\Primitives\PointInterface;
+use Mdanter\Ecc\Serializer\PrivateKey\DerPrivateKeySerializer;
+use Mdanter\Ecc\Serializer\PrivateKey\PemPrivateKeySerializer;
 use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
 use Symfony\Component\Validator\Constraints\NotNull;
 use Symfony\Component\Validator\Validation;
@@ -128,14 +133,15 @@ class ECKeyPair
      * @param string $chainId
      * @return string|null canonical signature on success, null if signature is not canonical
      * @throws ValidationException
+     * @throws \Exception
      */
     public function signature(string $hexData, string $chainId): ?string
     {
-        $hash = hash('sha256', pack('H*', $chainId . $hexData)); // 1cb9ecc48ea039dda1c4626965db67c241486ce886a007903c8d5446465d7c0c
+        $hash = hash('sha256', pack('H*', $chainId . $hexData));
         $derPrivateKey = $this->getPrivate()->toHex();
         $derPublicKey = $this->getPublic()->toCompressedPublicKey(); // compressed public key
-        $signaturePoint = (new Secp256k1())->sign($hash, $derPrivateKey); // [98168512353566611467237581092075278762442757234040552549754768745652925038257, 44848356081555762428592265712819773562446994169847499152120711725219453447745]
-        $signatureHex = (new HexSignatureSerializer())->serialize($signaturePoint); // d90968b241bfdce430bc1dfd15039b08429783d3f1380364294311ca86e0feb16327451e425f07be71768a7fe25d60f232cd12eafe036b9f24b600104415ae41
+        $signaturePoint = (new Secp256k1())->sign($hash, $derPrivateKey);
+        $signatureHex = (new HexSignatureSerializer())->serialize($signaturePoint);
 
         $finalRecId = -1;
         $recId = 31;

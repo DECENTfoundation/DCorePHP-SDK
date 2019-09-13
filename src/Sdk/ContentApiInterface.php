@@ -228,7 +228,7 @@ interface ContentApiInterface
      * @throws ValidationException
      * @throws Exception
      */
-    public function removeByIUrl(Credentials $author, string $url, AssetAmount $fee): ?TransactionConfirmation;
+    public function removeByUrl(Credentials $author, string $url, AssetAmount $fee): ?TransactionConfirmation;
 
     /**
      * Create request to submit content operation.

@@ -2,6 +2,7 @@
 
 namespace DCorePHPTests\Model;
 
+use DateTime;
 use DCorePHP\Exception\ValidationException;
 use DCorePHP\Model\Asset\AssetAmount;
 use DCorePHP\Model\Authority;
@@ -9,11 +10,10 @@ use DCorePHP\Model\BlockData;
 use DCorePHP\Model\DynamicGlobalProps;
 use DCorePHP\Model\Memo;
 use DCorePHP\Model\ChainObject;
+use DCorePHP\Model\Operation\AssetFundPoolsOperation;
 use DCorePHP\Model\Operation\AccountCreateOperation;
 use DCorePHP\Model\Operation\AccountUpdateOperation;
-use DCorePHP\Model\Operation\CreateAccountOperation;
 use DCorePHP\Model\Operation\TransferOperation;
-use DCorePHP\Model\Operation\UpdateAccountOperation;
 use DCorePHP\Model\Options;
 use DCorePHP\Model\Subscription\AuthMap;
 use DCorePHP\Model\Transaction;
@@ -22,14 +22,16 @@ use DCorePHP\Utils\Crypto;
 use DCorePHP\Crypto\PrivateKey;
 use DCorePHP\Crypto\PublicKey;
 use DCorePHPTests\DCoreSDKTest;
+use Exception;
 use PHPUnit\Framework\TestCase;
 
 class TransactionTest extends TestCase
 {
     /**
      * @throws ValidationException
+     * @throws Exception
      */
-    public function testSignTransfer()
+    public function testSignTransfer(): void
     {
         $senderPrivateKeyWif = DCoreSDKTest::PRIVATE_KEY_1;
         $senderPublicKeyWif = DCoreSDKTest::PUBLIC_KEY_1;
@@ -63,10 +65,6 @@ class TransactionTest extends TestCase
                 (new AssetAmount())
                     ->setAssetId(new ChainObject('1.3.0'))
                     ->setAmount(1500000)
-            )->setFee(
-                (new AssetAmount())
-                    ->setAssetId(new ChainObject('1.3.0'))
-                    ->setAmount(500000)
             )->setMemo(
                 (new Memo())
                     ->setFrom(Address::decodeCheckNull($senderPublicKeyWif))
@@ -78,7 +76,10 @@ class TransactionTest extends TestCase
                         PublicKey::fromWif($recipientPublicKeyWif),
                         '735604672334802432'
                     ))
-            );
+            )->setFee(
+                (new AssetAmount())
+                    ->setAssetId(new ChainObject('1.3.0'))
+                    ->setAmount(500000));
 
         $transaction = new Transaction();
         $transaction
@@ -95,9 +96,9 @@ class TransactionTest extends TestCase
 
     /**
      * @throws ValidationException
-     * @throws \Exception
+     * @throws Exception
      */
-    public function testSignRegisterAccount()
+    public function testSignRegisterAccount(): void
     {
         $dynamicGlobalProperties = new DynamicGlobalProps();
         $dynamicGlobalProperties
@@ -158,8 +159,9 @@ class TransactionTest extends TestCase
 
     /**
      * @throws ValidationException
+     * @throws Exception
      */
-    public function testSignUpdateAccount()
+    public function testSignUpdateAccount(): void
     {
         $dynamicGlobalProperties = new DynamicGlobalProps();
         $dynamicGlobalProperties
@@ -214,6 +216,60 @@ class TransactionTest extends TestCase
 
         $this->assertEquals(
             '1f6a0cad43d970a786385afd87ed7e0b70b8386e8496ded40a21d02bbab603c8923f9f914196ee0b0f5d2dd36b2f8aaaf37fbc0f73934be7829247bb8ea8595138',
+            $transaction->getSignatures()[0]
+        );
+    }
+
+    /**
+     * @throws ValidationException
+     * @throws Exception
+     */
+    public function testSignFund(): void
+    {
+        $senderPrivateKeyWif = DCoreSDKTest::PRIVATE_KEY_1;
+
+        /** @var DynamicGlobalProps $dynamicGlobalProperties */
+        $dynamicGlobalProperties = $this
+            ->getMockBuilder(DynamicGlobalProps::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['getHeadBlockNumber', 'getHeadBlockId', 'getTime', 'getRefBlockNum', 'getRefBlockPrefix', 'getExpiration'])
+            ->getMock();
+        $dynamicGlobalProperties->expects($this->any())->method('getHeadBlockNumber')->willReturn(1);
+        $dynamicGlobalProperties->expects($this->any())->method('getHeadBlockId')->willReturn('1');
+        $dynamicGlobalProperties->expects($this->any())->method('getTime')->willReturn(new DateTime());
+        $dynamicGlobalProperties->expects($this->any())->method('getRefBlockNum')->willReturn(57172);
+        $dynamicGlobalProperties->expects($this->any())->method('getRefBlockPrefix')->willReturn('2795193508');
+        $dynamicGlobalProperties->expects($this->any())->method('getExpiration')->willReturn(new DateTime('2019-07-17T20:42:38'));
+
+        $operation = new AssetFundPoolsOperation();
+        $operation
+            ->setFrom(DCoreSDKTest::ACCOUNT_ID_1)
+            ->setUia((new AssetAmount())->setAssetId(new ChainObject('1.3.82'))->setAmount(100))
+            ->setDct((new AssetAmount())->setAssetId(new ChainObject('1.3.0'))->setAmount(1000))
+            ->setFee((new AssetAmount())->setAssetId(new ChainObject('1.3.0'))->setAmount(500000))
+        ;
+
+        $transaction = new Transaction();
+        $transaction
+            ->setChainId('34b44a8df3c6910cbe4ca4656b4d23e8d6dc137b2ef8d1313d4b39fea05ff7be')
+            ->setBlockData(new BlockData(
+                $dynamicGlobalProperties->getRefBlockNum(),
+                $dynamicGlobalProperties->getRefBlockPrefix(),
+                $dynamicGlobalProperties->getExpiration())
+            )
+            ->setOperations([$operation])
+            ->setExtensions([])
+        ;
+
+        $this->assertEquals(
+            '54dfa4449ba63e882f5d012120a1070000000000001b640000000000000052e803000000000000000000',
+            $transaction->toBytes()
+        );
+
+        $transaction->sign($senderPrivateKeyWif);
+
+        $this->assertEquals(
+            '2043114653d1fcd6274276425a854476faed9b33f7e9e0c17db7a82b1c5a6699927123e6255cb21424603340a7ccfba7adc6985d1cfeced23cd61ecaf1dee7e4d1',
             $transaction->getSignatures()[0]
         );
     }

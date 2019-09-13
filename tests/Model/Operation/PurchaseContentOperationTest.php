@@ -4,20 +4,20 @@ namespace DCorePHPTests\Model\Operation;
 
 use DCorePHP\Crypto\Credentials;
 use DCorePHP\Crypto\ECKeyPair;
+use DCorePHP\Exception\ValidationException;
 use DCorePHP\Model\Asset\AssetAmount;
 use DCorePHP\Model\ChainObject;
-use DCorePHP\Model\Content\Content;
-use DCorePHP\Model\Content\PricePerRegion;
 use DCorePHP\Model\Operation\PurchaseContentOperation;
 use DCorePHP\Model\PubKey;
 use DCorePHPTests\DCoreSDKTest;
+use Exception;
 use PHPUnit\Framework\TestCase;
 
 class PurchaseContentOperationTest extends TestCase
 {
     /**
-     * @throws \DCorePHP\Exception\ValidationException
-     * @throws \Exception
+     * @throws ValidationException
+     * @throws Exception
      */
     public function testToBytes(): void
     {

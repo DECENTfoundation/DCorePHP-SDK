@@ -244,7 +244,7 @@ class ContentApi extends BaseApi implements ContentApiInterface
     /**
      * @inheritDoc
      */
-    public function removeByIUrl(Credentials $credentials, string $content, AssetAmount $fee = null): ?TransactionConfirmation
+    public function removeByUrl(Credentials $credentials, string $content, AssetAmount $fee = null): ?TransactionConfirmation
     {
         $fee = $fee ?: new AssetAmount();
         return $this->dcoreApi->getBroadcastApi()->broadcastOperationWithECKeyPairWithCallback(
