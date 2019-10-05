@@ -9,7 +9,6 @@ use DCorePHP\Model\ProcessedTransaction;
 use DCorePHP\Model\Transaction;
 use DCorePHP\Model\TransactionConfirmation;
 use DCorePHP\Net\Model\Request\GetProposedTransactions;
-use DCorePHP\Net\Model\Request\GetRecentTransactionById;
 use DCorePHP\Net\Model\Request\GetTransaction;
 use DCorePHP\Net\Model\Request\GetTransactionById;
 use DCorePHP\Net\Model\Request\GetTransactionHex;
@@ -44,14 +43,6 @@ class TransactionApi extends BaseApi implements TransactionApiInterface
     public function getAllProposed(ChainObject $accountId)
     {
         return $this->dcoreApi->requestWebsocket(new GetProposedTransactions($accountId));
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getRecent(string $trxId): ProcessedTransaction
-    {
-        return $this->dcoreApi->requestWebsocket(new GetRecentTransactionById($trxId));
     }
 
     /**

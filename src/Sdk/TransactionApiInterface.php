@@ -48,19 +48,6 @@ interface TransactionApiInterface
     public function getAllProposed(ChainObject $accountId);
 
     /**
-     * If the transaction has not expired, this method will return the transaction for the given ID or it will return [ch.decent.sdk.exception.ObjectNotFoundException].
-     * Just because it is not known does not mean it wasn't included in the DCore. The ID can be retrieved from [Transaction] or [TransactionConfirmation] objects.
-     *
-     * @param string $trxId transaction id
-     *
-     * @return ProcessedTransaction if found
-     *
-     * @throws InvalidApiCallException
-     * @throws BadOpcodeException
-     */
-    public function getRecent(string $trxId): ProcessedTransaction;
-
-    /**
      * This method will return the transaction for the given ID or it will return [ch.decent.sdk.exception.ObjectNotFoundException].
      * Just because it is not known does not mean it wasn't included in the DCore.
      * The ID can be retrieved from [Transaction] or [TransactionConfirmation] objects.
