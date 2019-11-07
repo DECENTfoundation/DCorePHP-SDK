@@ -11,7 +11,7 @@ class GetConfig extends BaseRequest
     {
         parent::__construct(
             self::API_GROUP_DATABASE,
-            'get_config'
+            'get_configuration'
         );
     }
 
