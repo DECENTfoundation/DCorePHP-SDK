@@ -15,7 +15,6 @@ use DCorePHP\Sdk\AssetApi;
 use DCorePHP\Sdk\BalanceApi;
 use DCorePHP\Sdk\BlockApi;
 use DCorePHP\Sdk\BroadcastApi;
-use DCorePHP\Sdk\CallbackApi;
 use DCorePHP\Sdk\ContentApi;
 use DCorePHP\Sdk\GeneralApi;
 use DCorePHP\Sdk\HistoryApi;
@@ -69,8 +68,6 @@ class DCoreApi extends DCoreSdk
     private $transactionApi;
     /** @var ValidationApi */
     private $validationApi;
-    /** @var CallbackApi */
-    private $callBackApi;
     /** @var BlockApi */
     private $blockApi;
     /** @var BroadcastApi */
@@ -97,7 +94,6 @@ class DCoreApi extends DCoreSdk
         $this->purchaseApi = new PurchaseApi($this);
         $this->transactionApi = new TransactionApi($this);
         $this->validationApi = new ValidationApi($this);
-        $this->callBackApi = new CallbackApi($this);
         $this->blockApi = new BlockApi($this);
         $this->broadcastApi = new BroadcastApi($this);
         $this->balanceApi = new BalanceApi($this);
@@ -343,25 +339,6 @@ class DCoreApi extends DCoreSdk
     public function setValidationApi(ValidationApi $validationApi): DCoreApi
     {
         $this->validationApi = $validationApi;
-
-        return $this;
-    }
-
-    /**
-     * @return CallbackApi
-     */
-    public function getCallBackApi(): CallbackApi
-    {
-        return $this->callBackApi;
-    }
-
-    /**
-     * @param CallbackApi $callBackApi
-     * @return DCoreApi
-     */
-    public function setCallBackApi(CallbackApi $callBackApi): DCoreApi
-    {
-        $this->callBackApi = $callBackApi;
 
         return $this;
     }
