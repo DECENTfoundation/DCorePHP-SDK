@@ -28,8 +28,7 @@ class GetMessages extends BaseRequest
                 [
                     '[id]' => 'id',
                     '[created]' => 'created',
-                    '[sender]' => 'sender',
-                    '[text]' => 'text'
+                    '[sender]' => 'sender'
                 ] as $path => $modelPath
             ) {
                 $value = self::getPropertyAccessor()->getValue($rawMessageResponse, $path);
