@@ -66,21 +66,6 @@ class TransactionApiTest extends DCoreSDKTest
     /**
      * @throws BadOpcodeException
      * @throws InvalidApiCallException
-     * @throws Exception
-     */
-    public function testGetRecent(): void
-    {
-        $transaction = self::$sdk->getTransactionApi()->getRecent(self::$trx->getId());
-
-        $operations = $transaction->getOperations();
-        /** @var AddOrUpdateContentOperation $operation */
-        $operation = reset($operations);
-        $this->assertEquals(DCoreSDKTest::ACCOUNT_ID_1, $operation->getAuthor());
-    }
-
-    /**
-     * @throws BadOpcodeException
-     * @throws InvalidApiCallException
      */
     public function testGetByBlockNum(): void
     {
