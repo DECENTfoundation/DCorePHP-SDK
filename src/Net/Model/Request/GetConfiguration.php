@@ -2,10 +2,10 @@
 
 namespace DCorePHP\Net\Model\Request;
 
-use DCorePHP\Model\General\Config;
+use DCorePHP\Model\General\Configuration;
 use DCorePHP\Net\Model\Response\BaseResponse;
 
-class GetConfig extends BaseRequest
+class GetConfiguration extends BaseRequest
 {
     public function __construct()
     {
@@ -15,10 +15,10 @@ class GetConfig extends BaseRequest
         );
     }
 
-    public static function responseToModel(BaseResponse $response): Config
+    public static function responseToModel(BaseResponse $response): Configuration
     {
         $rawConfig = $response->getResult();
-        $config = new Config();
+        $config = new Configuration();
         foreach (
             [
                 '[graphene_symbol]' => 'grapheneSymbol',

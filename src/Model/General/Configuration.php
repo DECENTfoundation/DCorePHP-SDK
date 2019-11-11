@@ -4,7 +4,7 @@ namespace DCorePHP\Model\General;
 
 use DCorePHP\Model\ChainObject;
 
-class Config
+class Configuration
 {
 
     /** @var string */
@@ -160,9 +160,9 @@ class Config
 
     /**
      * @param string $grapheneSymbol
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneSymbol(string $grapheneSymbol): Config
+    public function setGrapheneSymbol(string $grapheneSymbol): Configuration
     {
         $this->grapheneSymbol = $grapheneSymbol;
 
@@ -179,9 +179,9 @@ class Config
 
     /**
      * @param string $grapheneAddressPrefix
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneAddressPrefix(string $grapheneAddressPrefix): Config
+    public function setGrapheneAddressPrefix(string $grapheneAddressPrefix): Configuration
     {
         $this->grapheneAddressPrefix = $grapheneAddressPrefix;
 
@@ -198,9 +198,9 @@ class Config
 
     /**
      * @param int $grapheneMinAccountNameLength
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneMinAccountNameLength(int $grapheneMinAccountNameLength): Config
+    public function setGrapheneMinAccountNameLength(int $grapheneMinAccountNameLength): Configuration
     {
         $this->grapheneMinAccountNameLength = $grapheneMinAccountNameLength;
 
@@ -217,9 +217,9 @@ class Config
 
     /**
      * @param int $grapheneMaxAccountNameLength
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneMaxAccountNameLength(int $grapheneMaxAccountNameLength): Config
+    public function setGrapheneMaxAccountNameLength(int $grapheneMaxAccountNameLength): Configuration
     {
         $this->grapheneMaxAccountNameLength = $grapheneMaxAccountNameLength;
 
@@ -236,9 +236,9 @@ class Config
 
     /**
      * @param int $grapheneMinAssetSymbolLength
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneMinAssetSymbolLength(int $grapheneMinAssetSymbolLength): Config
+    public function setGrapheneMinAssetSymbolLength(int $grapheneMinAssetSymbolLength): Configuration
     {
         $this->grapheneMinAssetSymbolLength = $grapheneMinAssetSymbolLength;
 
@@ -255,9 +255,9 @@ class Config
 
     /**
      * @param int $grapheneMaxAssetSymbolLength
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneMaxAssetSymbolLength(int $grapheneMaxAssetSymbolLength): Config
+    public function setGrapheneMaxAssetSymbolLength(int $grapheneMaxAssetSymbolLength): Configuration
     {
         $this->grapheneMaxAssetSymbolLength = $grapheneMaxAssetSymbolLength;
 
@@ -274,9 +274,9 @@ class Config
 
     /**
      * @param string $grapheneMaxShareSupply
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneMaxShareSupply(string $grapheneMaxShareSupply): Config
+    public function setGrapheneMaxShareSupply(string $grapheneMaxShareSupply): Configuration
     {
         $this->grapheneMaxShareSupply = $grapheneMaxShareSupply;
 
@@ -293,9 +293,9 @@ class Config
 
     /**
      * @param int $grapheneMaxPayRate
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneMaxPayRate(int $grapheneMaxPayRate): Config
+    public function setGrapheneMaxPayRate(int $grapheneMaxPayRate): Configuration
     {
         $this->grapheneMaxPayRate = $grapheneMaxPayRate;
 
@@ -312,9 +312,9 @@ class Config
 
     /**
      * @param int $grapheneMaxSigCheckDepth
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneMaxSigCheckDepth(int $grapheneMaxSigCheckDepth): Config
+    public function setGrapheneMaxSigCheckDepth(int $grapheneMaxSigCheckDepth): Configuration
     {
         $this->grapheneMaxSigCheckDepth = $grapheneMaxSigCheckDepth;
 
@@ -331,9 +331,9 @@ class Config
 
     /**
      * @param int $grapheneMinTransactionSizeLimit
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneMinTransactionSizeLimit(int $grapheneMinTransactionSizeLimit): Config
+    public function setGrapheneMinTransactionSizeLimit(int $grapheneMinTransactionSizeLimit): Configuration
     {
         $this->grapheneMinTransactionSizeLimit = $grapheneMinTransactionSizeLimit;
 
@@ -350,9 +350,9 @@ class Config
 
     /**
      * @param int $grapheneMinBlockInterval
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneMinBlockInterval(int $grapheneMinBlockInterval): Config
+    public function setGrapheneMinBlockInterval(int $grapheneMinBlockInterval): Configuration
     {
         $this->grapheneMinBlockInterval = $grapheneMinBlockInterval;
 
@@ -369,9 +369,9 @@ class Config
 
     /**
      * @param int $grapheneMaxBlockInterval
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneMaxBlockInterval(int $grapheneMaxBlockInterval): Config
+    public function setGrapheneMaxBlockInterval(int $grapheneMaxBlockInterval): Configuration
     {
         $this->grapheneMaxBlockInterval = $grapheneMaxBlockInterval;
 
@@ -388,9 +388,9 @@ class Config
 
     /**
      * @param int $grapheneDefaultBlockInterval
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneDefaultBlockInterval(int $grapheneDefaultBlockInterval): Config
+    public function setGrapheneDefaultBlockInterval(int $grapheneDefaultBlockInterval): Configuration
     {
         $this->grapheneDefaultBlockInterval = $grapheneDefaultBlockInterval;
 
@@ -407,9 +407,9 @@ class Config
 
     /**
      * @param int $grapheneDefaultMaxTransactionSize
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneDefaultMaxTransactionSize(int $grapheneDefaultMaxTransactionSize): Config
+    public function setGrapheneDefaultMaxTransactionSize(int $grapheneDefaultMaxTransactionSize): Configuration
     {
         $this->grapheneDefaultMaxTransactionSize = $grapheneDefaultMaxTransactionSize;
 
@@ -426,9 +426,9 @@ class Config
 
     /**
      * @param int $grapheneDefaultMaxBlockSize
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneDefaultMaxBlockSize(int $grapheneDefaultMaxBlockSize): Config
+    public function setGrapheneDefaultMaxBlockSize(int $grapheneDefaultMaxBlockSize): Configuration
     {
         $this->grapheneDefaultMaxBlockSize = $grapheneDefaultMaxBlockSize;
 
@@ -445,9 +445,9 @@ class Config
 
     /**
      * @param int $grapheneDefaultMaxTimeUntilExpiration
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneDefaultMaxTimeUntilExpiration(int $grapheneDefaultMaxTimeUntilExpiration): Config
+    public function setGrapheneDefaultMaxTimeUntilExpiration(int $grapheneDefaultMaxTimeUntilExpiration): Configuration
     {
         $this->grapheneDefaultMaxTimeUntilExpiration = $grapheneDefaultMaxTimeUntilExpiration;
 
@@ -464,9 +464,9 @@ class Config
 
     /**
      * @param int $grapheneDefaultMaintenanceInterval
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneDefaultMaintenanceInterval(int $grapheneDefaultMaintenanceInterval): Config
+    public function setGrapheneDefaultMaintenanceInterval(int $grapheneDefaultMaintenanceInterval): Configuration
     {
         $this->grapheneDefaultMaintenanceInterval = $grapheneDefaultMaintenanceInterval;
 
@@ -483,9 +483,9 @@ class Config
 
     /**
      * @param int $grapheneDefaultMaintenanceSkipSlots
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneDefaultMaintenanceSkipSlots(int $grapheneDefaultMaintenanceSkipSlots): Config
+    public function setGrapheneDefaultMaintenanceSkipSlots(int $grapheneDefaultMaintenanceSkipSlots): Configuration
     {
         $this->grapheneDefaultMaintenanceSkipSlots = $grapheneDefaultMaintenanceSkipSlots;
 
@@ -502,9 +502,9 @@ class Config
 
     /**
      * @param int $grapheneMinUndoHistory
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneMinUndoHistory(int $grapheneMinUndoHistory): Config
+    public function setGrapheneMinUndoHistory(int $grapheneMinUndoHistory): Configuration
     {
         $this->grapheneMinUndoHistory = $grapheneMinUndoHistory;
 
@@ -521,9 +521,9 @@ class Config
 
     /**
      * @param int $grapheneMaxUndoHistory
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneMaxUndoHistory(int $grapheneMaxUndoHistory): Config
+    public function setGrapheneMaxUndoHistory(int $grapheneMaxUndoHistory): Configuration
     {
         $this->grapheneMaxUndoHistory = $grapheneMaxUndoHistory;
 
@@ -540,9 +540,9 @@ class Config
 
     /**
      * @param int $grapheneMinBlockSizeLimit
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneMinBlockSizeLimit(int $grapheneMinBlockSizeLimit): Config
+    public function setGrapheneMinBlockSizeLimit(int $grapheneMinBlockSizeLimit): Configuration
     {
         $this->grapheneMinBlockSizeLimit = $grapheneMinBlockSizeLimit;
 
@@ -559,9 +559,9 @@ class Config
 
     /**
      * @param int $grapheneMinTransactionExpirationLimit
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneMinTransactionExpirationLimit(int $grapheneMinTransactionExpirationLimit): Config
+    public function setGrapheneMinTransactionExpirationLimit(int $grapheneMinTransactionExpirationLimit): Configuration
     {
         $this->grapheneMinTransactionExpirationLimit = $grapheneMinTransactionExpirationLimit;
 
@@ -578,9 +578,9 @@ class Config
 
     /**
      * @param int $grapheneBlockchainPrecision
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneBlockchainPrecision(int $grapheneBlockchainPrecision): Config
+    public function setGrapheneBlockchainPrecision(int $grapheneBlockchainPrecision): Configuration
     {
         $this->grapheneBlockchainPrecision = $grapheneBlockchainPrecision;
 
@@ -597,9 +597,9 @@ class Config
 
     /**
      * @param int $grapheneBlockchainPrecisionDigits
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneBlockchainPrecisionDigits(int $grapheneBlockchainPrecisionDigits): Config
+    public function setGrapheneBlockchainPrecisionDigits(int $grapheneBlockchainPrecisionDigits): Configuration
     {
         $this->grapheneBlockchainPrecisionDigits = $grapheneBlockchainPrecisionDigits;
 
@@ -616,9 +616,9 @@ class Config
 
     /**
      * @param int $grapheneDefaultTransferFee
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneDefaultTransferFee(int $grapheneDefaultTransferFee): Config
+    public function setGrapheneDefaultTransferFee(int $grapheneDefaultTransferFee): Configuration
     {
         $this->grapheneDefaultTransferFee = $grapheneDefaultTransferFee;
 
@@ -635,9 +635,9 @@ class Config
 
     /**
      * @param string $grapheneMaxInstanceId
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneMaxInstanceId(string $grapheneMaxInstanceId): Config
+    public function setGrapheneMaxInstanceId(string $grapheneMaxInstanceId): Configuration
     {
         $this->grapheneMaxInstanceId = $grapheneMaxInstanceId;
 
@@ -654,9 +654,9 @@ class Config
 
     /**
      * @param int $graphene100Percent
-     * @return Config
+     * @return Configuration
      */
-    public function setGraphene100Percent(int $graphene100Percent): Config
+    public function setGraphene100Percent(int $graphene100Percent): Configuration
     {
         $this->graphene100Percent = $graphene100Percent;
 
@@ -673,9 +673,9 @@ class Config
 
     /**
      * @param int $graphene1Percent
-     * @return Config
+     * @return Configuration
      */
-    public function setGraphene1Percent(int $graphene1Percent): Config
+    public function setGraphene1Percent(int $graphene1Percent): Configuration
     {
         $this->graphene1Percent = $graphene1Percent;
 
@@ -692,9 +692,9 @@ class Config
 
     /**
      * @param int $grapheneMaxMarketFeePercent
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneMaxMarketFeePercent(int $grapheneMaxMarketFeePercent): Config
+    public function setGrapheneMaxMarketFeePercent(int $grapheneMaxMarketFeePercent): Configuration
     {
         $this->grapheneMaxMarketFeePercent = $grapheneMaxMarketFeePercent;
 
@@ -711,9 +711,9 @@ class Config
 
     /**
      * @param int $grapheneDefaultForceSettlementDelay
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneDefaultForceSettlementDelay(int $grapheneDefaultForceSettlementDelay): Config
+    public function setGrapheneDefaultForceSettlementDelay(int $grapheneDefaultForceSettlementDelay): Configuration
     {
         $this->grapheneDefaultForceSettlementDelay = $grapheneDefaultForceSettlementDelay;
 
@@ -730,9 +730,9 @@ class Config
 
     /**
      * @param int $grapheneDefaultForceSettlementOffset
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneDefaultForceSettlementOffset(int $grapheneDefaultForceSettlementOffset): Config
+    public function setGrapheneDefaultForceSettlementOffset(int $grapheneDefaultForceSettlementOffset): Configuration
     {
         $this->grapheneDefaultForceSettlementOffset = $grapheneDefaultForceSettlementOffset;
 
@@ -749,9 +749,9 @@ class Config
 
     /**
      * @param int $grapheneDefaultForceSettlementMaxVolume
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneDefaultForceSettlementMaxVolume(int $grapheneDefaultForceSettlementMaxVolume): Config
+    public function setGrapheneDefaultForceSettlementMaxVolume(int $grapheneDefaultForceSettlementMaxVolume): Configuration
     {
         $this->grapheneDefaultForceSettlementMaxVolume = $grapheneDefaultForceSettlementMaxVolume;
 
@@ -768,9 +768,9 @@ class Config
 
     /**
      * @param int $grapheneDefaultPriceFeedLifetime
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneDefaultPriceFeedLifetime(int $grapheneDefaultPriceFeedLifetime): Config
+    public function setGrapheneDefaultPriceFeedLifetime(int $grapheneDefaultPriceFeedLifetime): Configuration
     {
         $this->grapheneDefaultPriceFeedLifetime = $grapheneDefaultPriceFeedLifetime;
 
@@ -787,9 +787,9 @@ class Config
 
     /**
      * @param int $grapheneMaxFeedProducers
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneMaxFeedProducers(int $grapheneMaxFeedProducers): Config
+    public function setGrapheneMaxFeedProducers(int $grapheneMaxFeedProducers): Configuration
     {
         $this->grapheneMaxFeedProducers = $grapheneMaxFeedProducers;
 
@@ -806,9 +806,9 @@ class Config
 
     /**
      * @param int $grapheneDefaultMaxAuthorityMembership
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneDefaultMaxAuthorityMembership(int $grapheneDefaultMaxAuthorityMembership): Config
+    public function setGrapheneDefaultMaxAuthorityMembership(int $grapheneDefaultMaxAuthorityMembership): Configuration
     {
         $this->grapheneDefaultMaxAuthorityMembership = $grapheneDefaultMaxAuthorityMembership;
 
@@ -825,10 +825,10 @@ class Config
 
     /**
      * @param int $grapheneDefaultMaxAssetWhitelistAuthorities
-     * @return Config
+     * @return Configuration
      */
     public function setGrapheneDefaultMaxAssetWhitelistAuthorities(int $grapheneDefaultMaxAssetWhitelistAuthorities
-    ): Config {
+    ): Configuration {
         $this->grapheneDefaultMaxAssetWhitelistAuthorities = $grapheneDefaultMaxAssetWhitelistAuthorities;
 
         return $this;
@@ -844,9 +844,9 @@ class Config
 
     /**
      * @param int $grapheneDefaultMaxAssetFeedPublishers
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneDefaultMaxAssetFeedPublishers(int $grapheneDefaultMaxAssetFeedPublishers): Config
+    public function setGrapheneDefaultMaxAssetFeedPublishers(int $grapheneDefaultMaxAssetFeedPublishers): Configuration
     {
         $this->grapheneDefaultMaxAssetFeedPublishers = $grapheneDefaultMaxAssetFeedPublishers;
 
@@ -863,9 +863,9 @@ class Config
 
     /**
      * @param int $grapheneCollateralRatioDenom
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneCollateralRatioDenom(int $grapheneCollateralRatioDenom): Config
+    public function setGrapheneCollateralRatioDenom(int $grapheneCollateralRatioDenom): Configuration
     {
         $this->grapheneCollateralRatioDenom = $grapheneCollateralRatioDenom;
 
@@ -882,9 +882,9 @@ class Config
 
     /**
      * @param int $grapheneMinCollateralRatio
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneMinCollateralRatio(int $grapheneMinCollateralRatio): Config
+    public function setGrapheneMinCollateralRatio(int $grapheneMinCollateralRatio): Configuration
     {
         $this->grapheneMinCollateralRatio = $grapheneMinCollateralRatio;
 
@@ -901,9 +901,9 @@ class Config
 
     /**
      * @param int $grapheneMaxCollateralRatio
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneMaxCollateralRatio(int $grapheneMaxCollateralRatio): Config
+    public function setGrapheneMaxCollateralRatio(int $grapheneMaxCollateralRatio): Configuration
     {
         $this->grapheneMaxCollateralRatio = $grapheneMaxCollateralRatio;
 
@@ -920,9 +920,9 @@ class Config
 
     /**
      * @param int $grapheneDefaultMaintenanceCollateralRatio
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneDefaultMaintenanceCollateralRatio(int $grapheneDefaultMaintenanceCollateralRatio): Config
+    public function setGrapheneDefaultMaintenanceCollateralRatio(int $grapheneDefaultMaintenanceCollateralRatio): Configuration
     {
         $this->grapheneDefaultMaintenanceCollateralRatio = $grapheneDefaultMaintenanceCollateralRatio;
 
@@ -939,9 +939,9 @@ class Config
 
     /**
      * @param int $grapheneDefaultMaxShortSqueezeRatio
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneDefaultMaxShortSqueezeRatio(int $grapheneDefaultMaxShortSqueezeRatio): Config
+    public function setGrapheneDefaultMaxShortSqueezeRatio(int $grapheneDefaultMaxShortSqueezeRatio): Configuration
     {
         $this->grapheneDefaultMaxShortSqueezeRatio = $grapheneDefaultMaxShortSqueezeRatio;
 
@@ -958,9 +958,9 @@ class Config
 
     /**
      * @param int $grapheneDefaultMarginPeriodSec
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneDefaultMarginPeriodSec(int $grapheneDefaultMarginPeriodSec): Config
+    public function setGrapheneDefaultMarginPeriodSec(int $grapheneDefaultMarginPeriodSec): Configuration
     {
         $this->grapheneDefaultMarginPeriodSec = $grapheneDefaultMarginPeriodSec;
 
@@ -977,9 +977,9 @@ class Config
 
     /**
      * @param int $grapheneDefaultMaxMiners
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneDefaultMaxMiners(int $grapheneDefaultMaxMiners): Config
+    public function setGrapheneDefaultMaxMiners(int $grapheneDefaultMaxMiners): Configuration
     {
         $this->grapheneDefaultMaxMiners = $grapheneDefaultMaxMiners;
 
@@ -996,9 +996,9 @@ class Config
 
     /**
      * @param int $grapheneDefaultMaxProposalLifetimeSec
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneDefaultMaxProposalLifetimeSec(int $grapheneDefaultMaxProposalLifetimeSec): Config
+    public function setGrapheneDefaultMaxProposalLifetimeSec(int $grapheneDefaultMaxProposalLifetimeSec): Configuration
     {
         $this->grapheneDefaultMaxProposalLifetimeSec = $grapheneDefaultMaxProposalLifetimeSec;
 
@@ -1015,10 +1015,10 @@ class Config
 
     /**
      * @param int $grapheneDefaultMinerProposalReviewPeriodSec
-     * @return Config
+     * @return Configuration
      */
     public function setGrapheneDefaultMinerProposalReviewPeriodSec(int $grapheneDefaultMinerProposalReviewPeriodSec
-    ): Config {
+    ): Configuration {
         $this->grapheneDefaultMinerProposalReviewPeriodSec = $grapheneDefaultMinerProposalReviewPeriodSec;
 
         return $this;
@@ -1034,9 +1034,9 @@ class Config
 
     /**
      * @param int $grapheneDefaultNetworkPercentOfFee
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneDefaultNetworkPercentOfFee(int $grapheneDefaultNetworkPercentOfFee): Config
+    public function setGrapheneDefaultNetworkPercentOfFee(int $grapheneDefaultNetworkPercentOfFee): Configuration
     {
         $this->grapheneDefaultNetworkPercentOfFee = $grapheneDefaultNetworkPercentOfFee;
 
@@ -1053,10 +1053,10 @@ class Config
 
     /**
      * @param int $grapheneDefaultLifetimeReferrerPercentOfFee
-     * @return Config
+     * @return Configuration
      */
     public function setGrapheneDefaultLifetimeReferrerPercentOfFee(int $grapheneDefaultLifetimeReferrerPercentOfFee
-    ): Config {
+    ): Configuration {
         $this->grapheneDefaultLifetimeReferrerPercentOfFee = $grapheneDefaultLifetimeReferrerPercentOfFee;
 
         return $this;
@@ -1072,9 +1072,9 @@ class Config
 
     /**
      * @param int $grapheneDefaultMaxBulkDiscountPercent
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneDefaultMaxBulkDiscountPercent(int $grapheneDefaultMaxBulkDiscountPercent): Config
+    public function setGrapheneDefaultMaxBulkDiscountPercent(int $grapheneDefaultMaxBulkDiscountPercent): Configuration
     {
         $this->grapheneDefaultMaxBulkDiscountPercent = $grapheneDefaultMaxBulkDiscountPercent;
 
@@ -1091,9 +1091,9 @@ class Config
 
     /**
      * @param string $grapheneDefaultBulkDiscountThresholdMin
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneDefaultBulkDiscountThresholdMin(string $grapheneDefaultBulkDiscountThresholdMin): Config
+    public function setGrapheneDefaultBulkDiscountThresholdMin(string $grapheneDefaultBulkDiscountThresholdMin): Configuration
     {
         $this->grapheneDefaultBulkDiscountThresholdMin = $grapheneDefaultBulkDiscountThresholdMin;
 
@@ -1110,9 +1110,9 @@ class Config
 
     /**
      * @param string $grapheneDefaultBulkDiscountThresholdMax
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneDefaultBulkDiscountThresholdMax(string $grapheneDefaultBulkDiscountThresholdMax): Config
+    public function setGrapheneDefaultBulkDiscountThresholdMax(string $grapheneDefaultBulkDiscountThresholdMax): Configuration
     {
         $this->grapheneDefaultBulkDiscountThresholdMax = $grapheneDefaultBulkDiscountThresholdMax;
 
@@ -1129,9 +1129,9 @@ class Config
 
     /**
      * @param int $grapheneDefaultCashbackVestingPeriodSec
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneDefaultCashbackVestingPeriodSec(int $grapheneDefaultCashbackVestingPeriodSec): Config
+    public function setGrapheneDefaultCashbackVestingPeriodSec(int $grapheneDefaultCashbackVestingPeriodSec): Configuration
     {
         $this->grapheneDefaultCashbackVestingPeriodSec = $grapheneDefaultCashbackVestingPeriodSec;
 
@@ -1148,9 +1148,9 @@ class Config
 
     /**
      * @param string $grapheneDefaultCashbackVestingThreshold
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneDefaultCashbackVestingThreshold(string $grapheneDefaultCashbackVestingThreshold): Config
+    public function setGrapheneDefaultCashbackVestingThreshold(string $grapheneDefaultCashbackVestingThreshold): Configuration
     {
         $this->grapheneDefaultCashbackVestingThreshold = $grapheneDefaultCashbackVestingThreshold;
 
@@ -1167,9 +1167,9 @@ class Config
 
     /**
      * @param int $grapheneDefaultBurnPercentOfFee
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneDefaultBurnPercentOfFee(int $grapheneDefaultBurnPercentOfFee): Config
+    public function setGrapheneDefaultBurnPercentOfFee(int $grapheneDefaultBurnPercentOfFee): Configuration
     {
         $this->grapheneDefaultBurnPercentOfFee = $grapheneDefaultBurnPercentOfFee;
 
@@ -1186,9 +1186,9 @@ class Config
 
     /**
      * @param int $grapheneMinerPayPercentPrecision
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneMinerPayPercentPrecision(int $grapheneMinerPayPercentPrecision): Config
+    public function setGrapheneMinerPayPercentPrecision(int $grapheneMinerPayPercentPrecision): Configuration
     {
         $this->grapheneMinerPayPercentPrecision = $grapheneMinerPayPercentPrecision;
 
@@ -1205,9 +1205,9 @@ class Config
 
     /**
      * @param int $grapheneDefaultMaxAssertOpcode
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneDefaultMaxAssertOpcode(int $grapheneDefaultMaxAssertOpcode): Config
+    public function setGrapheneDefaultMaxAssertOpcode(int $grapheneDefaultMaxAssertOpcode): Configuration
     {
         $this->grapheneDefaultMaxAssertOpcode = $grapheneDefaultMaxAssertOpcode;
 
@@ -1224,9 +1224,9 @@ class Config
 
     /**
      * @param int $grapheneDefaultFeeLiquidationThreshold
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneDefaultFeeLiquidationThreshold(int $grapheneDefaultFeeLiquidationThreshold): Config
+    public function setGrapheneDefaultFeeLiquidationThreshold(int $grapheneDefaultFeeLiquidationThreshold): Configuration
     {
         $this->grapheneDefaultFeeLiquidationThreshold = $grapheneDefaultFeeLiquidationThreshold;
 
@@ -1243,9 +1243,9 @@ class Config
 
     /**
      * @param int $grapheneDefaultAccountsPerFeeScale
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneDefaultAccountsPerFeeScale(int $grapheneDefaultAccountsPerFeeScale): Config
+    public function setGrapheneDefaultAccountsPerFeeScale(int $grapheneDefaultAccountsPerFeeScale): Configuration
     {
         $this->grapheneDefaultAccountsPerFeeScale = $grapheneDefaultAccountsPerFeeScale;
 
@@ -1262,9 +1262,9 @@ class Config
 
     /**
      * @param int $grapheneDefaultAccountFeeScaleBitshifts
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneDefaultAccountFeeScaleBitshifts(int $grapheneDefaultAccountFeeScaleBitshifts): Config
+    public function setGrapheneDefaultAccountFeeScaleBitshifts(int $grapheneDefaultAccountFeeScaleBitshifts): Configuration
     {
         $this->grapheneDefaultAccountFeeScaleBitshifts = $grapheneDefaultAccountFeeScaleBitshifts;
 
@@ -1281,9 +1281,9 @@ class Config
 
     /**
      * @param int $grapheneMaxWorkerNameLength
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneMaxWorkerNameLength(int $grapheneMaxWorkerNameLength): Config
+    public function setGrapheneMaxWorkerNameLength(int $grapheneMaxWorkerNameLength): Configuration
     {
         $this->grapheneMaxWorkerNameLength = $grapheneMaxWorkerNameLength;
 
@@ -1300,9 +1300,9 @@ class Config
 
     /**
      * @param int $grapheneMaxUrlLength
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneMaxUrlLength(int $grapheneMaxUrlLength): Config
+    public function setGrapheneMaxUrlLength(int $grapheneMaxUrlLength): Configuration
     {
         $this->grapheneMaxUrlLength = $grapheneMaxUrlLength;
 
@@ -1319,9 +1319,9 @@ class Config
 
     /**
      * @param string $grapheneNearScheduleCtrIv
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneNearScheduleCtrIv(string $grapheneNearScheduleCtrIv): Config
+    public function setGrapheneNearScheduleCtrIv(string $grapheneNearScheduleCtrIv): Configuration
     {
         $this->grapheneNearScheduleCtrIv = $grapheneNearScheduleCtrIv;
 
@@ -1338,9 +1338,9 @@ class Config
 
     /**
      * @param string $grapheneFarScheduleCtrIv
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneFarScheduleCtrIv(string $grapheneFarScheduleCtrIv): Config
+    public function setGrapheneFarScheduleCtrIv(string $grapheneFarScheduleCtrIv): Configuration
     {
         $this->grapheneFarScheduleCtrIv = $grapheneFarScheduleCtrIv;
 
@@ -1357,9 +1357,9 @@ class Config
 
     /**
      * @param int $grapheneCoreAssetCycleRate
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneCoreAssetCycleRate(int $grapheneCoreAssetCycleRate): Config
+    public function setGrapheneCoreAssetCycleRate(int $grapheneCoreAssetCycleRate): Configuration
     {
         $this->grapheneCoreAssetCycleRate = $grapheneCoreAssetCycleRate;
 
@@ -1376,9 +1376,9 @@ class Config
 
     /**
      * @param int $grapheneCoreAssetCycleRateBits
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneCoreAssetCycleRateBits(int $grapheneCoreAssetCycleRateBits): Config
+    public function setGrapheneCoreAssetCycleRateBits(int $grapheneCoreAssetCycleRateBits): Configuration
     {
         $this->grapheneCoreAssetCycleRateBits = $grapheneCoreAssetCycleRateBits;
 
@@ -1395,9 +1395,9 @@ class Config
 
     /**
      * @param int $grapheneDefaultMinerPayPerBlock
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneDefaultMinerPayPerBlock(int $grapheneDefaultMinerPayPerBlock): Config
+    public function setGrapheneDefaultMinerPayPerBlock(int $grapheneDefaultMinerPayPerBlock): Configuration
     {
         $this->grapheneDefaultMinerPayPerBlock = $grapheneDefaultMinerPayPerBlock;
 
@@ -1414,9 +1414,9 @@ class Config
 
     /**
      * @param int $grapheneDefaultMinerPayVestingSeconds
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneDefaultMinerPayVestingSeconds(int $grapheneDefaultMinerPayVestingSeconds): Config
+    public function setGrapheneDefaultMinerPayVestingSeconds(int $grapheneDefaultMinerPayVestingSeconds): Configuration
     {
         $this->grapheneDefaultMinerPayVestingSeconds = $grapheneDefaultMinerPayVestingSeconds;
 
@@ -1433,9 +1433,9 @@ class Config
 
     /**
      * @param int $grapheneMaxInterestApr
-     * @return Config
+     * @return Configuration
      */
-    public function setGrapheneMaxInterestApr(int $grapheneMaxInterestApr): Config
+    public function setGrapheneMaxInterestApr(int $grapheneMaxInterestApr): Configuration
     {
         $this->grapheneMaxInterestApr = $grapheneMaxInterestApr;
 
@@ -1452,10 +1452,10 @@ class Config
 
     /**
      * @param ChainObject|string $grapheneMinerAccount
-     * @return Config
+     * @return Configuration
      * @throws \DCorePHP\Exception\ValidationException
      */
-    public function setGrapheneMinerAccount($grapheneMinerAccount): Config
+    public function setGrapheneMinerAccount($grapheneMinerAccount): Configuration
     {
         if (is_string($grapheneMinerAccount)) {
             $grapheneMinerAccount = new ChainObject($grapheneMinerAccount);
@@ -1475,10 +1475,10 @@ class Config
 
     /**
      * @param ChainObject|string $grapheneNullAccount
-     * @return Config
+     * @return Configuration
      * @throws \DCorePHP\Exception\ValidationException
      */
-    public function setGrapheneNullAccount($grapheneNullAccount): Config
+    public function setGrapheneNullAccount($grapheneNullAccount): Configuration
     {
         if (is_string($grapheneNullAccount)) {
             $grapheneNullAccount = new ChainObject($grapheneNullAccount);
@@ -1498,10 +1498,10 @@ class Config
 
     /**
      * @param ChainObject|string $grapheneTempAccount
-     * @return Config
+     * @return Configuration
      * @throws \DCorePHP\Exception\ValidationException
      */
-    public function setGrapheneTempAccount($grapheneTempAccount): Config
+    public function setGrapheneTempAccount($grapheneTempAccount): Configuration
     {
         if (is_string($grapheneTempAccount)) {
             $grapheneTempAccount = new ChainObject($grapheneTempAccount);

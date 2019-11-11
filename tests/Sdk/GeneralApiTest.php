@@ -51,7 +51,7 @@ class GeneralApiTest extends DCoreSDKTest
      */
     public function testGetConfig(): void
     {
-        $config = self::$sdk->getGeneralApi()->getConfig();
+        $config = self::$sdk->getGeneralApi()->getConfiguration();
         $this->assertEquals('DCT', $config->getGrapheneSymbol());
         $this->assertEquals('DCT', $config->getGrapheneAddressPrefix());
     }

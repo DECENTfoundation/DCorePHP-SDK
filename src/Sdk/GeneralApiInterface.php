@@ -5,7 +5,7 @@ namespace DCorePHP\Sdk;
 use DCorePHP\Exception\InvalidApiCallException;
 use DCorePHP\Model\DynamicGlobalProps;
 use DCorePHP\Model\General\ChainProperty;
-use DCorePHP\Model\General\Config;
+use DCorePHP\Model\General\Configuration;
 use DCorePHP\Model\General\GlobalProperty;
 use DCorePHP\Model\General\MinerRewardInput;
 use WebSocket\BadOpcodeException;
@@ -36,12 +36,12 @@ interface GeneralApiInterface
     /**
      * Retrieve compile-time constants
      *
-     * @return Config configured constants
+     * @return Configuration configured constants
      *
      * @throws InvalidApiCallException
      * @throws BadOpcodeException
      */
-    public function getConfig(): Config;
+    public function getConfiguration(): Configuration;
 
     /**
      * Get the chain ID
